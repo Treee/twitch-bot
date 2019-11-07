@@ -1,4 +1,4 @@
-import { Connector } from './src/connector';
+// import { PubSubWebSocket } from './src/twitch-connectors/pub-sub-websocket';
 
-const connector = new Connector();
-connector.connect();
+// const connector = new PubSubWebSocket();
+// connector.connect();

@@ -1,5 +1,7 @@
+// https://dev.twitch.tv/docs/pubsub
+// https://github.com/twitchdev/pubsub-samples/blob/master/javascript/main.js
 import WebSocket from 'ws';
-export class Connector {
+export class PubSubWebSocket {
 
     heartbeatInterval = 1000 * 60; //ms between PING's
     reconnectInterval = 1000 * 3; //ms to wait before reconnect
@@ -7,6 +9,17 @@ export class Connector {
 
     constructor() {
         this.ws = new WebSocket('wss://pubsub-edge.twitch.tv');
+    }
+
+    authUrl() {
+        sessionStorage.twitchOAuthState = this.nonce(15);
+        var url = 'https://api.twitch.tv/kraken/oauth2/authorize' +
+            '?response_type=token' +
+            '&client_id=' + 'gct24z0bpt832rurvqgn4m6kqja6kg' +
+            '&redirect_uri=' + 'http://localhost' +
+            '&state=' + sessionStorage.twitchOAuthState +
+            '&scope=' + '';
+        return url
     }
 
     connect(): void {
@@ -40,11 +53,33 @@ export class Connector {
 
     }
 
+    listen(topic: string) {
+        let message = {
+            type: 'LISTEN',
+            nonce: this.nonce(15),
+            data: {
+                topics: [topic],
+                auth_token: sessionStorage.twitchOAuthToken
+            }
+        };
+        console.log('SENT: ' + JSON.stringify(message) + '\n');
+        this.ws.send(JSON.stringify(message));
+    }
+
     heartbeat() {
         const message = {
             type: 'PING'
         };
         console.log('SENT: ' + JSON.stringify(message) + '\n');
         this.ws.send(JSON.stringify(message));
+    }
+
+    nonce(length: number) {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < length; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
     }
 }
