@@ -2,3 +2,8 @@
 
 // const connector = new PubSubWebSocket();
 // connector.connect();
+
+
+import { HelixApi } from './src/twitch-connectors/helix-api';
+const helix = new HelixApi();
+helix.getMostActiveStreamsForGameId(33214);

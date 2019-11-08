@@ -8,7 +8,8 @@ describe('Helix Api', () => {
         testApi = new HelixApi();
     });
 
-    it('Can get basic stuff', () => {
-        expect(false).toBe(true);
+    it('Can get basic stuff', async () => {
+        let x = await testApi.getMostActiveStreamsForGameId(33214);
+        console.log(x);
     });
 });

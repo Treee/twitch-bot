@@ -39,7 +39,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var HelixApi = /** @class */ (function () {
     function HelixApi() {
+        this.baseUrl = 'https://api.twitch.tv/helix';
     }
+    HelixApi.prototype.getMostActiveStreamsForGameId = function (gameId) {
+        return exports.get("/streams?game_id=" + gameId);
+    };
     return HelixApi;
 }());
 exports.HelixApi = HelixApi;
@@ -55,7 +59,7 @@ exports.get = function (path, args) {
     });
 };
 exports.post = function (path, body, args) {
-    if (args === void 0) { args = { method: 'post', body: JSON.stringify(body) }; }
+    if (args === void 0) { args = { method: 'post', headers: { 'Client-ID': clientId }, body: JSON.stringify(body) }; }
     return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -66,7 +70,7 @@ exports.post = function (path, body, args) {
     });
 };
 exports.put = function (path, body, args) {
-    if (args === void 0) { args = { method: 'put', body: JSON.stringify(body) }; }
+    if (args === void 0) { args = { method: 'put', headers: { 'Client-ID': clientId }, body: JSON.stringify(body) }; }
     return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {

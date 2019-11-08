@@ -1,7 +1,22 @@
 // https://dev.twitch.tv/docs/api
+import fetch from 'node-fetch';
+import { Request, RequestInfo, RequestInit } from 'node-fetch';
 
 export class HelixApi {
+    baseUrl: string = 'https://api.twitch.tv/helix';
     constructor() { }
+
+    getBasicInfo() {
+        fetch(`${this.baseUrl}/streams?game_id=33214`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+            })
+            .catch(err => console.log(err));
+    }
+    getMostActiveStreamsForGameId(gameId: number) {
+        return get(`${this.baseUrl}/streams?game_id=${gameId}`);
+    }
 }
 
 interface IHttpResponse<T> extends Response {
@@ -25,17 +40,17 @@ const clientId = 'gct24z0bpt832rurvqgn4m6kqja6kg';
 const http = <T>(request: RequestInfo): Promise<IHttpResponse<T>> => {
     return new Promise((resolve, reject) => {
         let response: IHttpResponse<T>;
-        fetch(request).then((res) => {
+        fetch(request).then((res: any) => {
             response = res;
             return res.json();
-        }).then((body) => {
+        }).then((body: any) => {
             if (response.ok) {
                 response.parseBody = body;
                 resolve(response);
             } else {
                 reject(response);
             }
-        }).catch((error) => {
+        }).catch((error: any) => {
             reject(error);
         });
     });
