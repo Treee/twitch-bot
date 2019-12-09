@@ -1,6 +1,7 @@
 // https://dev.twitch.tv/docs/pubsub
 // https://github.com/twitchdev/pubsub-samples/blob/master/javascript/main.js
 import WebSocket from 'ws';
+// import { SECRETS } from '../secrets';
 export class PubSubWebSocket {
 
     heartbeatInterval = 1000 * 60; //ms between PING's
@@ -15,10 +16,10 @@ export class PubSubWebSocket {
         sessionStorage.twitchOAuthState = this.nonce(15);
         var url = 'https://api.twitch.tv/kraken/oauth2/authorize' +
             '?response_type=token' +
-            '&client_id=' + 'gct24z0bpt832rurvqgn4m6kqja6kg' +
+            // '&client_id=' + SECRETS.botClientId +
             '&redirect_uri=' + 'http://localhost' +
             '&state=' + sessionStorage.twitchOAuthState +
-            '&scope=' + '';
+            '&scope=' + 'user_read+chat_login';
         return url
     }
 

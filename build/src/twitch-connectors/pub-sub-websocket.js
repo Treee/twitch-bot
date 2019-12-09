@@ -5,26 +5,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // https://dev.twitch.tv/docs/pubsub
 // https://github.com/twitchdev/pubsub-samples/blob/master/javascript/main.js
-var ws_1 = __importDefault(require("ws"));
-var PubSubWebSocket = /** @class */ (function () {
-    function PubSubWebSocket() {
+const ws_1 = __importDefault(require("ws"));
+// import { SECRETS } from '../secrets';
+class PubSubWebSocket {
+    constructor() {
         this.heartbeatInterval = 1000 * 60; //ms between PING's
         this.reconnectInterval = 1000 * 3; //ms to wait before reconnect
         this.ws = new ws_1.default('wss://pubsub-edge.twitch.tv');
     }
-    PubSubWebSocket.prototype.authUrl = function () {
+    authUrl() {
         sessionStorage.twitchOAuthState = this.nonce(15);
         var url = 'https://api.twitch.tv/kraken/oauth2/authorize' +
             '?response_type=token' +
-            '&client_id=' + 'gct24z0bpt832rurvqgn4m6kqja6kg' +
+            // '&client_id=' + SECRETS.botClientId +
             '&redirect_uri=' + 'http://localhost' +
             '&state=' + sessionStorage.twitchOAuthState +
-            '&scope=' + '';
+            '&scope=' + 'user_read+chat_login';
         return url;
-    };
-    PubSubWebSocket.prototype.connect = function () {
-        var heartbeatHandle;
-        var connector = this;
+    }
+    connect() {
+        let heartbeatHandle;
+        const connector = this;
         this.ws.onopen = function (event) {
             console.log('INFO: Socket Opened\n');
             connector.heartbeat();
@@ -34,7 +35,7 @@ var PubSubWebSocket = /** @class */ (function () {
             console.log('ERR:  ' + JSON.stringify(error) + '\n');
         };
         this.ws.onmessage = function (event) {
-            var message = JSON.parse(event.data.toString());
+            const message = JSON.parse(event.data.toString());
             console.log('RECV: ' + JSON.stringify(message) + '\n');
             if (message.type == 'RECONNECT') {
                 console.log('INFO: Reconnecting...\n');
@@ -47,9 +48,9 @@ var PubSubWebSocket = /** @class */ (function () {
             console.log('INFO: Reconnecting...\n');
             setTimeout(connector.connect, connector.reconnectInterval);
         };
-    };
-    PubSubWebSocket.prototype.listen = function (topic) {
-        var message = {
+    }
+    listen(topic) {
+        let message = {
             type: 'LISTEN',
             nonce: this.nonce(15),
             data: {
@@ -59,22 +60,21 @@ var PubSubWebSocket = /** @class */ (function () {
         };
         console.log('SENT: ' + JSON.stringify(message) + '\n');
         this.ws.send(JSON.stringify(message));
-    };
-    PubSubWebSocket.prototype.heartbeat = function () {
-        var message = {
+    }
+    heartbeat() {
+        const message = {
             type: 'PING'
         };
         console.log('SENT: ' + JSON.stringify(message) + '\n');
         this.ws.send(JSON.stringify(message));
-    };
-    PubSubWebSocket.prototype.nonce = function (length) {
+    }
+    nonce(length) {
         var text = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         for (var i = 0; i < length; i++) {
             text += possible.charAt(Math.floor(Math.random() * possible.length));
         }
         return text;
-    };
-    return PubSubWebSocket;
-}());
+    }
+}
 exports.PubSubWebSocket = PubSubWebSocket;

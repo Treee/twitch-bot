@@ -6,21 +6,25 @@
   "scripts": {
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "build": "tsc",
+    "build-emote-widget": "npm run build && browserify build/src/overlay-widgets/emote-widget/index.js > build/src/overlay-widgets/emote-widget/emote-widget-bundle.js",
     "local": "ts-node index.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/node-fetch": "^2.5.3",
-    "@types/ws": "^6.0.3",
     "node-fetch": "^2.6.0",
+    "tmi.js": "^1.5.0",
     "typescript": "^3.7.2",
     "ws": "^7.2.0"
   },
   "devDependencies": {
     "@types/jasmine": "^3.4.6",
+    "@types/jquery": "^3.3.31",
+    "@types/node-fetch": "^2.5.3",
+    "@types/tmi.js": "^1.4.0",
+    "@types/ws": "^6.0.3",
+    "browserify": "^16.5.0",
     "jasmine": "^3.5.0",
-    "ts-node": "^8.4.1",
-    "tslint": "^5.20.1"
+    "ts-node": "^8.4.1"
   }
 }
