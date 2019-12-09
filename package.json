@@ -6,7 +6,7 @@
   "scripts": {
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "build": "tsc",
-    "build-emote-widget": "npm run build && browserify build/src/overlay-widgets/emote-widget/index.js > build/src/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles src/overlay-widgets/emote-widget/index.html src/overlay-widgets/emote-widget/stylezz.css build",
+    "build-emote-widget": "npm run build && browserify build/src/overlay-widgets/emote-widget/index.js > build/src/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles src/overlay-widgets/**/*.html src/overlay-widgets/**/*.css src/overlay-widgets/**/*.md build",
     "local": "ts-node index.ts"
   },
   "author": "",
