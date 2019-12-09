@@ -6,7 +6,7 @@
   "scripts": {
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "build": "tsc",
-    "build-emote-widget": "npm run build && browserify build/src/overlay-widgets/emote-widget/index.js > build/src/overlay-widgets/emote-widget/emote-widget-bundle.js",
+    "build-emote-widget": "npm run build && browserify build/src/overlay-widgets/emote-widget/index.js > build/src/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles src/overlay-widgets/emote-widget/index.html src/overlay-widgets/emote-widget/stylezz.css build",
     "local": "ts-node index.ts"
   },
   "author": "",
@@ -24,6 +24,7 @@
     "@types/tmi.js": "^1.4.0",
     "@types/ws": "^6.0.3",
     "browserify": "^16.5.0",
+    "copyfiles": "^2.1.1",
     "jasmine": "^3.5.0",
     "ts-node": "^8.4.1"
   }
