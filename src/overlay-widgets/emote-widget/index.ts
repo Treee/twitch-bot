@@ -9,7 +9,7 @@ emoteWidgetConfig.setConfigFrom(window.location.search.substring(1))
 
 const emoteWidget = new EmoteWidget(emoteWidgetConfig);
 
-Promise.all([twitchApiV5.getTwitchEmotes(emoteWidgetConfig), twitchApiV5.getBttvEmotes(emoteWidgetConfig)]).then((values) => {
+Promise.all([twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel), twitchApiV5.getBttvEmotes(emoteWidgetConfig.channel)]).then((values) => {
     // console.log('values', values);
     emoteWidget.twitchEmotes = values[0].emotes;
     emoteWidget.twitchSubBadges = values[0].subBadges;
