@@ -14,7 +14,6 @@
   "dependencies": {
     "node-fetch": "^2.6.0",
     "tmi.js": "^1.5.0",
-    "typescript": "^3.7.2",
     "ws": "^7.2.0"
   },
   "devDependencies": {
@@ -26,6 +25,7 @@
     "browserify": "^16.5.0",
     "copyfiles": "^2.1.1",
     "jasmine": "^3.5.0",
-    "ts-node": "^8.4.1"
+    "ts-node": "^8.4.1",
+    "typescript": "^3.7.2"
   }
 }
