@@ -1,4 +1,3 @@
-import { EmoteWidgetConfig } from "../overlay-widgets/emote-widget/emote-widget-config";
 import { TwitchEmote, TwitchEmoteResponse, BttvEmoteResponse, BttvEmote, SubBadge } from "../overlay-widgets/emote-widget/emote";
 
 export class TwitchApiV5 {
@@ -12,9 +11,9 @@ export class TwitchApiV5 {
         return headers;
     }
 
-    async getTwitchEmotes(emoteConfig: EmoteWidgetConfig) {
-        const headers = this.getTwitchRequestHeaders(emoteConfig.clientId);
-        return await fetch(`https://api.twitch.tv/kraken/users?login=${emoteConfig.channel}`, { headers }).then(async (response) => {
+    async getTwitchEmotes(clientId: string, channelName: string) {
+        const headers = this.getTwitchRequestHeaders(clientId);
+        return await fetch(`https://api.twitch.tv/kraken/users?login=${channelName}`, { headers }).then(async (response) => {
             // console.log('user', data.users);
             let data = await response.json();
             let userId = -9999;
@@ -43,8 +42,8 @@ export class TwitchApiV5 {
         });
     }
 
-    async getBttvEmotes(emoteConfig: EmoteWidgetConfig) {
-        return await fetch(`https://api.betterttv.net/2/channels/${emoteConfig.channel}`).then(async (response) => {
+    async getBttvEmotes(channelName: string) {
+        return await fetch(`https://api.betterttv.net/2/channels/${channelName}`).then(async (response) => {
             // console.log('unmanaged emotes', data);
             let data = await response.json();
             const emotes = data.emotes || [];

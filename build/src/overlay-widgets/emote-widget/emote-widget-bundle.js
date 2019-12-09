@@ -243,7 +243,7 @@ const twitchApiV5 = new twitch_api_v5_1.TwitchApiV5();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
-Promise.all([twitchApiV5.getTwitchEmotes(emoteWidgetConfig), twitchApiV5.getBttvEmotes(emoteWidgetConfig)]).then((values) => {
+Promise.all([twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel), twitchApiV5.getBttvEmotes(emoteWidgetConfig.channel)]).then((values) => {
     // console.log('values', values);
     emoteWidget.twitchEmotes = values[0].emotes;
     emoteWidget.twitchSubBadges = values[0].subBadges;
@@ -294,10 +294,10 @@ class TwitchApiV5 {
         headers.append('Accept', 'application/vnd.twitchtv.v5+json');
         return headers;
     }
-    getTwitchEmotes(emoteConfig) {
+    getTwitchEmotes(clientId, channelName) {
         return __awaiter(this, void 0, void 0, function* () {
-            const headers = this.getTwitchRequestHeaders(emoteConfig.clientId);
-            return yield fetch(`https://api.twitch.tv/kraken/users?login=${emoteConfig.channel}`, { headers }).then((response) => __awaiter(this, void 0, void 0, function* () {
+            const headers = this.getTwitchRequestHeaders(clientId);
+            return yield fetch(`https://api.twitch.tv/kraken/users?login=${channelName}`, { headers }).then((response) => __awaiter(this, void 0, void 0, function* () {
                 // console.log('user', data.users);
                 let data = yield response.json();
                 let userId = -9999;
@@ -326,9 +326,9 @@ class TwitchApiV5 {
             });
         });
     }
-    getBttvEmotes(emoteConfig) {
+    getBttvEmotes(channelName) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield fetch(`https://api.betterttv.net/2/channels/${emoteConfig.channel}`).then((response) => __awaiter(this, void 0, void 0, function* () {
+            return yield fetch(`https://api.betterttv.net/2/channels/${channelName}`).then((response) => __awaiter(this, void 0, void 0, function* () {
                 // console.log('unmanaged emotes', data);
                 let data = yield response.json();
                 const emotes = data.emotes || [];

@@ -19,10 +19,10 @@ class TwitchApiV5 {
         headers.append('Accept', 'application/vnd.twitchtv.v5+json');
         return headers;
     }
-    getTwitchEmotes(emoteConfig) {
+    getTwitchEmotes(clientId, channelName) {
         return __awaiter(this, void 0, void 0, function* () {
-            const headers = this.getTwitchRequestHeaders(emoteConfig.clientId);
-            return yield fetch(`https://api.twitch.tv/kraken/users?login=${emoteConfig.channel}`, { headers }).then((response) => __awaiter(this, void 0, void 0, function* () {
+            const headers = this.getTwitchRequestHeaders(clientId);
+            return yield fetch(`https://api.twitch.tv/kraken/users?login=${channelName}`, { headers }).then((response) => __awaiter(this, void 0, void 0, function* () {
                 // console.log('user', data.users);
                 let data = yield response.json();
                 let userId = -9999;
@@ -51,9 +51,9 @@ class TwitchApiV5 {
             });
         });
     }
-    getBttvEmotes(emoteConfig) {
+    getBttvEmotes(channelName) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield fetch(`https://api.betterttv.net/2/channels/${emoteConfig.channel}`).then((response) => __awaiter(this, void 0, void 0, function* () {
+            return yield fetch(`https://api.betterttv.net/2/channels/${channelName}`).then((response) => __awaiter(this, void 0, void 0, function* () {
                 // console.log('unmanaged emotes', data);
                 let data = yield response.json();
                 const emotes = data.emotes || [];
