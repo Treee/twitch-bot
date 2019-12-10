@@ -8,6 +8,7 @@ class EmoteWidgetConfig {
         this.defaultImageUrl = 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x';
         this.showTwitch = true;
         this.showBttv = true;
+        this.showGlobal = false;
         this.botMode = false;
         this.totalEmotes = 100;
         this.secondsToRain = 10;

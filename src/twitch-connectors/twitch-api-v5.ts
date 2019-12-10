@@ -11,6 +11,26 @@ export class TwitchApiV5 {
         return headers;
     }
 
+    async getTwitchEmotesBySets(clientId: string, setIds: number[]): Promise<TwitchEmote[]> {
+        const headers = this.getTwitchRequestHeaders(clientId);
+        return await fetch(`https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=${setIds.join(',')}`, { headers }).then(async (response) => {
+            let data = await response.json();
+            // console.log('emotes by set emotes', data);
+            const emoticonSets = data.emoticon_sets || {};
+            const formattedEmotes: TwitchEmote[] = [];
+            setIds.forEach((setId: number) => {
+                if (emoticonSets[setId]) {
+                    emoticonSets[setId].forEach((emote: any) => {
+                        formattedEmotes.push(new TwitchEmote(emote.code, emote.emoticon_set, emote.id));
+                    });
+                }
+            });
+            return formattedEmotes;
+        }, (error) => {
+            return [];
+        });
+    }
+
     async getTwitchEmotes(clientId: string, channelName: string) {
         const headers = this.getTwitchRequestHeaders(clientId);
         return await fetch(`https://api.twitch.tv/kraken/users?login=${channelName}`, { headers }).then(async (response) => {

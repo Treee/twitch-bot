@@ -19,6 +19,27 @@ class TwitchApiV5 {
         headers.append('Accept', 'application/vnd.twitchtv.v5+json');
         return headers;
     }
+    getTwitchEmotesBySets(clientId, setIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const headers = this.getTwitchRequestHeaders(clientId);
+            return yield fetch(`https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=${setIds.join(',')}`, { headers }).then((response) => __awaiter(this, void 0, void 0, function* () {
+                let data = yield response.json();
+                // console.log('emotes by set emotes', data);
+                const emoticonSets = data.emoticon_sets || {};
+                const formattedEmotes = [];
+                setIds.forEach((setId) => {
+                    if (emoticonSets[setId]) {
+                        emoticonSets[setId].forEach((emote) => {
+                            formattedEmotes.push(new emote_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
+                        });
+                    }
+                });
+                return formattedEmotes;
+            }), (error) => {
+                return [];
+            });
+        });
+    }
     getTwitchEmotes(clientId, channelName) {
         return __awaiter(this, void 0, void 0, function* () {
             const headers = this.getTwitchRequestHeaders(clientId);
