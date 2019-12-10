@@ -6,6 +6,7 @@ export class EmoteWidgetConfig {
     defaultImageUrl: string = 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x';
     showTwitch: boolean = true;
     showBttv: boolean = true;
+    showGlobal: boolean = false;
     botMode: boolean = false;
     totalEmotes: number = 100;
     secondsToRain: number = 10;

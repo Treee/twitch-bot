@@ -9,6 +9,7 @@ class EmoteWidgetConfig {
         this.defaultImageUrl = 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x';
         this.showTwitch = true;
         this.showBttv = true;
+        this.showGlobal = false;
         this.botMode = false;
         this.totalEmotes = 100;
         this.secondsToRain = 10;
@@ -243,9 +244,19 @@ const twitchApiV5 = new twitch_api_v5_1.TwitchApiV5();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
-Promise.all([twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel), twitchApiV5.getBttvEmotes(emoteWidgetConfig.channel)]).then((values) => {
+Promise.all([
+    twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
+    twitchApiV5.getBttvEmotes(emoteWidgetConfig.channel),
+    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42])
+]).then((values) => {
     // console.log('values', values);
-    emoteWidget.twitchEmotes = values[0].emotes;
+    if (emoteWidgetConfig.showGlobal) {
+        const combinedTwitchEmotes = values[0].emotes.concat(values[2]);
+        emoteWidget.twitchEmotes = combinedTwitchEmotes;
+    }
+    else {
+        emoteWidget.twitchEmotes = values[0].emotes;
+    }
     emoteWidget.twitchSubBadges = values[0].subBadges;
     emoteWidget.bttvEmotes = values[1].emotes;
 }).then(() => {
@@ -293,6 +304,27 @@ class TwitchApiV5 {
         headers.append('Client-ID', clientId);
         headers.append('Accept', 'application/vnd.twitchtv.v5+json');
         return headers;
+    }
+    getTwitchEmotesBySets(clientId, setIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const headers = this.getTwitchRequestHeaders(clientId);
+            return yield fetch(`https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=${setIds.join(',')}`, { headers }).then((response) => __awaiter(this, void 0, void 0, function* () {
+                let data = yield response.json();
+                // console.log('emotes by set emotes', data);
+                const emoticonSets = data.emoticon_sets || {};
+                const formattedEmotes = [];
+                setIds.forEach((setId) => {
+                    if (emoticonSets[setId]) {
+                        emoticonSets[setId].forEach((emote) => {
+                            formattedEmotes.push(new emote_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
+                        });
+                    }
+                });
+                return formattedEmotes;
+            }), (error) => {
+                return [];
+            });
+        });
     }
     getTwitchEmotes(clientId, channelName) {
         return __awaiter(this, void 0, void 0, function* () {

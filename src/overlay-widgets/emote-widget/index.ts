@@ -9,9 +9,18 @@ emoteWidgetConfig.setConfigFrom(window.location.search.substring(1))
 
 const emoteWidget = new EmoteWidget(emoteWidgetConfig);
 
-Promise.all([twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel), twitchApiV5.getBttvEmotes(emoteWidgetConfig.channel)]).then((values) => {
+Promise.all([
+    twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
+    twitchApiV5.getBttvEmotes(emoteWidgetConfig.channel),
+    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42])
+]).then((values) => {
     // console.log('values', values);
-    emoteWidget.twitchEmotes = values[0].emotes;
+    if (emoteWidgetConfig.showGlobal) {
+        const combinedTwitchEmotes = values[0].emotes.concat(values[2])
+        emoteWidget.twitchEmotes = combinedTwitchEmotes;
+    } else {
+        emoteWidget.twitchEmotes = values[0].emotes;
+    }
     emoteWidget.twitchSubBadges = values[0].subBadges;
     emoteWidget.bttvEmotes = values[1].emotes;
 }).then(() => {
