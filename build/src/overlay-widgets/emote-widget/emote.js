@@ -87,6 +87,14 @@ class TwitchEmote extends Emote {
         this.emoticon_set = emoticon_set;
         this.id = id;
     }
+    convertScaleToPixels() {
+        if (this.emoticon_set === 42) {
+            return { width: 20 * this.scale, height: 18 * this.scale };
+        }
+        else {
+            return super.convertScaleToPixels();
+        }
+    }
     setUrl() {
         this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}/${this.scale}.0`;
     }
