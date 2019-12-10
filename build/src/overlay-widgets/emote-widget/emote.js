@@ -27,10 +27,13 @@ class Emote {
     }
     randomizeEmoteAnimation(emoteElement) {
         // move across the top of the screen
-        emoteElement.css('left', `${this.randomNumberBetween(0, 93)}vw`);
         // randomize the lifetime of the animation
-        let randomAnmimationLifetime = this.randomNumberBetween(2.5, 8.5);
-        emoteElement.css('-webkit-animation', `raining-rotating ${randomAnmimationLifetime}s none linear, fade-out ${randomAnmimationLifetime}s none linear`);
+        const randomAnmimationLifetime = this.randomNumberBetween(2.5, 8.5);
+        emoteElement.css({
+            'left': `${this.randomNumberBetween(0, 95)}vw`,
+            'top': `-${this.convertScaleToPixels().height}px`,
+            '-webkit-animation': `raining-rotating ${randomAnmimationLifetime}s none linear, fade-out ${randomAnmimationLifetime}s none linear`,
+        });
         // return the lifetime of the animation so we can kill it via DOM removal
         return randomAnmimationLifetime;
     }
