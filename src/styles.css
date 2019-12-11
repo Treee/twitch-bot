@@ -26,5 +26,44 @@ div.menu-item:hover {
 }
 
 .emote-container {
-    z-index: -1 !important;
+    z-index: -1 !important;    
+}
+.widget-toggle {
+    color:blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.url-builder-visibility-toggle {
+    position: absolute;
+    top: 7vh;
+}
+
+.emote-widget-url-builder {
+    top: 10vh;
+    width: 20vw;
+    position: absolute;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    background-color: rgba(211, 211, 211, 0.4);
+}
+.required {
+    color: red;
+}
+.url-options {
+    padding: 0.15em;
+}
+
+.url-options-button {
+    margin-top: 0.5em;
+}
+
+.url-result:hover {
+    color:blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.submit-and-result {
+    display: inline-block;
+    white-space: nowrap;
 }
