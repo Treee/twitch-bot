@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const twitch_api_v5_1 = require("../../twitch-connectors/twitch-api-v5");
 const emote_widget_config_1 = require("./emote-widget-config");
 const emote_widget_1 = require("./emote-widget");
+const emote_widget_client_1 = require("./emote-widget-client");
 const twitchApiV5 = new twitch_api_v5_1.TwitchApiV5();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
@@ -44,4 +45,6 @@ Promise.all([
             }, emoteWidgetConfig.secondsToWaitForRain * 1000);
         }
     }
+}).then(() => {
+    new emote_widget_client_1.EmoteWidgetClient('ws://localhost:8080', emoteWidget);
 });

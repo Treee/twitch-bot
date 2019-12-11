@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const WebSocket = require("ws");
 class EmoteWidgetClient {
     constructor(serverUrl, emoteWidget) {
         this.serverUrl = 'ws://localhost:8080';
@@ -8,8 +7,8 @@ class EmoteWidgetClient {
         this.serverUrl = serverUrl;
         this.emoteWidget = emoteWidget;
         this.socket = new WebSocket(serverUrl);
-        this.socket.onopen = this.onOpen;
-        this.socket.onmessage = this.onMessage;
+        this.socket.onopen = this.onOpen.bind(this);
+        this.socket.onmessage = this.onMessage.bind(this);
         this.socket.onclose = this.onClose;
         this.socket.onerror = this.onError;
     }

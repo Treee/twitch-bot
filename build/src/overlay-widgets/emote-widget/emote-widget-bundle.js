@@ -1,6 +1,60 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+class EmoteWidgetClient {
+    constructor(serverUrl, emoteWidget) {
+        this.serverUrl = 'ws://localhost:8080';
+        this.emoteCodesToLookFor = [];
+        this.serverUrl = serverUrl;
+        this.emoteWidget = emoteWidget;
+        this.socket = new WebSocket(serverUrl);
+        this.socket.onopen = this.onOpen.bind(this);
+        this.socket.onmessage = this.onMessage.bind(this);
+        this.socket.onclose = this.onClose;
+        this.socket.onerror = this.onError;
+    }
+    onOpen(event) {
+        const emoteCodes = this.emoteWidget.getEmoteCodes();
+        console.log('[open] Connection established');
+        console.log('Sending list of emotes to look for', emoteCodes);
+        this.socket.send(JSON.stringify({ dataType: 'emoteCodes', data: emoteCodes }));
+    }
+    onMessage(event) {
+        console.log(`[message] Data received from server: ${event.data}`);
+        // TODO handle when json parse fails
+        const invokedEmotes = JSON.parse(event.data.toString());
+        if (!!invokedEmotes && invokedEmotes.length > 0) {
+            invokedEmotes.forEach((emote) => {
+                const emoteToShow = this.emoteWidget.getSpecificTwitchEmote(emote);
+                if (!emoteToShow) {
+                    const bttvEmoteToShow = this.emoteWidget.getSpecificBttvEmote(emote);
+                    this.emoteWidget.addEmoteToContainer('emote-container', 'emote', bttvEmoteToShow);
+                }
+                else {
+                    this.emoteWidget.addEmoteToContainer('emote-container', 'emote', emoteToShow);
+                }
+            });
+        }
+    }
+    onClose(event) {
+        if (event.wasClean) {
+            console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+        }
+        else {
+            // e.g. server process killed or network down
+            // event.code is usually 1006 in this case
+            console.log('[close] Connection died');
+        }
+    }
+    onError(event) {
+        console.log(`[error] ${event.message}`);
+    }
+}
+exports.EmoteWidgetClient = EmoteWidgetClient;
+
+},{}],2:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class EmoteWidgetConfig {
     constructor() {
         this.clientId = '';
@@ -41,7 +95,7 @@ class EmoteWidgetConfig {
 }
 exports.EmoteWidgetConfig = EmoteWidgetConfig;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_1 = require("./emote");
@@ -141,7 +195,7 @@ class EmoteWidget {
 }
 exports.EmoteWidget = EmoteWidget;
 
-},{"./emote":3}],3:[function(require,module,exports){
+},{"./emote":4}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Emote {
@@ -245,12 +299,13 @@ class TwitchEmote extends Emote {
 }
 exports.TwitchEmote = TwitchEmote;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const twitch_api_v5_1 = require("../../twitch-connectors/twitch-api-v5");
 const emote_widget_config_1 = require("./emote-widget-config");
 const emote_widget_1 = require("./emote-widget");
+const emote_widget_client_1 = require("./emote-widget-client");
 const twitchApiV5 = new twitch_api_v5_1.TwitchApiV5();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
@@ -292,9 +347,11 @@ Promise.all([
             }, emoteWidgetConfig.secondsToWaitForRain * 1000);
         }
     }
+}).then(() => {
+    new emote_widget_client_1.EmoteWidgetClient('ws://localhost:8080', emoteWidget);
 });
 
-},{"../../twitch-connectors/twitch-api-v5":5,"./emote-widget":2,"./emote-widget-config":1}],5:[function(require,module,exports){
+},{"../../twitch-connectors/twitch-api-v5":6,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],6:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -308,8 +365,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_1 = require("../overlay-widgets/emote-widget/emote");
 class TwitchApiV5 {
-    constructor() {
-    }
+    constructor() { }
     getTwitchRequestHeaders(clientId) {
         const headers = new Headers();
         headers.append('Client-ID', clientId);
@@ -388,4 +444,4 @@ class TwitchApiV5 {
 }
 exports.TwitchApiV5 = TwitchApiV5;
 
-},{"../overlay-widgets/emote-widget/emote":3}]},{},[4]);
+},{"../overlay-widgets/emote-widget/emote":4}]},{},[5]);
