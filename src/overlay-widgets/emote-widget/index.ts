@@ -49,5 +49,7 @@ Promise.all([
         }
     }
 }).then(() => {
-    new EmoteWidgetClient('ws://localhost:8080', emoteWidget);
+    if (emoteWidgetConfig.botMode) {
+        new EmoteWidgetClient('ws://localhost:8080', emoteWidget);
+    }
 });

@@ -46,5 +46,7 @@ Promise.all([
         }
     }
 }).then(() => {
-    new emote_widget_client_1.EmoteWidgetClient('ws://localhost:8080', emoteWidget);
+    if (emoteWidgetConfig.botMode) {
+        new emote_widget_client_1.EmoteWidgetClient('ws://localhost:8080', emoteWidget);
+    }
 });
