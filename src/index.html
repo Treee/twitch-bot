@@ -2,11 +2,25 @@
 <html>
 
 <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="./main.js"></script>
+    <script src="../build/src/overlay-widgets/emote-widget/emote-widget-bundle.js"></script>
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+    <link rel="stylesheet" type="text/css" href="../build/src/overlay-widgets/emote-widget/stylezz.css">
+
     <title>Page Title</title>
 </head>
 
 <body>
-    twitch bot page
+    <div class="menu">
+        <div class="menu-item" onclick="window.open('https://github.com/Treee/twitch-bot','mywindow');">Github</div>
+        <div class="menu-item">Emote Widget</div>
+    </div>
+
+    <div class="emote-widget-url-builder"></div>
+    <div class="emote-widget">
+        <div class="emote-container"></div>
+    </div>
 </body>
 
 </html>
