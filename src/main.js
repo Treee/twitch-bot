@@ -13,7 +13,7 @@
     };
 
     generateUrlParams = () => {
-        let url = window.location.pathname;
+        let url = window.location.href;
         const clientId = getTextboxValue('clientId');
         url = url.concat(`?clientId=${clientId}`);
         const channel = getTextboxValue('channel');
