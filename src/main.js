@@ -45,6 +45,10 @@
         if (secondsToWaitForRain !== '23') {
             url = url.concat(`&totalEmotes=${secondsToWaitForRain}`);
         }
+        const numTimesToRepeat = getNumberInputValues('numTimesToRepeat');
+        if (numTimesToRepeat !== '1') {
+            url = url.concat(`&numTimesToRepeat=${numTimesToRepeat}`);
+        }
         // const single = getTextboxValue('single');
         // if (single !== '') {
         //     url = url.concat(`&single=${single}`);
