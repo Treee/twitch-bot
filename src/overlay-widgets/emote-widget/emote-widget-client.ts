@@ -1,4 +1,3 @@
-import WebSocket = require('ws');
 import { EmoteWidget } from './emote-widget';
 
 export class EmoteWidgetClient {
@@ -13,20 +12,20 @@ export class EmoteWidgetClient {
         this.serverUrl = serverUrl;
         this.emoteWidget = emoteWidget;
         this.socket = new WebSocket(serverUrl);
-        this.socket.onopen = this.onOpen;
-        this.socket.onmessage = this.onMessage;
+        this.socket.onopen = this.onOpen.bind(this);
+        this.socket.onmessage = this.onMessage.bind(this);
         this.socket.onclose = this.onClose;
         this.socket.onerror = this.onError;
     }
 
-    onOpen(event: WebSocket.OpenEvent) {
+    onOpen(event: any) {
         const emoteCodes = this.emoteWidget.getEmoteCodes();
         console.log('[open] Connection established');
         console.log('Sending list of emotes to look for', emoteCodes);
         this.socket.send(JSON.stringify({ dataType: 'emoteCodes', data: emoteCodes }));
     }
 
-    onMessage(event: WebSocket.MessageEvent) {
+    onMessage(event: any) {
         console.log(`[message] Data received from server: ${event.data}`);
         // TODO handle when json parse fails
         const invokedEmotes = JSON.parse(event.data.toString());
@@ -44,7 +43,7 @@ export class EmoteWidgetClient {
         }
     }
 
-    onClose(event: WebSocket.CloseEvent) {
+    onClose(event: any) {
         if (event.wasClean) {
             console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
         } else {
@@ -54,7 +53,7 @@ export class EmoteWidgetClient {
         }
     }
 
-    onError(event: WebSocket.ErrorEvent) {
+    onError(event: any) {
         console.log(`[error] ${event.message}`);
     }
 }

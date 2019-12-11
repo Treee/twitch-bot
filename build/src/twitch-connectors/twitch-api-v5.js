@@ -11,8 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_1 = require("../overlay-widgets/emote-widget/emote");
 class TwitchApiV5 {
-    constructor() {
-    }
+    constructor() { }
     getTwitchRequestHeaders(clientId) {
         const headers = new Headers();
         headers.append('Client-ID', clientId);

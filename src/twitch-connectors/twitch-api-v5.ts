@@ -1,8 +1,7 @@
 import { TwitchEmote, TwitchEmoteResponse, BttvEmoteResponse, BttvEmote, SubBadge } from "../overlay-widgets/emote-widget/emote";
 
 export class TwitchApiV5 {
-    constructor() {
-    }
+    constructor() { }
 
     getTwitchRequestHeaders(clientId: string): Headers {
         const headers = new Headers();

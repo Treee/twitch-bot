@@ -1,6 +1,7 @@
 import { TwitchApiV5 } from '../../twitch-connectors/twitch-api-v5';
 import { EmoteWidgetConfig } from './emote-widget-config';
 import { EmoteWidget } from './emote-widget';
+import { EmoteWidgetClient } from './emote-widget-client';
 
 const twitchApiV5 = new TwitchApiV5();
 
@@ -47,4 +48,6 @@ Promise.all([
             }, emoteWidgetConfig.secondsToWaitForRain * 1000);
         }
     }
+}).then(() => {
+    new EmoteWidgetClient('ws://localhost:8080', emoteWidget);
 });

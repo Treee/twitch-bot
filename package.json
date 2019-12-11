@@ -6,7 +6,8 @@
   "scripts": {
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "build": "tsc",
-    "build-emote-widget": "npm run build && browserify build/src/overlay-widgets/emote-widget/index.js > build/src/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles src/overlay-widgets/**/*.html src/overlay-widgets/**/*.css src/overlay-widgets/**/*.md build",
+    "build-emote-widget": "npm run build && browserify src/overlay-widgets/emote-widget/index.ts -p [ tsify --noImplicityAny ] > build/src/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles src/overlay-widgets/**/*.html src/overlay-widgets/**/*.css src/overlay-widgets/**/*.md build",
+    "local-chatbot": "node ./src/twitch-connectors/twitch-websocket-server.js",
     "local": "ts-node index.ts"
   },
   "author": "",
@@ -26,6 +27,7 @@
     "copyfiles": "^2.1.1",
     "jasmine": "^3.5.0",
     "ts-node": "^8.4.1",
+    "tsify": "^4.0.1",
     "typescript": "^3.7.2"
   }
 }
