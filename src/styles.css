@@ -48,6 +48,8 @@ div.menu-item:hover {
 }
 .required {
     color: red;
+    position: absolute;
+    top: -.5vh;
 }
 .url-options {
     padding: 0.15em;

@@ -14,45 +14,54 @@
 
     generateUrlParams = () => {
         let url = `${window.location.origin}${window.location.pathname}`;
-        const clientId = getTextboxValue('clientId');
-        url = url.concat(`?clientId=${clientId}`);
+        const paramsToAdd = [];
         const channel = getTextboxValue('channel');
         if (channel !== 'itsatreee') {
-            url = url.concat(`&channel=${itsatreee}`);
+            paramsToAdd.push(`channel=${itsatreee}`);
         }
         const showTwitch = getRadioButtonCheckedValue('showTwitch');
+        const clientId = getTextboxValue('clientId');
+        paramsToAdd.push(`clientId=${clientId}`);
         if (showTwitch !== 'true') {
-            url = url.concat(`&showTwitch=${showTwitch}`);
+
+            paramsToAdd.push(`showTwitch=${showTwitch}`);
         }
         const showGlobal = getRadioButtonCheckedValue('showGlobal');
         if (showGlobal !== 'false') {
-            url = url.concat(`&showGlobal=${true}`);
+            paramsToAdd.push(`showGlobal=${true}`);
         }
         const showBttv = getRadioButtonCheckedValue('showBttv');
         if (showBttv !== 'false') {
-            url = url.concat(`&showBttv=${true}`);
+            paramsToAdd.push(`showBttv=${true}`);
         }
 
         const totalEmotes = getNumberInputValues('totalEmotes');
         if (totalEmotes !== '100') {
-            url = url.concat(`&totalEmotes=${totalEmotes}`);
+            paramsToAdd.push(`totalEmotes=${totalEmotes}`);
         }
         const secondsToRain = getNumberInputValues('secondsToRain');
         if (secondsToRain !== '10') {
-            url = url.concat(`&secondsToRain=${secondsToRain}`);
+            paramsToAdd.push(`secondsToRain=${secondsToRain}`);
         }
         const secondsToWaitForRain = getNumberInputValues('secondsToWaitForRain');
         if (secondsToWaitForRain !== '23') {
-            url = url.concat(`&totalEmotes=${secondsToWaitForRain}`);
+            paramsToAdd.push(`totalEmotes=${secondsToWaitForRain}`);
         }
         const numTimesToRepeat = getNumberInputValues('numTimesToRepeat');
         if (numTimesToRepeat !== '1') {
-            url = url.concat(`&numTimesToRepeat=${numTimesToRepeat}`);
+            paramsToAdd.push(`numTimesToRepeat=${numTimesToRepeat}`);
         }
         // const single = getTextboxValue('single');
         // if (single !== '') {
-        //     url = url.concat(`&single=${single}`);
+        //    paramsToAdd.push(`single=${single}`);
         // }
+        let paramString = '';
+        paramsToAdd.forEach((param) => {
+            paramString = paramString.concat(`&${param}`);
+        });
+        if (paramsToAdd.length > 0) {
+            url = url.concat('?').concat(paramString.substring(1));
+        }
         console.log(url);
         $('#generatedUrl').text(url);
     };
