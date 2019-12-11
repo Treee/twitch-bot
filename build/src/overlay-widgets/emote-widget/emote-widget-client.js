@@ -25,7 +25,7 @@ class EmoteWidgetClient {
         if (!!invokedEmotes && invokedEmotes.length > 0) {
             invokedEmotes.forEach((emote) => {
                 const emoteToShow = this.emoteWidget.getSpecificTwitchEmote(emote);
-                if (!emoteToShow) {
+                if (!emoteToShow.code) {
                     const bttvEmoteToShow = this.emoteWidget.getSpecificBttvEmote(emote);
                     this.emoteWidget.addEmoteToContainer('emote-container', 'emote', bttvEmoteToShow);
                 }

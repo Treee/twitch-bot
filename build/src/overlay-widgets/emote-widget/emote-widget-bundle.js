@@ -26,7 +26,7 @@ class EmoteWidgetClient {
         if (!!invokedEmotes && invokedEmotes.length > 0) {
             invokedEmotes.forEach((emote) => {
                 const emoteToShow = this.emoteWidget.getSpecificTwitchEmote(emote);
-                if (!emoteToShow) {
+                if (!emoteToShow.code) {
                     const bttvEmoteToShow = this.emoteWidget.getSpecificBttvEmote(emote);
                     this.emoteWidget.addEmoteToContainer('emote-container', 'emote', bttvEmoteToShow);
                 }
@@ -348,7 +348,9 @@ Promise.all([
         }
     }
 }).then(() => {
-    new emote_widget_client_1.EmoteWidgetClient('ws://localhost:8080', emoteWidget);
+    if (emoteWidgetConfig.botMode) {
+        new emote_widget_client_1.EmoteWidgetClient('ws://localhost:8080', emoteWidget);
+    }
 });
 
 },{"../../twitch-connectors/twitch-api-v5":6,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],6:[function(require,module,exports){
