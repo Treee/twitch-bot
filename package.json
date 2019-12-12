@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "local-chatbot": "node ./src/twitch-connectors/twitch-websocket-server.js",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "build": "tsc",
     "build-emote-widget": "npm run build && browserify src/overlay-widgets/emote-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles -f src/overlay-widgets/**/*.html src/overlay-widgets/**/*.css src/overlay-widgets/**/*.md build/overlay-widgets/emote-widget",
-    "build-physics-widget": "npm run build && browserify src/overlay-widgets/physics-widget/physics-engine.js > build/overlay-widgets/physics-widget/physics-bundle.js",
-    "local-chatbot": "node ./src/twitch-connectors/twitch-websocket-server.js",
-    "local": "ts-node index.ts"
+    "build-physics-widget": "npm run build && browserify src/overlay-widgets/physics-widget/test.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/physics-widget/physics-bundle.js",
+    "build-all": "npm run build-emote-widget && npm run build-physics-widget"
   },
   "author": "",
   "license": "ISC",
@@ -22,6 +22,7 @@
   "devDependencies": {
     "@types/jasmine": "^3.4.6",
     "@types/jquery": "^3.3.31",
+    "@types/matter-js": "^0.10.5",
     "@types/node-fetch": "^2.5.3",
     "@types/tmi.js": "^1.4.0",
     "@types/ws": "^6.0.3",
