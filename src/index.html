@@ -11,7 +11,7 @@
     <title>Page Title</title>
 </head>
 
-<body>
+<body class="general-css">
     <div class="menu">
         <div id="gitHubMenu" class="menu-item" onclick="window.open('https://github.com/Treee/twitch-bot','mywindow');">
             Github</div>
@@ -19,7 +19,7 @@
         <div id="physicsWidgetMenu" class="menu-item" onclick="toggleMenuVisibility('physics')">Physics Widget</div>
     </div>
 
-    <div id="emoteWidgetDisplay" class="emote-widget">
+    <div id="emoteWidgetDisplay" hidden="true" class="emote-widget">
         <div class="url-builder-visibility-toggle">
             <div id="show-url-builder" class="widget-toggle" hidden="true" onclick="toggleVisibility('show')">Show
             </div>
@@ -94,7 +94,7 @@
         <div class="emote-container"></div>
     </div>
 
-    <div id="physicsWidgetDisplay" hidden="true" class="physics-widget">
+    <div id="physicsWidgetDisplay" class="physics-widget">
 
     </div>
 </body>

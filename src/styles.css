@@ -1,3 +1,7 @@
+.general-css {
+    overflow: hidden;
+}
+
 .menu {
     background-color: mediumpurple;
     display: inline-flex;
@@ -68,4 +72,13 @@ div.menu-item:hover {
 .submit-and-result {
     display: inline-block;
     white-space: nowrap;
+}
+
+.physics-widget {
+    position: absolute;
+    top: 10vh;
+    left: 6vw;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2;
 }
