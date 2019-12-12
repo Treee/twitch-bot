@@ -1,3 +1,4 @@
+var Matter = require('matter-js');
 // module aliases
 var Engine = Matter.Engine,
     Render = Matter.Render,
@@ -9,7 +10,7 @@ var engine = Engine.create();
 
 // create a renderer
 var render = Render.create({
-    element: document.body,
+    element: document.getElementById('physicsWidgetDisplay'),
     engine: engine
 });
 

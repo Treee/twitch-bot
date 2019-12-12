@@ -13,11 +13,13 @@
 
 <body>
     <div class="menu">
-        <div class="menu-item" onclick="window.open('https://github.com/Treee/twitch-bot','mywindow');">Github</div>
-        <div class="menu-item">Emote Widget</div>
+        <div id="gitHubMenu" class="menu-item" onclick="window.open('https://github.com/Treee/twitch-bot','mywindow');">
+            Github</div>
+        <div id="emoteWidgetMenu" class="menu-item" onclick="toggleMenuVisibility('emote')">Emote Widget</div>
+        <div id="physicsWidgetMenu" class="menu-item" onclick="toggleMenuVisibility('physics')">Physics Widget</div>
     </div>
 
-    <div class="emote-widget">
+    <div id="emoteWidgetDisplay" class="emote-widget">
         <div class="url-builder-visibility-toggle">
             <div id="show-url-builder" class="widget-toggle" hidden="true" onclick="toggleVisibility('show')">Show
             </div>
@@ -91,6 +93,12 @@
         </div>
         <div class="emote-container"></div>
     </div>
+
+    <div id="physicsWidgetDisplay" hidden="true" class="physics-widget">
+
+    </div>
 </body>
+
+<script src="../build/overlay-widgets/physics-widget/physics-bundle.js"></script>
 
 </html>
