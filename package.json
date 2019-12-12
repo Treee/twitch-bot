@@ -7,6 +7,7 @@
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "build": "tsc",
     "build-emote-widget": "npm run build && browserify src/overlay-widgets/emote-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles -f src/overlay-widgets/**/*.html src/overlay-widgets/**/*.css src/overlay-widgets/**/*.md build/overlay-widgets/emote-widget",
+    "build-physics-widget": "npm run build && copyfiles -f src/overlay-widgets/physics-widget/physics-engine.js build/overlay-widgets/physics-widget",
     "local-chatbot": "node ./src/twitch-connectors/twitch-websocket-server.js",
     "local": "ts-node index.ts"
   },
