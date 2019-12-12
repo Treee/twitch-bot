@@ -1,5 +1,15 @@
 (() => {
 
+    toggleMenuVisibility = (toggle) => {
+        if (toggle === 'emote') {
+            $('#emoteWidgetDisplay').show(1);
+            $('#physicsWidgetDisplay').hide(1);
+        } else if (toggle === 'physics') {
+            $('#emoteWidgetDisplay').hide(1);
+            $('#physicsWidgetDisplay').show(1);
+        }
+    }
+
     toggleVisibility = (toggle) => {
         if (toggle === 'show') {
             $('#hide-url-builder').show(1);
