@@ -3,8 +3,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Emote {
     constructor(scale = 1, url = '') {
         this.scale = 1;
+        this.position = { x: 0, y: 0 };
+        this.velocity = { x: 0, y: 0 };
+        this.lifespan = 0;
         this.url = url;
         this.scale = scale;
+    }
+    setPosition(x, y) {
+        this.position.x = x;
+        this.position.y = y;
+    }
+    setVelocity(x, y) {
+        this.velocity.x = x;
+        this.velocity.y = y;
     }
     setScale(size) {
         this.scale = size;
@@ -25,17 +36,33 @@ class Emote {
         }
         return { width: emoteWidth, height: emoteHeight };
     }
-    randomizeEmoteAnimation(emoteElement) {
+    randomizeEmoteAnimation() {
+        var _a;
         // move across the top of the screen
         // randomize the lifetime of the animation
-        const randomAnmimationLifetime = this.randomNumberBetween(2.5, 8.5);
-        emoteElement.css({
+        this.lifespan = this.randomNumberBetween(2.5, 8.5);
+        (_a = this.htmlElement) === null || _a === void 0 ? void 0 : _a.css({
             'left': `${this.randomNumberBetween(0, 95)}vw`,
             'top': `-${this.convertScaleToPixels().height}px`,
-            '-webkit-animation': `raining-rotating ${randomAnmimationLifetime}s none linear, fade-out ${randomAnmimationLifetime}s none linear`,
+            '-webkit-animation': `raining-rotating ${this.lifespan}s none linear, fade-out ${this.lifespan}s none linear`,
         });
-        // return the lifetime of the animation so we can kill it via DOM removal
-        return randomAnmimationLifetime;
+    }
+    createHtmlElement(emoteCssClass) {
+        this.htmlElement = $('<div></div>').addClass(emoteCssClass);
+        const emoteSize = this.convertScaleToPixels();
+        this.htmlElement.width(`${emoteSize.width}px`);
+        this.htmlElement.height(`${emoteSize.height}px`);
+        this.htmlElement.css('background', `url("${this.url}")`);
+        this.htmlElement.css('background-size', 'cover');
+    }
+    move() {
+        if (this.htmlElement) {
+            this.htmlElement.css('transform', `translate(${this.position.x += this.velocity.x}px, ${this.position.y += this.velocity.y}px)`);
+        }
+    }
+    calculateNextMoveFrame() {
+        const emotePixelScale = this.convertScaleToPixels();
+        return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
     }
     randomNumberBetween(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
