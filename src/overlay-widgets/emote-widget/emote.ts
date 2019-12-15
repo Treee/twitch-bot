@@ -2,10 +2,24 @@
 export class Emote {
     url: string;
     scale: number = 1;
+    position: { x: number, y: number } = { x: 0, y: 0 };
+    velocity: { x: number, y: number } = { x: 0, y: 0 };
+    lifespan: number = 0;
+    htmlElement: JQuery | undefined;
 
     constructor(scale: number = 1, url: string = '') {
         this.url = url;
         this.scale = scale;
+    }
+
+    setPosition(x: number, y: number) {
+        this.position.x = x;
+        this.position.y = y;
+    }
+
+    setVelocity(x: number, y: number) {
+        this.velocity.x = x;
+        this.velocity.y = y;
     }
 
     setScale(size: number) {
@@ -29,18 +43,35 @@ export class Emote {
         return { width: emoteWidth, height: emoteHeight };
     }
 
-    randomizeEmoteAnimation(emoteElement: JQuery) {
+    randomizeEmoteAnimation() {
         // move across the top of the screen
         // randomize the lifetime of the animation
-        const randomAnmimationLifetime = this.randomNumberBetween(2.5, 8.5);
-        emoteElement.css({
+        this.lifespan = this.randomNumberBetween(2.5, 8.5);
+        this.htmlElement?.css({
             'left': `${this.randomNumberBetween(0, 95)}vw`,
             'top': `-${this.convertScaleToPixels().height}px`,
-            '-webkit-animation': `raining-rotating ${randomAnmimationLifetime}s none linear, fade-out ${randomAnmimationLifetime}s none linear`,
+            '-webkit-animation': `raining-rotating ${this.lifespan}s none linear, fade-out ${this.lifespan}s none linear`,
         });
+    }
 
-        // return the lifetime of the animation so we can kill it via DOM removal
-        return randomAnmimationLifetime;
+    createHtmlElement(emoteCssClass: string) {
+        this.htmlElement = $('<div></div>').addClass(emoteCssClass);
+        const emoteSize = this.convertScaleToPixels();
+        this.htmlElement.width(`${emoteSize.width}px`);
+        this.htmlElement.height(`${emoteSize.height}px`);
+        this.htmlElement.css('background', `url("${this.url}")`);
+        this.htmlElement.css('background-size', 'cover');
+    }
+
+    move() {
+        if (this.htmlElement) {
+            this.htmlElement.css('transform', `translate(${this.position.x += this.velocity.x}px, ${this.position.y += this.velocity.y}px)`);
+        }
+    }
+
+    calculateNextMoveFrame() {
+        const emotePixelScale = this.convertScaleToPixels();
+        return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
     }
 
     private randomNumberBetween(min: number, max: number) {

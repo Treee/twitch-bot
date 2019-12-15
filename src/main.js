@@ -27,7 +27,7 @@
         const paramsToAdd = [];
         const channel = getTextboxValue('channel');
         if (channel !== 'itsatreee') {
-            paramsToAdd.push(`channel=${itsatreee}`);
+            paramsToAdd.push(`channel=${channel}`);
         }
         const showTwitch = getRadioButtonCheckedValue('showTwitch');
         const clientId = getTextboxValue('clientId');

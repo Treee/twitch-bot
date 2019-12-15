@@ -76,9 +76,16 @@ div.menu-item:hover {
 
 .physics-widget {
     position: absolute;
-    top: 10vh;
-    left: 6vw;
+    top: 0vh;
+    left: 0vw;
     width: 100vw;
     height: 100vh;
-    z-index: -2;
+    z-index: -1;
+}
+
+.default-emote {
+    position: absolute;
+    width: 56px; 
+    height: 56px; 
+    background: url('https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x');
 }
