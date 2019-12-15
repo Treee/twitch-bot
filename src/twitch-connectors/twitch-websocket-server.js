@@ -27,7 +27,13 @@ let emoteCodesToLookFor = [];
 // Called every time a message comes in
 function onMessageHandler(target, context, msg, self) {
     if (self) { return; } // Ignore messages from the bot
-
+    console.log(`target: ${target} msg: ${msg} self: ${self}`);
+    console.log('context:', context);
+    if (context['message-type'] === 'raid') {
+        console.log('========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================');
+        console.log(`target: ${target} msg: ${msg} self: ${self}`);
+        console.log('context:', context);
+    }
     // Remove whitespace from chat message
     const commandName = msg.trim();
     const parsedEmotes = parseForEmoteCodes(commandName);
