@@ -24,15 +24,8 @@ class EmoteWidgetClient {
         // TODO handle when json parse fails
         const invokedEmotes = JSON.parse(event.data.toString());
         if (!!invokedEmotes && invokedEmotes.length > 0) {
-            invokedEmotes.forEach((emote) => {
-                const emoteToShow = this.emoteWidget.getSpecificTwitchEmote(emote);
-                if (!emoteToShow.code) {
-                    const bttvEmoteToShow = this.emoteWidget.getSpecificBttvEmote(emote);
-                    this.emoteWidget.addEmoteToContainer('emote-container', 'emote', bttvEmoteToShow);
-                }
-                else {
-                    this.emoteWidget.addEmoteToContainer('emote-container', 'emote', emoteToShow);
-                }
+            invokedEmotes.forEach((emoteCode) => {
+                this.emoteWidget.addEmoteToContainer('emote-container', 'emote', emoteCode);
             });
         }
     }
@@ -116,6 +109,13 @@ class EmoteWidget {
         });
         return emoteCodes;
     }
+    getEmoteFromCode(emoteCode) {
+        let newEmote = this.getSpecificTwitchEmote(emoteCode);
+        if (newEmote.code === '') {
+            newEmote = this.getSpecificBttvEmote(emoteCode);
+        }
+        return newEmote;
+    }
     getSpecificTwitchEmote(emoteCode) {
         let emote = this.twitchEmotes.find((emote) => {
             return emote.code === emoteCode;
@@ -168,26 +168,42 @@ class EmoteWidget {
         // pick a random number, if it is even make a twitch emote otherwise bttv emote. toggle
         return emoteChoices[this.randomNumberBetween(0, emoteChoices.length - 1)];
     }
-    addEmoteToContainer(emoteContainerClass, emoteCssClass, specificEmote) {
-        let emote;
-        if (specificEmote instanceof Function) {
-            emote = specificEmote();
+    addEmoteToContainer(emoteContainerClass, emoteCssClass, emoteCode) {
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        let newEmote;
+        let numExtraEmotes = -1;
+        if (emoteCode === '') {
+            // get a random emote code or w/e
+            newEmote = this.getRandomEmote();
         }
         else {
-            emote = specificEmote;
+            newEmote = this.getEmoteFromCode(emoteCode);
+            numExtraEmotes = this.randomNumberBetween(2, 7);
         }
-        const newEmote = $('<div></div>').addClass(emoteCssClass);
-        const emoteSize = emote.convertScaleToPixels();
-        newEmote.width(`${emoteSize.width}px`);
-        newEmote.height(`${emoteSize.height}px`);
-        newEmote.css('background', `url("${emote.url}")`);
-        newEmote.css('background-size', 'cover');
-        const lifetimeOfElement = emote.randomizeEmoteAnimation(newEmote);
-        $(`.${emoteContainerClass}`).append(newEmote);
-        // remove the elment
-        setTimeout((emote) => {
-            emote.remove();
-        }, lifetimeOfElement * 1000, newEmote);
+        if (numExtraEmotes > -1) {
+            for (let index = 0; index < numExtraEmotes; index++) {
+                (_a = newEmote) === null || _a === void 0 ? void 0 : _a.createHtmlElement(emoteCssClass);
+                (_b = newEmote) === null || _b === void 0 ? void 0 : _b.randomizeEmoteAnimation();
+                if ((_c = newEmote) === null || _c === void 0 ? void 0 : _c.htmlElement) {
+                    $(`.${emoteContainerClass}`).append(newEmote.htmlElement);
+                }
+                // remove the elment
+                setTimeout((emote) => {
+                    emote.htmlElement.hide(1);
+                }, (((_d = newEmote) === null || _d === void 0 ? void 0 : _d.lifespan) || 0) * 1000 + 1000, newEmote);
+            }
+        }
+        else {
+            (_e = newEmote) === null || _e === void 0 ? void 0 : _e.createHtmlElement(emoteCssClass);
+            (_f = newEmote) === null || _f === void 0 ? void 0 : _f.randomizeEmoteAnimation();
+            if ((_g = newEmote) === null || _g === void 0 ? void 0 : _g.htmlElement) {
+                $(`.${emoteContainerClass}`).append(newEmote.htmlElement);
+            }
+            // remove the elment
+            setTimeout((emote) => {
+                emote.htmlElement.hide(1);
+            }, (((_h = newEmote) === null || _h === void 0 ? void 0 : _h.lifespan) || 0) * 1000 + 1000, newEmote);
+        }
     }
     randomNumberBetween(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
@@ -201,8 +217,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Emote {
     constructor(scale = 1, url = '') {
         this.scale = 1;
+        this.position = { x: 0, y: 0 };
+        this.velocity = { x: 0, y: 0 };
+        this.lifespan = 0;
         this.url = url;
         this.scale = scale;
+    }
+    setPosition(x, y) {
+        this.position.x = x;
+        this.position.y = y;
+    }
+    setVelocity(x, y) {
+        this.velocity.x = x;
+        this.velocity.y = y;
     }
     setScale(size) {
         this.scale = size;
@@ -223,17 +250,33 @@ class Emote {
         }
         return { width: emoteWidth, height: emoteHeight };
     }
-    randomizeEmoteAnimation(emoteElement) {
+    randomizeEmoteAnimation() {
+        var _a;
         // move across the top of the screen
         // randomize the lifetime of the animation
-        const randomAnmimationLifetime = this.randomNumberBetween(2.5, 8.5);
-        emoteElement.css({
+        this.lifespan = this.randomNumberBetween(2.5, 8.5);
+        (_a = this.htmlElement) === null || _a === void 0 ? void 0 : _a.css({
             'left': `${this.randomNumberBetween(0, 95)}vw`,
             'top': `-${this.convertScaleToPixels().height}px`,
-            '-webkit-animation': `raining-rotating ${randomAnmimationLifetime}s none linear, fade-out ${randomAnmimationLifetime}s none linear`,
+            '-webkit-animation': `raining-rotating ${this.lifespan}s none linear, fade-out ${this.lifespan}s none linear`,
         });
-        // return the lifetime of the animation so we can kill it via DOM removal
-        return randomAnmimationLifetime;
+    }
+    createHtmlElement(emoteCssClass) {
+        this.htmlElement = $('<div></div>').addClass(emoteCssClass);
+        const emoteSize = this.convertScaleToPixels();
+        this.htmlElement.width(`${emoteSize.width}px`);
+        this.htmlElement.height(`${emoteSize.height}px`);
+        this.htmlElement.css('background', `url("${this.url}")`);
+        this.htmlElement.css('background-size', 'cover');
+    }
+    move() {
+        if (this.htmlElement) {
+            this.htmlElement.css('transform', `translate(${this.position.x += this.velocity.x}px, ${this.position.y += this.velocity.y}px)`);
+        }
+    }
+    calculateNextMoveFrame() {
+        const emotePixelScale = this.convertScaleToPixels();
+        return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
     }
     randomNumberBetween(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
@@ -328,7 +371,7 @@ Promise.all([
 }).then(() => {
     if (!emoteWidgetConfig.botMode) {
         // this first interval makes it so emotes rain immediately instead of waiting for the second interval to start
-        let interval = setInterval(emoteWidget.addEmoteToContainer, ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), 'emote-container', 'emote', () => { return emoteWidget.getRandomEmote(); });
+        let interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), 'emote-container', 'emote', '');
         if (emoteWidgetConfig.numTimesToRepeat != -1) {
             // timeout to ensure the raining emotes stop after a certain amount of time
             setTimeout(() => {
@@ -338,7 +381,7 @@ Promise.all([
             // this interval will continually start and stop the raining of emotes.
             setInterval(() => {
                 if (emoteWidgetConfig.numTimesToRepeat > 0) {
-                    interval = setInterval(emoteWidget.addEmoteToContainer, ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), 'emote-container', 'emote', () => { return emoteWidget.getRandomEmote(); });
+                    interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), 'emote-container', 'emote', '');
                     setTimeout(() => {
                         clearInterval(interval);
                         emoteWidgetConfig.numTimesToRepeat--;

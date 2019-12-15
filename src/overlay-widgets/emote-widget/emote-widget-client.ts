@@ -31,14 +31,8 @@ export class EmoteWidgetClient {
         const invokedEmotes = JSON.parse(event.data.toString());
 
         if (!!invokedEmotes && invokedEmotes.length > 0) {
-            invokedEmotes.forEach((emote: any) => {
-                const emoteToShow = this.emoteWidget.getSpecificTwitchEmote(emote);
-                if (!emoteToShow.code) {
-                    const bttvEmoteToShow = this.emoteWidget.getSpecificBttvEmote(emote);
-                    this.emoteWidget.addEmoteToContainer('emote-container', 'emote', bttvEmoteToShow);
-                } else {
-                    this.emoteWidget.addEmoteToContainer('emote-container', 'emote', emoteToShow);
-                }
+            invokedEmotes.forEach((emoteCode: string) => {
+                this.emoteWidget.addEmoteToContainer('emote-container', 'emote', emoteCode);
             });
         }
     }

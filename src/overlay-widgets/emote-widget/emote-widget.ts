@@ -23,6 +23,16 @@ export class EmoteWidget {
         return emoteCodes;
     }
 
+    getEmoteFromCode(emoteCode: string): TwitchEmote | BttvEmote | undefined {
+        let newEmote: TwitchEmote | BttvEmote = this.getSpecificTwitchEmote(emoteCode);
+
+        if (newEmote.code === '') {
+            newEmote = this.getSpecificBttvEmote(emoteCode);
+        }
+
+        return newEmote;
+    }
+
     getSpecificTwitchEmote(emoteCode: string): TwitchEmote {
         let emote = this.twitchEmotes.find((emote: TwitchEmote) => {
             return emote.code === emoteCode;
@@ -63,8 +73,8 @@ export class EmoteWidget {
         return emote;
     }
 
-    getRandomEmote(): Emote {
-        const emoteChoices: Emote[] = [];
+    getRandomEmote(): TwitchEmote | BttvEmote {
+        const emoteChoices: any[] = [];
 
         if (this.emoteConfig.showTwitch && this.twitchEmotes.length > 0) {
             emoteChoices.push(this.getRandomTwitchEmote());
@@ -79,26 +89,42 @@ export class EmoteWidget {
         return emoteChoices[this.randomNumberBetween(0, emoteChoices.length - 1)];
     }
 
-    addEmoteToContainer(emoteContainerClass: string, emoteCssClass: string, specificEmote: Function | Emote) {
-        let emote;
-        if (specificEmote instanceof Function) {
-            emote = specificEmote();
+    addEmoteToContainer(emoteContainerClass: string, emoteCssClass: string, emoteCode: string) {
+        let newEmote;
+        let numExtraEmotes = -1;
+        if (emoteCode === '') {
+            // get a random emote code or w/e
+            newEmote = this.getRandomEmote();
         } else {
-            emote = specificEmote;
+            newEmote = this.getEmoteFromCode(emoteCode);
+            numExtraEmotes = this.randomNumberBetween(2, 7);
         }
-        const newEmote = $('<div></div>').addClass(emoteCssClass);
-        const emoteSize = emote.convertScaleToPixels();
-        newEmote.width(`${emoteSize.width}px`);
-        newEmote.height(`${emoteSize.height}px`);
-        newEmote.css('background', `url("${emote.url}")`);
-        newEmote.css('background-size', 'cover');
-        const lifetimeOfElement = emote.randomizeEmoteAnimation(newEmote);
-        $(`.${emoteContainerClass}`).append(newEmote);
 
-        // remove the elment
-        setTimeout((emote) => {
-            emote.remove();
-        }, lifetimeOfElement * 1000, newEmote)
+        if (numExtraEmotes > -1) {
+            for (let index = 0; index < numExtraEmotes; index++) {
+                newEmote?.createHtmlElement(emoteCssClass);
+                newEmote?.randomizeEmoteAnimation();
+                if (newEmote?.htmlElement) {
+                    $(`.${emoteContainerClass}`).append(newEmote.htmlElement);
+                }
+
+                // remove the elment
+                setTimeout((emote) => {
+                    emote.htmlElement.hide(1);
+                }, (newEmote?.lifespan || 0) * 1000 + 1000, newEmote)
+            }
+        } else {
+            newEmote?.createHtmlElement(emoteCssClass);
+            newEmote?.randomizeEmoteAnimation();
+            if (newEmote?.htmlElement) {
+                $(`.${emoteContainerClass}`).append(newEmote.htmlElement);
+            }
+
+            // remove the elment
+            setTimeout((emote) => {
+                emote.htmlElement.hide(1);
+            }, (newEmote?.lifespan || 0) * 1000 + 1000, newEmote)
+        }
     }
 
     randomNumberBetween(min: number, max: number) {
