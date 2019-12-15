@@ -26,7 +26,7 @@ Promise.all([
 }).then(() => {
     if (!emoteWidgetConfig.botMode) {
         // this first interval makes it so emotes rain immediately instead of waiting for the second interval to start
-        let interval = setInterval(emoteWidget.addEmoteToContainer, ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), 'emote-container', 'emote', () => { return emoteWidget.getRandomEmote(); });
+        let interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), 'emote-container', 'emote', '');
         if (emoteWidgetConfig.numTimesToRepeat != -1) {
             // timeout to ensure the raining emotes stop after a certain amount of time
             setTimeout(() => {
@@ -36,7 +36,7 @@ Promise.all([
             // this interval will continually start and stop the raining of emotes.
             setInterval(() => {
                 if (emoteWidgetConfig.numTimesToRepeat > 0) {
-                    interval = setInterval(emoteWidget.addEmoteToContainer, ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), 'emote-container', 'emote', () => { return emoteWidget.getRandomEmote(); });
+                    interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), 'emote-container', 'emote', '');
                     setTimeout(() => {
                         clearInterval(interval);
                         emoteWidgetConfig.numTimesToRepeat--;

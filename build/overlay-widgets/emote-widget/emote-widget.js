@@ -18,6 +18,13 @@ class EmoteWidget {
         });
         return emoteCodes;
     }
+    getEmoteFromCode(emoteCode) {
+        let newEmote = this.getSpecificTwitchEmote(emoteCode);
+        if (newEmote.code === '') {
+            newEmote = this.getSpecificBttvEmote(emoteCode);
+        }
+        return newEmote;
+    }
     getSpecificTwitchEmote(emoteCode) {
         let emote = this.twitchEmotes.find((emote) => {
             return emote.code === emoteCode;
@@ -70,26 +77,42 @@ class EmoteWidget {
         // pick a random number, if it is even make a twitch emote otherwise bttv emote. toggle
         return emoteChoices[this.randomNumberBetween(0, emoteChoices.length - 1)];
     }
-    addEmoteToContainer(emoteContainerClass, emoteCssClass, specificEmote) {
-        let emote;
-        if (specificEmote instanceof Function) {
-            emote = specificEmote();
+    addEmoteToContainer(emoteContainerClass, emoteCssClass, emoteCode) {
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        let newEmote;
+        let numExtraEmotes = -1;
+        if (emoteCode === '') {
+            // get a random emote code or w/e
+            newEmote = this.getRandomEmote();
         }
         else {
-            emote = specificEmote;
+            newEmote = this.getEmoteFromCode(emoteCode);
+            numExtraEmotes = this.randomNumberBetween(2, 7);
         }
-        const newEmote = $('<div></div>').addClass(emoteCssClass);
-        const emoteSize = emote.convertScaleToPixels();
-        newEmote.width(`${emoteSize.width}px`);
-        newEmote.height(`${emoteSize.height}px`);
-        newEmote.css('background', `url("${emote.url}")`);
-        newEmote.css('background-size', 'cover');
-        const lifetimeOfElement = emote.randomizeEmoteAnimation(newEmote);
-        $(`.${emoteContainerClass}`).append(newEmote);
-        // remove the elment
-        setTimeout((emote) => {
-            emote.remove();
-        }, lifetimeOfElement * 1000, newEmote);
+        if (numExtraEmotes > -1) {
+            for (let index = 0; index < numExtraEmotes; index++) {
+                (_a = newEmote) === null || _a === void 0 ? void 0 : _a.createHtmlElement(emoteCssClass);
+                (_b = newEmote) === null || _b === void 0 ? void 0 : _b.randomizeEmoteAnimation();
+                if ((_c = newEmote) === null || _c === void 0 ? void 0 : _c.htmlElement) {
+                    $(`.${emoteContainerClass}`).append(newEmote.htmlElement);
+                }
+                // remove the elment
+                setTimeout((emote) => {
+                    emote.htmlElement.hide(1);
+                }, (((_d = newEmote) === null || _d === void 0 ? void 0 : _d.lifespan) || 0) * 1000 + 1000, newEmote);
+            }
+        }
+        else {
+            (_e = newEmote) === null || _e === void 0 ? void 0 : _e.createHtmlElement(emoteCssClass);
+            (_f = newEmote) === null || _f === void 0 ? void 0 : _f.randomizeEmoteAnimation();
+            if ((_g = newEmote) === null || _g === void 0 ? void 0 : _g.htmlElement) {
+                $(`.${emoteContainerClass}`).append(newEmote.htmlElement);
+            }
+            // remove the elment
+            setTimeout((emote) => {
+                emote.htmlElement.hide(1);
+            }, (((_h = newEmote) === null || _h === void 0 ? void 0 : _h.lifespan) || 0) * 1000 + 1000, newEmote);
+        }
     }
     randomNumberBetween(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);

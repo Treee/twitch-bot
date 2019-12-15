@@ -23,15 +23,8 @@ class EmoteWidgetClient {
         // TODO handle when json parse fails
         const invokedEmotes = JSON.parse(event.data.toString());
         if (!!invokedEmotes && invokedEmotes.length > 0) {
-            invokedEmotes.forEach((emote) => {
-                const emoteToShow = this.emoteWidget.getSpecificTwitchEmote(emote);
-                if (!emoteToShow.code) {
-                    const bttvEmoteToShow = this.emoteWidget.getSpecificBttvEmote(emote);
-                    this.emoteWidget.addEmoteToContainer('emote-container', 'emote', bttvEmoteToShow);
-                }
-                else {
-                    this.emoteWidget.addEmoteToContainer('emote-container', 'emote', emoteToShow);
-                }
+            invokedEmotes.forEach((emoteCode) => {
+                this.emoteWidget.addEmoteToContainer('emote-container', 'emote', emoteCode);
             });
         }
     }
