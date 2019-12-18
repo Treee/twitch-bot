@@ -9,7 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const emote_1 = require("../overlay-widgets/emote-widget/emote");
+const emote_twitch_1 = require("../overlay-widgets/emote-widget/emote-twitch");
+const emote_bttv_1 = require("../overlay-widgets/emote-widget/emote-bttv");
 class TwitchApiV5 {
     constructor() { }
     getTwitchRequestHeaders(clientId) {
@@ -29,7 +30,7 @@ class TwitchApiV5 {
                 setIds.forEach((setId) => {
                     if (emoticonSets[setId]) {
                         emoticonSets[setId].forEach((emote) => {
-                            formattedEmotes.push(new emote_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
+                            formattedEmotes.push(new emote_twitch_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
                         });
                     }
                 });
@@ -59,15 +60,15 @@ class TwitchApiV5 {
                 const formattedEmotes = [];
                 const formattedSubBadges = [];
                 emotes.forEach((emote) => {
-                    formattedEmotes.push(new emote_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
+                    formattedEmotes.push(new emote_twitch_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
                 });
                 Object.keys(subBadges).forEach((objectKey) => {
                     const subLoyaltyImages = [subBadges[objectKey].image_url_1x, subBadges[objectKey].image_url_2x, subBadges[objectKey].image_url_4x];
-                    formattedSubBadges.push(new emote_1.SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
+                    formattedSubBadges.push(new emote_twitch_1.SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
                 });
-                return new emote_1.TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges);
+                return new emote_twitch_1.TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges);
             }), (error) => {
-                return new emote_1.TwitchEmoteResponse('', '', '', [], []);
+                return new emote_twitch_1.TwitchEmoteResponse('', '', '', [], []);
             });
         });
     }
@@ -79,11 +80,11 @@ class TwitchApiV5 {
                 const emotes = data.emotes || [];
                 const formattedEmotes = [];
                 emotes.forEach((emote) => {
-                    formattedEmotes.push(new emote_1.BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
+                    formattedEmotes.push(new emote_bttv_1.BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
                 });
-                return new emote_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes);
+                return new emote_bttv_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes);
             }), (error) => {
-                return new emote_1.BttvEmoteResponse('', []);
+                return new emote_bttv_1.BttvEmoteResponse('', []);
             });
         });
     }

@@ -1,4 +1,3 @@
-
 export class Emote {
     url: string;
     scale: number = 1;
@@ -76,87 +75,5 @@ export class Emote {
 
     private randomNumberBetween(min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-}
-
-export class BttvEmoteResponse {
-    urlTemplate: string;
-    emotes: BttvEmote[];
-
-    constructor(urlTemplate: string, emotes: BttvEmote[]) {
-        this.urlTemplate = urlTemplate;
-        this.emotes = emotes;
-    }
-}
-
-export class BttvEmote extends Emote {
-    channel: string;
-    code: string;
-    id: string;
-    imageType: string;
-
-    constructor(channel: string, code: string, id: string, imageType: string) {
-        super();
-        this.channel = channel;
-        this.code = code;
-        this.id = id;
-        this.imageType = imageType;
-    }
-
-    setUrl() {
-        this.url = `https://cdn.betterttv.net/emote/${this.id}/${this.scale}x`;
-    }
-}
-
-export class TwitchEmoteResponse {
-    channelId: string;
-    channelName: string;
-    channelDisplayName: string;
-    emotes: TwitchEmote[];
-    subBadges: SubBadge[];
-
-    constructor(channelId: string, channeName: string, channelDisplayName: string, emotes: TwitchEmote[], subBadges: SubBadge[]) {
-        this.channelId = channelId;
-        this.channelName = channeName;
-        this.channelDisplayName = channelDisplayName;
-        this.emotes = emotes;
-        this.subBadges = subBadges;
-    }
-}
-
-export class SubBadge {
-    tier: number;
-    displayName: string;
-    imageSizes: string[]
-
-    constructor(tier: number, displayName: string, imageSizes: string[]) {
-        this.tier = tier;
-        this.displayName = displayName;
-        this.imageSizes = imageSizes;
-    }
-}
-
-export class TwitchEmote extends Emote {
-    code: string;
-    emoticon_set: number;
-    id: number;
-
-    constructor(code: string, emoticon_set: number, id: number) {
-        super();
-        this.code = code;
-        this.emoticon_set = emoticon_set;
-        this.id = id;
-    }
-
-    convertScaleToPixels(): { width: number, height: number } {
-        if (this.emoticon_set === 42) {
-            return { width: 20 * this.scale, height: 18 * this.scale };
-        } else {
-            return super.convertScaleToPixels();
-        }
-    }
-
-    setUrl() {
-        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}/${this.scale}.0`;
     }
 }

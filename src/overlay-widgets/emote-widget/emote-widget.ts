@@ -1,5 +1,7 @@
 import { EmoteWidgetConfig } from "./emote-widget-config";
-import { Emote, TwitchEmote, BttvEmote, SubBadge } from "./emote";
+import { Emote } from "./emote";
+import { SubBadge, TwitchEmote } from "./emote-twitch";
+import { BttvEmote } from "./emote-bttv";
 
 export class EmoteWidget {
     emoteConfig: EmoteWidgetConfig;
