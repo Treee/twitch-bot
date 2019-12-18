@@ -1,4 +1,5 @@
-import { TwitchEmote, TwitchEmoteResponse, BttvEmoteResponse, BttvEmote, SubBadge } from "../overlay-widgets/emote-widget/emote";
+import { TwitchEmote, SubBadge, TwitchEmoteResponse } from "../overlay-widgets/emote-widget/emote-twitch";
+import { BttvEmote, BttvEmoteResponse } from "../overlay-widgets/emote-widget/emote-bttv";
 
 export class TwitchApiV5 {
     constructor() { }

@@ -1,6 +1,74 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const emote_1 = require("./emote");
+class BttvEmoteResponse {
+    constructor(urlTemplate, emotes) {
+        this.urlTemplate = urlTemplate;
+        this.emotes = emotes;
+    }
+}
+exports.BttvEmoteResponse = BttvEmoteResponse;
+class BttvEmote extends emote_1.Emote {
+    constructor(channel, code, id, imageType) {
+        super();
+        this.channel = channel;
+        this.code = code;
+        this.id = id;
+        this.imageType = imageType;
+    }
+    setUrl() {
+        this.url = `https://cdn.betterttv.net/emote/${this.id}/${this.scale}x`;
+    }
+}
+exports.BttvEmote = BttvEmote;
+
+},{"./emote":6}],2:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const emote_1 = require("./emote");
+class TwitchEmoteResponse {
+    constructor(channelId, channeName, channelDisplayName, emotes, subBadges) {
+        this.channelId = channelId;
+        this.channelName = channeName;
+        this.channelDisplayName = channelDisplayName;
+        this.emotes = emotes;
+        this.subBadges = subBadges;
+    }
+}
+exports.TwitchEmoteResponse = TwitchEmoteResponse;
+class SubBadge {
+    constructor(tier, displayName, imageSizes) {
+        this.tier = tier;
+        this.displayName = displayName;
+        this.imageSizes = imageSizes;
+    }
+}
+exports.SubBadge = SubBadge;
+class TwitchEmote extends emote_1.Emote {
+    constructor(code, emoticon_set, id) {
+        super();
+        this.code = code;
+        this.emoticon_set = emoticon_set;
+        this.id = id;
+    }
+    convertScaleToPixels() {
+        if (this.emoticon_set === 42) {
+            return { width: 20 * this.scale, height: 18 * this.scale };
+        }
+        else {
+            return super.convertScaleToPixels();
+        }
+    }
+    setUrl() {
+        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}/${this.scale}.0`;
+    }
+}
+exports.TwitchEmote = TwitchEmote;
+
+},{"./emote":6}],3:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class EmoteWidgetClient {
     constructor(serverUrl, emoteWidget) {
         this.serverUrl = 'ws://localhost:8080';
@@ -45,7 +113,7 @@ class EmoteWidgetClient {
 }
 exports.EmoteWidgetClient = EmoteWidgetClient;
 
-},{}],2:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class EmoteWidgetConfig {
@@ -88,10 +156,12 @@ class EmoteWidgetConfig {
 }
 exports.EmoteWidgetConfig = EmoteWidgetConfig;
 
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_1 = require("./emote");
+const emote_twitch_1 = require("./emote-twitch");
+const emote_bttv_1 = require("./emote-bttv");
 class EmoteWidget {
     constructor(emoteConfig) {
         this.twitchSubBadges = [];
@@ -125,7 +195,7 @@ class EmoteWidget {
             emote.setUrl();
         }
         else {
-            emote = new emote_1.TwitchEmote('', -999, -999);
+            emote = new emote_twitch_1.TwitchEmote('', -999, -999);
         }
         return emote;
     }
@@ -144,7 +214,7 @@ class EmoteWidget {
             emote.setUrl();
         }
         else {
-            emote = new emote_1.BttvEmote('', '', '', '');
+            emote = new emote_bttv_1.BttvEmote('', '', '', '');
         }
         return emote;
     }
@@ -211,7 +281,7 @@ class EmoteWidget {
 }
 exports.EmoteWidget = EmoteWidget;
 
-},{"./emote":4}],4:[function(require,module,exports){
+},{"./emote":6,"./emote-bttv":1,"./emote-twitch":2}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Emote {
@@ -283,66 +353,8 @@ class Emote {
     }
 }
 exports.Emote = Emote;
-class BttvEmoteResponse {
-    constructor(urlTemplate, emotes) {
-        this.urlTemplate = urlTemplate;
-        this.emotes = emotes;
-    }
-}
-exports.BttvEmoteResponse = BttvEmoteResponse;
-class BttvEmote extends Emote {
-    constructor(channel, code, id, imageType) {
-        super();
-        this.channel = channel;
-        this.code = code;
-        this.id = id;
-        this.imageType = imageType;
-    }
-    setUrl() {
-        this.url = `https://cdn.betterttv.net/emote/${this.id}/${this.scale}x`;
-    }
-}
-exports.BttvEmote = BttvEmote;
-class TwitchEmoteResponse {
-    constructor(channelId, channeName, channelDisplayName, emotes, subBadges) {
-        this.channelId = channelId;
-        this.channelName = channeName;
-        this.channelDisplayName = channelDisplayName;
-        this.emotes = emotes;
-        this.subBadges = subBadges;
-    }
-}
-exports.TwitchEmoteResponse = TwitchEmoteResponse;
-class SubBadge {
-    constructor(tier, displayName, imageSizes) {
-        this.tier = tier;
-        this.displayName = displayName;
-        this.imageSizes = imageSizes;
-    }
-}
-exports.SubBadge = SubBadge;
-class TwitchEmote extends Emote {
-    constructor(code, emoticon_set, id) {
-        super();
-        this.code = code;
-        this.emoticon_set = emoticon_set;
-        this.id = id;
-    }
-    convertScaleToPixels() {
-        if (this.emoticon_set === 42) {
-            return { width: 20 * this.scale, height: 18 * this.scale };
-        }
-        else {
-            return super.convertScaleToPixels();
-        }
-    }
-    setUrl() {
-        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}/${this.scale}.0`;
-    }
-}
-exports.TwitchEmote = TwitchEmote;
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const twitch_api_v5_1 = require("../../twitch-connectors/twitch-api-v5");
@@ -396,7 +408,7 @@ Promise.all([
     }
 });
 
-},{"../../twitch-connectors/twitch-api-v5":6,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],6:[function(require,module,exports){
+},{"../../twitch-connectors/twitch-api-v5":8,"./emote-widget":5,"./emote-widget-client":3,"./emote-widget-config":4}],8:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -408,7 +420,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const emote_1 = require("../overlay-widgets/emote-widget/emote");
+const emote_twitch_1 = require("../overlay-widgets/emote-widget/emote-twitch");
+const emote_bttv_1 = require("../overlay-widgets/emote-widget/emote-bttv");
 class TwitchApiV5 {
     constructor() { }
     getTwitchRequestHeaders(clientId) {
@@ -428,7 +441,7 @@ class TwitchApiV5 {
                 setIds.forEach((setId) => {
                     if (emoticonSets[setId]) {
                         emoticonSets[setId].forEach((emote) => {
-                            formattedEmotes.push(new emote_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
+                            formattedEmotes.push(new emote_twitch_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
                         });
                     }
                 });
@@ -458,15 +471,15 @@ class TwitchApiV5 {
                 const formattedEmotes = [];
                 const formattedSubBadges = [];
                 emotes.forEach((emote) => {
-                    formattedEmotes.push(new emote_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
+                    formattedEmotes.push(new emote_twitch_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
                 });
                 Object.keys(subBadges).forEach((objectKey) => {
                     const subLoyaltyImages = [subBadges[objectKey].image_url_1x, subBadges[objectKey].image_url_2x, subBadges[objectKey].image_url_4x];
-                    formattedSubBadges.push(new emote_1.SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
+                    formattedSubBadges.push(new emote_twitch_1.SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
                 });
-                return new emote_1.TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges);
+                return new emote_twitch_1.TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges);
             }), (error) => {
-                return new emote_1.TwitchEmoteResponse('', '', '', [], []);
+                return new emote_twitch_1.TwitchEmoteResponse('', '', '', [], []);
             });
         });
     }
@@ -478,15 +491,15 @@ class TwitchApiV5 {
                 const emotes = data.emotes || [];
                 const formattedEmotes = [];
                 emotes.forEach((emote) => {
-                    formattedEmotes.push(new emote_1.BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
+                    formattedEmotes.push(new emote_bttv_1.BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
                 });
-                return new emote_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes);
+                return new emote_bttv_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes);
             }), (error) => {
-                return new emote_1.BttvEmoteResponse('', []);
+                return new emote_bttv_1.BttvEmoteResponse('', []);
             });
         });
     }
 }
 exports.TwitchApiV5 = TwitchApiV5;
 
-},{"../overlay-widgets/emote-widget/emote":4}]},{},[5]);
+},{"../overlay-widgets/emote-widget/emote-bttv":1,"../overlay-widgets/emote-widget/emote-twitch":2}]},{},[7]);

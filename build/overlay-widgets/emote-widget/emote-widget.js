@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_1 = require("./emote");
+const emote_twitch_1 = require("./emote-twitch");
+const emote_bttv_1 = require("./emote-bttv");
 class EmoteWidget {
     constructor(emoteConfig) {
         this.twitchSubBadges = [];
@@ -34,7 +36,7 @@ class EmoteWidget {
             emote.setUrl();
         }
         else {
-            emote = new emote_1.TwitchEmote('', -999, -999);
+            emote = new emote_twitch_1.TwitchEmote('', -999, -999);
         }
         return emote;
     }
@@ -53,7 +55,7 @@ class EmoteWidget {
             emote.setUrl();
         }
         else {
-            emote = new emote_1.BttvEmote('', '', '', '');
+            emote = new emote_bttv_1.BttvEmote('', '', '', '');
         }
         return emote;
     }

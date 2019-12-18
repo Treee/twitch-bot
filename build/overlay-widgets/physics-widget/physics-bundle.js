@@ -70,64 +70,6 @@ class Emote {
     }
 }
 exports.Emote = Emote;
-class BttvEmoteResponse {
-    constructor(urlTemplate, emotes) {
-        this.urlTemplate = urlTemplate;
-        this.emotes = emotes;
-    }
-}
-exports.BttvEmoteResponse = BttvEmoteResponse;
-class BttvEmote extends Emote {
-    constructor(channel, code, id, imageType) {
-        super();
-        this.channel = channel;
-        this.code = code;
-        this.id = id;
-        this.imageType = imageType;
-    }
-    setUrl() {
-        this.url = `https://cdn.betterttv.net/emote/${this.id}/${this.scale}x`;
-    }
-}
-exports.BttvEmote = BttvEmote;
-class TwitchEmoteResponse {
-    constructor(channelId, channeName, channelDisplayName, emotes, subBadges) {
-        this.channelId = channelId;
-        this.channelName = channeName;
-        this.channelDisplayName = channelDisplayName;
-        this.emotes = emotes;
-        this.subBadges = subBadges;
-    }
-}
-exports.TwitchEmoteResponse = TwitchEmoteResponse;
-class SubBadge {
-    constructor(tier, displayName, imageSizes) {
-        this.tier = tier;
-        this.displayName = displayName;
-        this.imageSizes = imageSizes;
-    }
-}
-exports.SubBadge = SubBadge;
-class TwitchEmote extends Emote {
-    constructor(code, emoticon_set, id) {
-        super();
-        this.code = code;
-        this.emoticon_set = emoticon_set;
-        this.id = id;
-    }
-    convertScaleToPixels() {
-        if (this.emoticon_set === 42) {
-            return { width: 20 * this.scale, height: 18 * this.scale };
-        }
-        else {
-            return super.convertScaleToPixels();
-        }
-    }
-    setUrl() {
-        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}/${this.scale}.0`;
-    }
-}
-exports.TwitchEmote = TwitchEmote;
 
 },{}],2:[function(require,module,exports){
 "use strict";
