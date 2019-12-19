@@ -1,5 +1,5 @@
 import "jasmine"
-import { Vector2 } from './tree-math';
+import { Vector2, ClockWiseDirection } from './tree-math';
 
 describe('Tree Math Spec', () => {
 
@@ -119,5 +119,50 @@ describe('Tree Math Spec', () => {
         const actualDot = aVec.dot(bVec);
 
         expect(actualDot).toEqual(expectedDot);
+    });
+
+    it('gives the clockwise normal to a vector', () => {
+        const aVec = new Vector2(1, 0);
+        const clockWiseNormal = aVec.normal(ClockWiseDirection.ClockWise);
+        expect(clockWiseNormal).toEqual(new Vector2(0, -1));
+    });
+
+    it('gives the counterclockwise normal to a vector', () => {
+        const aVec = new Vector2(1, 0);
+        const counterClockwiseNormal = aVec.normal(ClockWiseDirection.CounterClockWise);
+        expect(counterClockwiseNormal).toEqual(new Vector2(-0, 1));
+    });
+
+    describe('collision shortcut checks', () => {
+        it('unit vector: returns -1 when vectors are moving away from each other', () => {
+            const aVec = new Vector2(1, 1);
+            const bVec = new Vector2(-1, 0.1);
+
+            const actualValue = aVec.dot(bVec);
+            expect(actualValue).toBeLessThan(0);
+        });
+
+        it('unit vector: returns 0 when vectors are perpendicular to each other', () => {
+            const aVec = new Vector2(1, 1);
+            const bVec = new Vector2(-1, 1);
+
+            const actualValue = aVec.dot(bVec);
+            expect(actualValue).toBe(0);
+        });
+
+        it('unit vector: returns 1 when vectors are moving in the same general direction', () => {
+            const aVec = new Vector2(1, 1);
+            const bVec = new Vector2(0.1, 1);
+
+            const actualValue = aVec.dot(bVec);
+            expect(actualValue).toBeGreaterThan(0);
+        });
+
+        it('non unit vector: returns - when vectors pointing opposide directions', () => {
+            const aVec = new Vector2(5, 5);
+            const topFaceNormalPointingDown = new Vector2(0, -1080);
+            const actualValue = aVec.dot(topFaceNormalPointingDown);
+            expect(actualValue).toBeLessThan(0);
+        });
     });
 });
