@@ -1,3 +1,6 @@
+export enum ClockWiseDirection {
+    ClockWise, CounterClockWise
+}
 export class Vector2 {
     values: number[];
     constructor(x: number = 0, y: number = 0) {
@@ -22,6 +25,16 @@ export class Vector2 {
             return new Vector2(this.values[0] / magnitude, this.values[1] / magnitude);
         } else {
             throw new Error('Cannot normalize a vector with 0 magnitude.');
+        }
+    }
+
+    normal(direction: ClockWiseDirection): Vector2 {
+        if (direction === ClockWiseDirection.ClockWise) {
+            return new Vector2(this.values[1], -this.values[0]);
+        } else if (direction === ClockWiseDirection.CounterClockWise) {
+            return new Vector2(-this.values[1], this.values[0]);
+        } else {
+            throw new Error('Cannot return normal');
         }
     }
 
