@@ -16,8 +16,7 @@ describe('AABB Spec', () => {
 
         const otherAABB = new AABB(new Vector2(5, 5), testWidth);
 
-        const difference = otherAABB.minkowskiDifference(testAABB);
-        const actualResult = testAABB.isColliding(difference);
+        const actualResult = otherAABB.isCollidingWith(testAABB, 0);
         expect(actualResult).toBe(true);
     });
 
@@ -27,8 +26,31 @@ describe('AABB Spec', () => {
 
         const otherAABB = new AABB(new Vector2(25, 25), testWidth);
 
-        const difference = otherAABB.minkowskiDifference(testAABB);
-        const actualResult = testAABB.isColliding(difference);
+        const actualResult = testAABB.isCollidingWith(otherAABB, 0);
+        expect(actualResult).toBe(false);
+    });
+
+    it('returns true if the AABBs with high velocities are colliding next frame', () => {
+        const testWidth = new Vector2(10, 10);
+        // a velocity that will surely be a collision
+        const movingVelocity = new Vector2(0, 100);
+        const movingAABB = new AABB(new Vector2(5, 0), testWidth, movingVelocity);
+
+        const floorAABB = new AABB(new Vector2(0, 25), testWidth);
+
+        const actualResult = movingAABB.isCollidingWith(floorAABB, 1);
+        expect(actualResult).toBe(true);
+    });
+
+    it('returns false if the AABBs with low velocities are not colliding next frame', () => {
+        const testWidth = new Vector2(1, 1);
+        // a velocity that will surely be a collision
+        const movingVelocity = new Vector2(0, 0.001);
+        const movingAABB = new AABB(new Vector2(5, 0), testWidth, movingVelocity);
+
+        const floorAABB = new AABB(new Vector2(0, 25), testWidth);
+
+        const actualResult = movingAABB.isCollidingWith(floorAABB, 1);
         expect(actualResult).toBe(false);
     });
 
