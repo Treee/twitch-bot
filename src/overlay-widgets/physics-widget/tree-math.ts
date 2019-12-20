@@ -68,6 +68,10 @@ export class Vector2 {
         return (Math.acos(this.dot(other)) * (180 / Math.PI));
     }
 
+    print(): string {
+        return `[${this.values[0]}, ${this.values[1]}]`;
+    }
+
     checkBoundaries(aVec: Vector2, listOfBoundaries: Vector2[]) {
         const collidedSides: Vector2[] = [];
         let colliding = false;
