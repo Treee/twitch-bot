@@ -4,20 +4,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Emote {
     constructor(scale = 1, url = '') {
         this.scale = 1;
-        this.position = { x: 0, y: 0 };
-        this.velocity = { x: 0, y: 0 };
+        // position: { x: number, y: number } = { x: 0, y: 0 };
+        // velocity: { x: number, y: number } = { x: 0, y: 0 };
         this.lifespan = 0;
         this.url = url;
         this.scale = scale;
     }
-    setPosition(x, y) {
-        this.position.x = x;
-        this.position.y = y;
-    }
-    setVelocity(x, y) {
-        this.velocity.x = x;
-        this.velocity.y = y;
-    }
+    // setPosition(x: number, y: number) {
+    //     this.position.x = x;
+    //     this.position.y = y;
+    // }
+    // setVelocity(x: number, y: number) {
+    //     this.velocity.x = x;
+    //     this.velocity.y = y;
+    // }
     setScale(size) {
         this.scale = size;
     }
@@ -56,15 +56,16 @@ class Emote {
         this.htmlElement.css('background', `url("${this.url}")`);
         this.htmlElement.css('background-size', 'cover');
     }
-    move() {
+    // x and y should be in pixel coordinates
+    moveTo(x, y) {
         if (this.htmlElement) {
-            this.htmlElement.css('transform', `translate(${this.position.x += this.velocity.x}px, ${this.position.y += this.velocity.y}px)`);
+            this.htmlElement.css('transform', `translate(${x}px, ${y}px)`);
         }
     }
-    calculateNextMoveFrame() {
-        const emotePixelScale = this.convertScaleToPixels();
-        return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
-    }
+    // calculateNextMoveFrame() {
+    //     const emotePixelScale = this.convertScaleToPixels();
+    //     return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
+    // }
     randomNumberBetween(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
@@ -74,71 +75,261 @@ exports.Emote = Emote;
 },{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const tree_math_1 = require("./tree-math");
+class AABB {
+    constructor(center, extents, velocity = new tree_math_1.Vector2(), acceleration = new tree_math_1.Vector2()) {
+        this.center = center;
+        this.extents = extents;
+        this.velocity = velocity;
+        this.acceleration = acceleration;
+    }
+    isMoving() {
+        return this.velocity.values[0] !== 0 || this.velocity.values[1] !== 0;
+    }
+    min() {
+        return new tree_math_1.Vector2(this.center.values[0] - this.extents.values[0], this.center.values[1] - this.extents.values[1]);
+    }
+    max() {
+        return new tree_math_1.Vector2(this.center.values[0] + this.extents.values[0], this.center.values[1] + this.extents.values[1]);
+    }
+    size() {
+        return new tree_math_1.Vector2(this.extents.values[0] * 2, this.extents.values[1] * 2);
+    }
+    minkowskiDifference(other) {
+        const topLeft = this.min().subtract(other.max());
+        const fullSize = this.size().add(other.size());
+        return new AABB(topLeft.add(fullSize.divideScalar(2)), fullSize.divideScalar(2));
+    }
+    isCollidingWith(other, dt) {
+        const difference = this.minkowskiDifference(other);
+        let colliding = false;
+        const min = difference.min();
+        const max = difference.max();
+        let rvRayIntersection = null;
+        // console.log(`dt:${dt} velocityA:${this.velocity.print()} velocityB:${other.velocity.print()}`);
+        let rvRay = this.velocity.subtract(other.velocity).multiplyScalar(dt);
+        // this checks if the AABBs are currently colliding (static)
+        if (min.values[0] <= 0 && max.values[0] >= 0 && min.values[1] <= 0 && max.values[1] >= 0) {
+            colliding = true;
+            // console.log(`minx:${min.values[0]} minY:${max.values[0]} maxX:${min.values[1]} maxY:${max.values[1]}`);
+        }
+        else if (this.isMoving() || other.isMoving()) { // this checks quickly moving AABBs
+            // https://blog.hamaluik.ca/posts/swept-aabb-collision-using-minkowski-difference/
+            // see if there WILL be a collision
+            const intersectFraction = this.getRayIntersectionFraction(new tree_math_1.Vector2(), rvRay);
+            if (intersectFraction) {
+                // yup, there WILL be a collision this frame
+                rvRayIntersection = rvRay.multiplyScalar(intersectFraction);
+                // move the boxes appropriately
+                // this.center = this.center.add(this.velocity.multiplyScalar(dt).multiplyScalar(intersectFraction));
+                // other.center = other.center.add(other.velocity.multiplyScalar(dt).multiplyScalar(intersectFraction));
+                colliding = true;
+                // zero out the normal of the collision
+                // var nrvRay = rvRay.normalize();
+                // var tangent = new Vector2(-nrvRay.values[1], nrvRay.values[0]);
+                // this.velocity = tangent.multiplyScalar(this.velocity.dot(tangent));
+                // other.velocity = tangent.multiplyScalar(tangent.dot(other.velocity));
+            }
+        }
+        return colliding;
+    }
+    getRayIntersectionFraction(origin, direction) {
+        var end = origin.add(direction);
+        // console.log(`origin: ${origin.print()} direction: ${direction.print()} end: ${end.print()}`);
+        const min = this.min();
+        const max = this.max();
+        // check each face of a square
+        var minT = this.checkEdge(null, origin, end, new tree_math_1.Vector2(min.values[0], min.values[1]), new tree_math_1.Vector2(min.values[0], max.values[1]));
+        minT = this.checkEdge(minT, origin, end, new tree_math_1.Vector2(min.values[0], max.values[1]), new tree_math_1.Vector2(max.values[0], max.values[1]));
+        minT = this.checkEdge(minT, origin, end, new tree_math_1.Vector2(max.values[0], max.values[1]), new tree_math_1.Vector2(max.values[0], min.values[1]));
+        minT = this.checkEdge(minT, origin, end, new tree_math_1.Vector2(max.values[0], min.values[1]), new tree_math_1.Vector2(min.values[0], min.values[1]));
+        // ok, now we should have found the fractional component along the ray where we collided
+        return minT;
+    }
+    checkEdge(minT, origin, end, originB, endB) {
+        let x = this.getRayIntersectionFractionOfFirstRay(origin, end, originB, endB);
+        // console.log(`minT:${minT} x:${x}`);
+        // if minT is null and x is something
+        if (!minT && x) {
+            // console.log('minT is null so default accept a good value');
+            minT = x;
+        }
+        else if (x && minT && x < minT) {
+            // console.log('we found a fraction that is closer to the collision');
+            minT = x;
+        }
+        return minT;
+    }
+    // taken from https://github.com/pgkelley4/line-segments-intersect/blob/master/js/line-segments-intersect.js
+    // returns the point where they intersect (if they intersect)
+    // returns null if they don't intersect
+    getRayIntersectionFractionOfFirstRay(originA, endA, originB, endB) {
+        var r = endA.subtract(originA);
+        var s = endB.subtract(originB);
+        var numerator = originB.subtract(originA).crossProduct(r);
+        var denominator = r.crossProduct(s);
+        console.log(`checking intersection between startA:${originA.print()} endA:${endA.print()} startB:${originB.print()} endB:${endB.print()}`);
+        if (numerator === 0 && denominator === 0) {
+            // the lines are co-linear
+            // check if they overlap
+            /*return	((originB.x - originA.x < 0) != (originB.x - endA.x < 0) != (endB.x - originA.x < 0) != (endB.x - endA.x < 0)) ||
+            ((originB.y - originA.y < 0) != (originB.y - endA.y < 0) != (endB.y - originA.y < 0) != (endB.y - endA.y < 0));*/
+            return null;
+        }
+        if (denominator === 0) {
+            // lines are parallel
+            return null;
+        }
+        var u = numerator / denominator;
+        var t = originB.subtract(originA).crossProduct(s) / denominator;
+        if ((t >= 0) && (t <= 1) && (u >= 0) && (u <= 1)) {
+            console.log(`==========> t: ${t} u: ${u}`);
+            console.log('=============> collision!!!');
+            //return originA + (r * t);
+            return t;
+        }
+        return null;
+    }
+}
+exports.AABB = AABB;
+
+},{"./tree-math":4}],3:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const emote_1 = require("../emote-widget/emote");
+const axis_aligned_bounding_box_1 = require("./axis-aligned-bounding-box");
+const tree_math_1 = require("./tree-math");
+class MovableEmote {
+    constructor(emote, aabb) {
+        this.emote = emote;
+        this.aabb = aabb;
+    }
+}
+exports.MovableEmote = MovableEmote;
 class PhysicsEngine {
     constructor() {
         this.emotes = [];
+        this.emotes1 = [];
         this.startSimulation();
     }
     startSimulation() {
-        this.addEmotesToContainer(10);
+        this.addEmotesToContainer(1);
+        let dt = 0.016;
         setInterval(() => {
             // console.log('bounds', this.bouncingWidget);
-            this.oneLoop();
+            this.oneLoop(dt);
         }, 1000 / 60);
     }
     addEmotesToContainer(numEmotesToAdd) {
+        // for (let index = 0; index < numEmotesToAdd; index++) {
+        //     const newEmote = new Emote(2, 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x');
+        //     newEmote.createHtmlElement('default-emote');
+        //     newEmote.setPosition(Math.random() * 500, Math.random() * 500);
+        //     newEmote.setVelocity(Math.random() * 7 + 1, Math.random() * 7 + 1);
+        //     this.emotes.push(newEmote);
+        // }
         for (let index = 0; index < numEmotesToAdd; index++) {
             const newEmote = new emote_1.Emote(2, 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x');
             newEmote.createHtmlElement('default-emote');
-            newEmote.setPosition(Math.random() * 500, Math.random() * 500);
-            newEmote.setVelocity(Math.random() * 7 + 1, Math.random() * 7 + 1);
-            this.emotes.push(newEmote);
+            const center = new tree_math_1.Vector2(Math.random() * 500, Math.random() * 500);
+            const radius = new tree_math_1.Vector2(28, 28);
+            const velocity = new tree_math_1.Vector2(0, 1);
+            const acceleration = new tree_math_1.Vector2();
+            const aabb = new axis_aligned_bounding_box_1.AABB(center, radius, velocity, acceleration);
+            newEmote.moveTo(center.values[0] - radius.values[0], center.values[1] - radius.values[1]);
+            this.emotes1.push(new MovableEmote(newEmote, aabb));
         }
-        this.emotes.forEach((emote) => {
-            if (emote.htmlElement) {
-                $('#physicsWidgetDisplay').append(emote.htmlElement);
+        // this.emotes.forEach((emote) => {
+        //     if (emote.htmlElement) {
+        //         $('#physicsWidgetDisplay').append(emote.htmlElement);
+        //     }
+        // });
+        this.emotes1.forEach((movableEmote) => {
+            if (movableEmote.emote.htmlElement) {
+                $('#physicsWidgetDisplay').append(movableEmote.emote.htmlElement);
             }
         });
     }
-    oneLoop() {
-        this.emotes.forEach((emote) => {
-            const nextFrame = emote.calculateNextMoveFrame();
-            this.checkForWindowCollision(emote, nextFrame);
-            this.emotes.forEach((otherEmote) => {
-                if (emote === otherEmote) {
+    oneLoop(dt) {
+        // this.emotes.forEach((emote) => {
+        //     const nextFrame = emote.calculateNextMoveFrame();
+        //     this.checkForWindowCollision(emote, nextFrame);
+        //     this.emotes.forEach((otherEmote) => {
+        //         if (emote === otherEmote) {
+        //             return;
+        //         }
+        //         this.checkForEmoteCollision(emote, nextFrame, otherEmote);
+        //     });
+        //     emote.move();
+        // });
+        this.emotes1.forEach((movableEmote) => {
+            this.checkForWindowCollision(movableEmote, dt);
+            this.emotes1.forEach((otherMovableEmote) => {
+                if (movableEmote === otherMovableEmote) {
                     return;
                 }
-                this.checkForEmoteCollision(emote, nextFrame, otherEmote);
+                this.checkForEmoteCollision(movableEmote, otherMovableEmote, dt);
             });
-            emote.move();
+            movableEmote.aabb.center.values[0] += (movableEmote.aabb.velocity.values[0]);
+            movableEmote.aabb.center.values[1] -= (movableEmote.aabb.velocity.values[1]);
+            movableEmote.emote.moveTo(movableEmote.aabb.center.values[0], movableEmote.aabb.center.values[1]);
         });
     }
-    checkForEmoteCollision(emote, nextFrame, otherEmote) {
-        const emotePixelScale = emote.convertScaleToPixels();
-        const otherEmotePixelScale = otherEmote.convertScaleToPixels();
-        const otherNextFrame = otherEmote.calculateNextMoveFrame();
-        const middleXY = { x: nextFrame.x + emotePixelScale.width / 2, y: nextFrame.y + emotePixelScale.height / 2 };
-        const otherMiddleXY = { x: otherNextFrame.x + otherEmotePixelScale.width / 2, y: otherNextFrame.y + otherEmotePixelScale.height / 2 };
-        const powX = (otherMiddleXY.x - middleXY.x) * (otherMiddleXY.x - middleXY.x);
-        const powY = (otherMiddleXY.y - middleXY.y) * (otherMiddleXY.y - middleXY.y);
-        const distance = Math.sqrt((powX + powY));
-        if (distance < ((emotePixelScale.width / 2) + (otherEmotePixelScale.width / 2))) {
-            emote.velocity.x *= -1;
-            otherEmote.velocity.x *= -1;
-        }
-        if (distance < ((emotePixelScale.height / 2) + (otherEmotePixelScale.height / 2))) {
-            emote.velocity.y *= -1;
-            otherEmote.velocity.y *= -1;
+    checkForEmoteCollision(movable, otherMovable, dt) {
+        if (movable.aabb.isCollidingWith(otherMovable.aabb, dt)) {
+            const tempValues = movable.aabb.velocity.values.slice();
+            movable.aabb.velocity.values = otherMovable.aabb.velocity.values;
+            otherMovable.aabb.velocity.values = tempValues;
+            console.log('collide with emote');
         }
     }
-    checkForWindowCollision(emote, nextFrame) {
-        // check for window bounding box collision
-        if (emote.position.x < 0 || nextFrame.x > this.getViewWidth()) {
-            emote.velocity.x *= -1;
+    // checkForEmoteCollision(emote: Emote, nextFrame: { x: number, y: number }, otherEmote: Emote) {
+    //     const emotePixelScale = emote.convertScaleToPixels();
+    //     const otherEmotePixelScale = otherEmote.convertScaleToPixels();
+    //     const otherNextFrame = otherEmote.calculateNextMoveFrame();
+    //     const middleXY = { x: nextFrame.x + emotePixelScale.width / 2, y: nextFrame.y + emotePixelScale.height / 2 };
+    //     const otherMiddleXY = { x: otherNextFrame.x + otherEmotePixelScale.width / 2, y: otherNextFrame.y + otherEmotePixelScale.height / 2 };
+    //     const powX = (otherMiddleXY.x - middleXY.x) * (otherMiddleXY.x - middleXY.x);
+    //     const powY = (otherMiddleXY.y - middleXY.y) * (otherMiddleXY.y - middleXY.y);
+    //     const distance = Math.sqrt((powX + powY));
+    //     if (distance < ((emotePixelScale.width / 2) + (otherEmotePixelScale.width / 2))) {
+    //         emote.velocity.x *= -1;
+    //         otherEmote.velocity.x *= -1;
+    //     }
+    //     if (distance < ((emotePixelScale.height / 2) + (otherEmotePixelScale.height / 2))) {
+    //         emote.velocity.y *= -1;
+    //         otherEmote.velocity.y *= -1;
+    //     }
+    // }
+    checkForWindowCollision(movable, dt) {
+        var _a, _b, _c, _d;
+        const vw = this.getViewWidth() * 0.75;
+        const halfVW = vw / 2;
+        const vh = this.getViewHeight();
+        const halfVH = vh / 2;
+        const northWall = new axis_aligned_bounding_box_1.AABB(new tree_math_1.Vector2(halfVW, 0), new tree_math_1.Vector2(halfVW, 1));
+        const southWall = new axis_aligned_bounding_box_1.AABB(new tree_math_1.Vector2(halfVW, vh), new tree_math_1.Vector2(halfVW, 1));
+        const eastWall = new axis_aligned_bounding_box_1.AABB(new tree_math_1.Vector2(vw, halfVH), new tree_math_1.Vector2(1, halfVH));
+        const westWall = new axis_aligned_bounding_box_1.AABB(new tree_math_1.Vector2(0, halfVH), new tree_math_1.Vector2(1, halfVH));
+        (_a = document.getElementById('north')) === null || _a === void 0 ? void 0 : _a.setAttribute('style', `top:${northWall.center.values[1] - northWall.extents.values[1]}px; left:${northWall.center.values[0] - northWall.extents.values[0]}px; width:${northWall.extents.values[0] * 2}px; height:${northWall.extents.values[1] * 2}px`);
+        (_b = document.getElementById('south')) === null || _b === void 0 ? void 0 : _b.setAttribute('style', `top:${southWall.center.values[1] - southWall.extents.values[1]}px; left:${southWall.center.values[0] - southWall.extents.values[0]}px; width:${southWall.extents.values[0] * 2}px; height:${southWall.extents.values[1] * 2}px`);
+        (_c = document.getElementById('east')) === null || _c === void 0 ? void 0 : _c.setAttribute('style', `top:${eastWall.center.values[1] - eastWall.extents.values[1]}px; left:${eastWall.center.values[0] - eastWall.extents.values[0]}px; width:${eastWall.extents.values[0] * 2}px; height:${eastWall.extents.values[1] * 2}px`);
+        (_d = document.getElementById('west')) === null || _d === void 0 ? void 0 : _d.setAttribute('style', `top:${westWall.center.values[1] - westWall.extents.values[1]}px; left:${westWall.center.values[0] - westWall.extents.values[0]}px; width:${westWall.extents.values[0] * 2}px; height:${westWall.extents.values[1] * 2}px`);
+        if (movable.aabb.isCollidingWith(northWall, dt)) {
+            movable.aabb.velocity.values[1] *= -1;
+            console.log('north wall collision');
         }
-        if (emote.position.y < 0 || nextFrame.y > this.getViewHeight()) {
-            emote.velocity.y *= -1;
+        else if (movable.aabb.isCollidingWith(southWall, dt)) {
+            movable.aabb.velocity.values[1] *= -1;
+            console.log('south wall collision');
+        }
+        else if (movable.aabb.isCollidingWith(eastWall, dt)) {
+            movable.aabb.velocity.values[0] *= -1;
+            console.log('east wall collision');
+        }
+        else if (movable.aabb.isCollidingWith(westWall, dt)) {
+            movable.aabb.velocity.values[0] *= -1;
+            console.log('west wall collision');
         }
     }
     getViewHeight() {
@@ -151,4 +342,87 @@ class PhysicsEngine {
 exports.PhysicsEngine = PhysicsEngine;
 new PhysicsEngine();
 
-},{"../emote-widget/emote":1}]},{},[2]);
+},{"../emote-widget/emote":1,"./axis-aligned-bounding-box":2,"./tree-math":4}],4:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ClockDirection;
+(function (ClockDirection) {
+    // clockwise, counter clockwise
+    ClockDirection[ClockDirection["CW"] = 0] = "CW";
+    ClockDirection[ClockDirection["CCW"] = 1] = "CCW";
+})(ClockDirection = exports.ClockDirection || (exports.ClockDirection = {}));
+class Vector2 {
+    constructor(x = 0, y = 0) {
+        this.values = [x, y];
+    }
+    add(other) {
+        return new Vector2((this.values[0] + other.values[0]), (this.values[1] + other.values[1]));
+    }
+    subtract(other) {
+        return new Vector2((this.values[0] - other.values[0]), (this.values[1] - other.values[1]));
+    }
+    magnitude() {
+        return Math.sqrt((this.values[0] * this.values[0]) + (this.values[1] * this.values[1]));
+    }
+    multiplyScalar(scalar) {
+        return new Vector2(this.values[0] * scalar, this.values[1] * scalar);
+    }
+    divideScalar(scalar) {
+        if (scalar === 0) {
+            throw new Error('Cannont divide by 0');
+        }
+        return new Vector2(this.values[0] / scalar, this.values[1] / scalar);
+    }
+    normalize() {
+        const magnitude = this.magnitude();
+        if (magnitude > 0) {
+            return new Vector2(this.values[0] / magnitude, this.values[1] / magnitude);
+        }
+        else {
+            throw new Error('Cannot normalize a vector with 0 magnitude.');
+        }
+    }
+    normal(direction) {
+        if (direction === ClockDirection.CW) {
+            return new Vector2(this.values[1], -this.values[0]);
+        }
+        else if (direction === ClockDirection.CCW) {
+            return new Vector2(-this.values[1], this.values[0]);
+        }
+        else {
+            throw new Error('Cannot return normal');
+        }
+    }
+    dot(other) {
+        const aNorm = this.normalize();
+        const oNorm = other.normalize();
+        // console.log(`(${aNorm.values[0]}, ${aNorm.values[1]}) dot (${oNorm.values[0]}, ${oNorm.values[1]})`);
+        return ((aNorm.values[0] * oNorm.values[0]) + (aNorm.values[1] * oNorm.values[1]));
+    }
+    crossProduct(other) {
+        const aNorm = this.normalize();
+        const oNorm = other.normalize();
+        return ((aNorm.values[0] * oNorm.values[1]) - (aNorm.values[1] * oNorm.values[0]));
+    }
+    angleBetween(other) {
+        return (Math.acos(this.dot(other)) * (180 / Math.PI));
+    }
+    print() {
+        return `[${this.values[0]}, ${this.values[1]}]`;
+    }
+    checkBoundaries(aVec, listOfBoundaries) {
+        const collidedSides = [];
+        let colliding = false;
+        listOfBoundaries.forEach((boundary) => {
+            // console.log(boundary, aVec.dot(boundary));
+            if (aVec.dot(boundary) < 0) {
+                colliding = true;
+                collidedSides.push(boundary);
+            }
+        });
+        return { colliding: colliding, collidedSides: collidedSides };
+    }
+}
+exports.Vector2 = Vector2;
+
+},{}]},{},[3]);

@@ -35,7 +35,7 @@ describe('AABB Spec', () => {
         // a velocity that will surely be a collision
         const movingVelocity = new tree_math_1.Vector2(0, 0.001);
         const movingAABB = new axis_aligned_bounding_box_1.AABB(new tree_math_1.Vector2(5, 0), testWidth, movingVelocity);
-        const floorAABB = new axis_aligned_bounding_box_1.AABB(new tree_math_1.Vector2(0, 25), testWidth);
+        const floorAABB = new axis_aligned_bounding_box_1.AABB(new tree_math_1.Vector2(100, 100), testWidth);
         const actualResult = movingAABB.isCollidingWith(floorAABB, 1);
         expect(actualResult).toBe(false);
     });

@@ -72,42 +72,7 @@ export class AABB {
         return colliding;
     }
 
-    // taken from https://github.com/pgkelley4/line-segments-intersect/blob/master/js/line-segments-intersect.js
-    // returns the point where they intersect (if they intersect)
-    // returns null if they don't intersect
-    private getRayIntersectionFractionOfFirstRay(originA: Vector2, endA: Vector2, originB: Vector2, endB: Vector2): number | null {
-        // console.log(`checking intersection between startA:${originA.print()} endA:${endA.print()} startB:${originB.print()} endB:${endB.print()}`)
-        var r = endA.subtract(originA);
-        var s = endB.subtract(originB);
-
-        var numerator: number = originB.subtract(originA).crossProduct(r);
-        var denominator: number = r.crossProduct(s);
-
-        if (numerator === 0 && denominator === 0) {
-            // the lines are co-linear
-            // check if they overlap
-        	/*return	((originB.x - originA.x < 0) != (originB.x - endA.x < 0) != (endB.x - originA.x < 0) != (endB.x - endA.x < 0)) || 
-        			((originB.y - originA.y < 0) != (originB.y - endA.y < 0) != (endB.y - originA.y < 0) != (endB.y - endA.y < 0));*/
-            return null;
-        }
-        if (denominator === 0) {
-            // lines are parallel
-            return null;
-        }
-
-        var u: number = numerator / denominator;
-        var t: number = originB.subtract(originA).crossProduct(s) / denominator;
-        // console.log(`==========> t: ${t} u: ${u}`);
-        if ((t >= 0) && (t <= 1) && (u >= 0) && (u <= 1)) {
-            // console.log('=============> collision!!!');
-            //return originA + (r * t);
-            return t;
-        }
-        return null;
-    }
-
-    // check each edge of a shape
-    public getRayIntersectionFraction(origin: Vector2, direction: Vector2): number | null {
+    getRayIntersectionFraction(origin: Vector2, direction: Vector2): number | null {
         var end = origin.add(direction);
         // console.log(`origin: ${origin.print()} direction: ${direction.print()} end: ${end.print()}`);
         const min = this.min();
@@ -134,5 +99,39 @@ export class AABB {
             minT = x;
         }
         return minT;
+    }
+
+    // taken from https://github.com/pgkelley4/line-segments-intersect/blob/master/js/line-segments-intersect.js
+    // returns the point where they intersect (if they intersect)
+    // returns null if they don't intersect
+    getRayIntersectionFractionOfFirstRay(originA: Vector2, endA: Vector2, originB: Vector2, endB: Vector2): number | null {
+        var r = endA.subtract(originA);
+        var s = endB.subtract(originB);
+
+        var numerator: number = originB.subtract(originA).crossProduct(r);
+        var denominator: number = r.crossProduct(s);
+
+        console.log(`checking intersection between startA:${originA.print()} endA:${endA.print()} startB:${originB.print()} endB:${endB.print()}`)
+        if (numerator === 0 && denominator === 0) {
+            // the lines are co-linear
+            // check if they overlap
+        	/*return	((originB.x - originA.x < 0) != (originB.x - endA.x < 0) != (endB.x - originA.x < 0) != (endB.x - endA.x < 0)) || 
+            ((originB.y - originA.y < 0) != (originB.y - endA.y < 0) != (endB.y - originA.y < 0) != (endB.y - endA.y < 0));*/
+            return null;
+        }
+        if (denominator === 0) {
+            // lines are parallel
+            return null;
+        }
+
+        var u: number = numerator / denominator;
+        var t: number = originB.subtract(originA).crossProduct(s) / denominator;
+        if ((t >= 0) && (t <= 1) && (u >= 0) && (u <= 1)) {
+            console.log(`==========> t: ${t} u: ${u}`);
+            console.log('=============> collision!!!');
+            //return originA + (r * t);
+            return t;
+        }
+        return null;
     }
 }

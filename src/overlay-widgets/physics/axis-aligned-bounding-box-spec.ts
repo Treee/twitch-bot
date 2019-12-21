@@ -48,7 +48,7 @@ describe('AABB Spec', () => {
         const movingVelocity = new Vector2(0, 0.001);
         const movingAABB = new AABB(new Vector2(5, 0), testWidth, movingVelocity);
 
-        const floorAABB = new AABB(new Vector2(0, 25), testWidth);
+        const floorAABB = new AABB(new Vector2(100, 100), testWidth);
 
         const actualResult = movingAABB.isCollidingWith(floorAABB, 1);
         expect(actualResult).toBe(false);

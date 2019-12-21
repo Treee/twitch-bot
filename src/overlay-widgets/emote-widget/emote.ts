@@ -1,8 +1,10 @@
+import { AABB } from "../physics/axis-aligned-bounding-box";
+
 export class Emote {
     url: string;
     scale: number = 1;
-    position: { x: number, y: number } = { x: 0, y: 0 };
-    velocity: { x: number, y: number } = { x: 0, y: 0 };
+    // position: { x: number, y: number } = { x: 0, y: 0 };
+    // velocity: { x: number, y: number } = { x: 0, y: 0 };
     lifespan: number = 0;
     htmlElement: JQuery | undefined;
 
@@ -11,15 +13,15 @@ export class Emote {
         this.scale = scale;
     }
 
-    setPosition(x: number, y: number) {
-        this.position.x = x;
-        this.position.y = y;
-    }
+    // setPosition(x: number, y: number) {
+    //     this.position.x = x;
+    //     this.position.y = y;
+    // }
 
-    setVelocity(x: number, y: number) {
-        this.velocity.x = x;
-        this.velocity.y = y;
-    }
+    // setVelocity(x: number, y: number) {
+    //     this.velocity.x = x;
+    //     this.velocity.y = y;
+    // }
 
     setScale(size: number) {
         this.scale = size;
@@ -62,16 +64,17 @@ export class Emote {
         this.htmlElement.css('background-size', 'cover');
     }
 
-    move() {
+    // x and y should be in pixel coordinates
+    moveTo(x: number, y: number) {
         if (this.htmlElement) {
-            this.htmlElement.css('transform', `translate(${this.position.x += this.velocity.x}px, ${this.position.y += this.velocity.y}px)`);
+            this.htmlElement.css('transform', `translate(${x}px, ${y}px)`);
         }
     }
 
-    calculateNextMoveFrame() {
-        const emotePixelScale = this.convertScaleToPixels();
-        return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
-    }
+    // calculateNextMoveFrame() {
+    //     const emotePixelScale = this.convertScaleToPixels();
+    //     return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
+    // }
 
     private randomNumberBetween(min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1) + min);
