@@ -133,10 +133,10 @@ export class PhysicsEngine {
         const eastWall: AABB = new AABB(new Vector2(vw, halfVH), new Vector2(1, halfVH));
         const westWall: AABB = new AABB(new Vector2(0, halfVH), new Vector2(1, halfVH));
 
-        document.getElementById('north')?.setAttribute('style', `top:${northWall.center.values[1] - northWall.extents.values[1]}px; left:${northWall.center.values[0] - northWall.extents.values[0]}px; width:${northWall.extents.values[0] * 2}px; height:${northWall.extents.values[1] * 2}px`);
-        document.getElementById('south')?.setAttribute('style', `top:${southWall.center.values[1] - southWall.extents.values[1]}px; left:${southWall.center.values[0] - southWall.extents.values[0]}px; width:${southWall.extents.values[0] * 2}px; height:${southWall.extents.values[1] * 2}px`);
-        document.getElementById('east')?.setAttribute('style', `top:${eastWall.center.values[1] - eastWall.extents.values[1]}px; left:${eastWall.center.values[0] - eastWall.extents.values[0]}px; width:${eastWall.extents.values[0] * 2}px; height:${eastWall.extents.values[1] * 2}px`);
-        document.getElementById('west')?.setAttribute('style', `top:${westWall.center.values[1] - westWall.extents.values[1]}px; left:${westWall.center.values[0] - westWall.extents.values[0]}px; width:${westWall.extents.values[0] * 2}px; height:${westWall.extents.values[1] * 2}px`);
+        // document.getElementById('north')?.setAttribute('style', `top:${northWall.center.values[1] - northWall.extents.values[1]}px; left:${northWall.center.values[0] - northWall.extents.values[0]}px; width:${northWall.extents.values[0] * 2}px; height:${northWall.extents.values[1] * 2}px`);
+        // document.getElementById('south')?.setAttribute('style', `top:${southWall.center.values[1] - southWall.extents.values[1]}px; left:${southWall.center.values[0] - southWall.extents.values[0]}px; width:${southWall.extents.values[0] * 2}px; height:${southWall.extents.values[1] * 2}px`);
+        // document.getElementById('east')?.setAttribute('style', `top:${eastWall.center.values[1] - eastWall.extents.values[1]}px; left:${eastWall.center.values[0] - eastWall.extents.values[0]}px; width:${eastWall.extents.values[0] * 2}px; height:${eastWall.extents.values[1] * 2}px`);
+        // document.getElementById('west')?.setAttribute('style', `top:${westWall.center.values[1] - westWall.extents.values[1]}px; left:${westWall.center.values[0] - westWall.extents.values[0]}px; width:${westWall.extents.values[0] * 2}px; height:${westWall.extents.values[1] * 2}px`);
 
         if (movable.aabb.isCollidingWith(northWall, dt)) {
             movable.aabb.velocity.values[1] *= -1;
