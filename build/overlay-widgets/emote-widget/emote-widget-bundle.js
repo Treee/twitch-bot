@@ -287,20 +287,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Emote {
     constructor(scale = 1, url = '') {
         this.scale = 1;
-        this.position = { x: 0, y: 0 };
-        this.velocity = { x: 0, y: 0 };
+        // position: { x: number, y: number } = { x: 0, y: 0 };
+        // velocity: { x: number, y: number } = { x: 0, y: 0 };
         this.lifespan = 0;
         this.url = url;
         this.scale = scale;
     }
-    setPosition(x, y) {
-        this.position.x = x;
-        this.position.y = y;
-    }
-    setVelocity(x, y) {
-        this.velocity.x = x;
-        this.velocity.y = y;
-    }
+    // setPosition(x: number, y: number) {
+    //     this.position.x = x;
+    //     this.position.y = y;
+    // }
+    // setVelocity(x: number, y: number) {
+    //     this.velocity.x = x;
+    //     this.velocity.y = y;
+    // }
     setScale(size) {
         this.scale = size;
     }
@@ -339,15 +339,16 @@ class Emote {
         this.htmlElement.css('background', `url("${this.url}")`);
         this.htmlElement.css('background-size', 'cover');
     }
-    move() {
+    // x and y should be in pixel coordinates
+    moveTo(x, y) {
         if (this.htmlElement) {
-            this.htmlElement.css('transform', `translate(${this.position.x += this.velocity.x}px, ${this.position.y += this.velocity.y}px)`);
+            this.htmlElement.css('transform', `translate(${x}px, ${y}px)`);
         }
     }
-    calculateNextMoveFrame() {
-        const emotePixelScale = this.convertScaleToPixels();
-        return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
-    }
+    // calculateNextMoveFrame() {
+    //     const emotePixelScale = this.convertScaleToPixels();
+    //     return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
+    // }
     randomNumberBetween(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
