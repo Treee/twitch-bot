@@ -48,6 +48,7 @@ exports.SubBadge = SubBadge;
 class TwitchEmote extends emote_1.Emote {
     constructor(code, emoticon_set, id) {
         super();
+        this.channelPointModifier = '';
         this.code = code;
         this.emoticon_set = emoticon_set;
         this.id = id;
@@ -61,7 +62,7 @@ class TwitchEmote extends emote_1.Emote {
         }
     }
     setUrl() {
-        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}/${this.scale}.0`;
+        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}${this.channelPointModifier}/${this.scale}.0`;
     }
 }
 exports.TwitchEmote = TwitchEmote;
@@ -163,6 +164,7 @@ const emote_1 = require("./emote");
 const emote_twitch_1 = require("./emote-twitch");
 const emote_bttv_1 = require("./emote-bttv");
 class EmoteWidget {
+    // emoteSuffixes: string[] = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
     constructor(emoteConfig) {
         this.twitchSubBadges = [];
         this.twitchEmotes = [];
@@ -187,10 +189,18 @@ class EmoteWidget {
         return newEmote;
     }
     getSpecificTwitchEmote(emoteCode) {
+        let formattedEmoteCode = emoteCode;
+        const emoteSuffix = emoteCode.split('_');
+        if (emoteSuffix.length > 1) {
+            formattedEmoteCode = emoteSuffix[0];
+        }
         let emote = this.twitchEmotes.find((emote) => {
-            return emote.code === emoteCode;
+            return emote.code === formattedEmoteCode;
         });
         if (!!emote) {
+            if (emoteSuffix.length > 1) {
+                emote.channelPointModifier = `_${emoteSuffix[1]}`;
+            }
             emote.setScale(this.randomNumberBetween(1, 3));
             emote.setUrl();
         }
