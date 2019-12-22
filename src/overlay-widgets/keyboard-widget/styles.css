@@ -9,11 +9,18 @@
     outline: none;
 }
 
+.numberpad {
+    border: 1px solid red;
+    position: absolute;
+    top: 10vh;
+    left: 10vw;
+}
+
 .keyboard {
     border: 1px solid red;
     position: absolute;
-    top: 25vh;
-    left: 25vw;
+    top: 10vh;
+    left: 10vw;
 }
 
 .normal-key {
