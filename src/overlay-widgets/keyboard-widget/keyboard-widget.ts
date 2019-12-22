@@ -17,15 +17,21 @@ export class KeyboardWidget {
     }
 
     onUserKeyPress(event: any) {
-
         this.activeKeys[event.key] = (event.type === 'keydown');
         console.log('clicked', this.activeKeys);
-        this.toggle = !this.toggle
-        if (!this.toggle) {
-            document.getElementById('test')?.classList.remove('active-key');
-        } else {
-            document.getElementById('test')?.classList.add('active-key');
-        }
+        this.handleUserInput();
+    }
+
+    handleUserInput(): boolean {
+        const activeKeys = Object.keys(this.activeKeys).filter((key) => {
+            const isPressed = this.activeKeys[key];
+            if (isPressed) {
+                document.getElementById(key)?.classList.add('active-key');
+            } else {
+                document.getElementById(key)?.classList.remove('active-key');
+            }
+        });
+        return activeKeys.length > 0;
     }
 
     // c++ keyboard listener without interrupting flow

@@ -1,6 +1,6 @@
 .keyboard-container {
-    top: 0%;
-    left: 0%;
+    top: 0vh;
+    left: 0vw;
     position: absolute;
     background: transparent;
     overflow: hidden;
@@ -9,10 +9,20 @@
     outline: none;
 }
 
-.normal {
-    width: 10vw;
-    height: 10vh;
+.keyboard {
+    border: 1px solid red;
     position: absolute;
+    top: 25vh;
+    left: 25vw;
+}
+
+.normal-key {
+    width: 5vw;
+    height: 10vh;
+    border-radius: 0.5rem;
+    text-align: center;
+    vertical-align: middle;
+    display: inline-block;
     top: 50vh;
     left: 50vw;
     background-color: transparent;
@@ -22,4 +32,9 @@
 .active-key {
     background-color: red;
     border: 1px solid black;
+}
+
+.key-symbol {
+    padding-bottom: .5rem;
+    border-radius: 0.5rem;
 }

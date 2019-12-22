@@ -14,18 +14,22 @@ class KeyboardWidget {
     onUserClick(event) {
     }
     onUserKeyPress(event) {
-        var _a, _b;
-        // {}
-        // object { event.key: value }
         this.activeKeys[event.key] = (event.type === 'keydown');
         console.log('clicked', this.activeKeys);
-        this.toggle = !this.toggle;
-        if (!this.toggle) {
-            (_a = document.getElementById('test')) === null || _a === void 0 ? void 0 : _a.classList.remove('active-key');
-        }
-        else {
-            (_b = document.getElementById('test')) === null || _b === void 0 ? void 0 : _b.classList.add('active-key');
-        }
+        this.handleUserInput();
+    }
+    handleUserInput() {
+        const activeKeys = Object.keys(this.activeKeys).filter((key) => {
+            var _a, _b;
+            const isPressed = this.activeKeys[key];
+            if (isPressed) {
+                (_a = document.getElementById(key)) === null || _a === void 0 ? void 0 : _a.classList.add('active-key');
+            }
+            else {
+                (_b = document.getElementById(key)) === null || _b === void 0 ? void 0 : _b.classList.remove('active-key');
+            }
+        });
+        return activeKeys.length > 0;
     }
 }
 exports.KeyboardWidget = KeyboardWidget;
