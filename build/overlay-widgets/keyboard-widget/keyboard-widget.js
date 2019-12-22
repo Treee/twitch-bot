@@ -16,7 +16,49 @@ class KeyboardWidget {
             setInterval(() => {
                 this.handleInput(this.getActivelyPressedKeys());
             }, 1000 / 60);
+            setInterval(() => {
+                this.triggerRandomCharacterEvent();
+            }, 1000 / 60);
         }
+    }
+    triggerRandomCharacterEvent() {
+        var _a;
+        const randomCharacter = this.getRandomCharacter();
+        const randomChance = this.randomNumberBetween(1, 100);
+        const ctrlChance = randomChance % 5 === 0;
+        const altChance = randomChance % 4 === 0;
+        const shiftChance = randomChance % 3 === 0;
+        let event = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            ctrlKey: ctrlChance,
+            altKey: altChance,
+            shiftKey: shiftChance,
+            metaKey: false,
+            key: randomCharacter,
+            code: `key${randomCharacter}`
+        });
+        (_a = document.getElementById('keyboard-container')) === null || _a === void 0 ? void 0 : _a.dispatchEvent(event);
+        setTimeout(() => {
+            var _a;
+            event = new KeyboardEvent('keyup', {
+                bubbles: true,
+                cancelable: true,
+                ctrlKey: ctrlChance,
+                altKey: altChance,
+                shiftKey: shiftChance,
+                metaKey: false,
+                key: randomCharacter,
+                code: `key${randomCharacter}`
+            });
+            (_a = document.getElementById('keyboard-container')) === null || _a === void 0 ? void 0 : _a.dispatchEvent(event);
+        }, 100);
+    }
+    getRandomCharacter() {
+        return String.fromCharCode(this.randomNumberBetween(97, 122));
+    }
+    randomNumberBetween(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
     }
     onUserClick(event) {
     }
@@ -53,27 +95,26 @@ class KeyboardWidget {
         }
         return id;
     }
-    createKeyboardKey(key, symbols) {
+    createKeyboardKey(key) {
         const keyParent = document.createElement('div');
-        keyParent.id = key;
+        keyParent.id = key.getId();
         keyParent.classList.add('normal-key');
-        keyParent.appendChild(this.createKeySymbol(key, symbols[0]));
-        if (symbols.length > 1) {
-            keyParent.appendChild(this.createKeySymbol(key, symbols[1]));
-        }
+        key.symbols.forEach((keySymbol) => {
+            keyParent.appendChild(this.createKeySymbol(keySymbol));
+        });
         return keyParent;
     }
-    createKeySymbol(key, symbol) {
+    createKeySymbol(keySymbol) {
         const newKey = document.createElement('div');
-        newKey.id = `${key}-${symbol.toLowerCase()}`;
+        newKey.id = keySymbol.getId();
         newKey.classList.add('key-symbol');
-        newKey.innerText = symbol;
+        newKey.innerText = keySymbol.displayText;
         return newKey;
     }
-    createRow(containerIdToAppend, rowDataObject) {
-        Object.keys(rowDataObject).forEach((key) => {
+    createRow(containerIdToAppend, listOfKeys) {
+        listOfKeys.forEach((key) => {
             var _a;
-            (_a = document.getElementById(containerIdToAppend)) === null || _a === void 0 ? void 0 : _a.appendChild(this.createKeyboardKey(key.toLowerCase(), rowDataObject[key]));
+            (_a = document.getElementById(containerIdToAppend)) === null || _a === void 0 ? void 0 : _a.appendChild(this.createKeyboardKey(key));
         });
         this.addNewLine(containerIdToAppend);
     }
