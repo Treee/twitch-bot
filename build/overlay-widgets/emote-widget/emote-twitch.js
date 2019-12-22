@@ -22,6 +22,7 @@ exports.SubBadge = SubBadge;
 class TwitchEmote extends emote_1.Emote {
     constructor(code, emoticon_set, id) {
         super();
+        this.channelPointModifier = '';
         this.code = code;
         this.emoticon_set = emoticon_set;
         this.id = id;
@@ -35,7 +36,7 @@ class TwitchEmote extends emote_1.Emote {
         }
     }
     setUrl() {
-        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}/${this.scale}.0`;
+        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}${this.channelPointModifier}/${this.scale}.0`;
     }
 }
 exports.TwitchEmote = TwitchEmote;

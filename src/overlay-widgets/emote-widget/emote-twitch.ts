@@ -32,6 +32,7 @@ export class TwitchEmote extends Emote {
     code: string;
     emoticon_set: number;
     id: number;
+    channelPointModifier: string = '';
 
     constructor(code: string, emoticon_set: number, id: number) {
         super();
@@ -49,6 +50,6 @@ export class TwitchEmote extends Emote {
     }
 
     setUrl() {
-        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}/${this.scale}.0`;
+        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}${this.channelPointModifier}/${this.scale}.0`;
     }
 }

@@ -8,6 +8,7 @@ export class EmoteWidget {
     twitchSubBadges: SubBadge[] = [];
     twitchEmotes: TwitchEmote[] = [];
     bttvEmotes: BttvEmote[] = [];
+    // emoteSuffixes: string[] = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
 
     constructor(emoteConfig: EmoteWidgetConfig) {
         this.emoteConfig = emoteConfig;
@@ -36,10 +37,20 @@ export class EmoteWidget {
     }
 
     getSpecificTwitchEmote(emoteCode: string): TwitchEmote {
+        let formattedEmoteCode = emoteCode;
+        const emoteSuffix = emoteCode.split('_');
+        if (emoteSuffix.length > 1) {
+            formattedEmoteCode = emoteSuffix[0];
+        }
+
+
         let emote = this.twitchEmotes.find((emote: TwitchEmote) => {
-            return emote.code === emoteCode;
+            return emote.code === formattedEmoteCode;
         });
         if (!!emote) {
+            if (emoteSuffix.length > 1) {
+                emote.channelPointModifier = `_${emoteSuffix[1]}`;
+            }
             emote.setScale(this.randomNumberBetween(1, 3));
             emote.setUrl();
         } else {

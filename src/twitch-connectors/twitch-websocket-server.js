@@ -61,6 +61,7 @@ function rollDice() {
     return Math.floor(Math.random() * sides) + 1;
 }
 
+const emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
 function parseForEmoteCodes(message) {
     const invokedEmotes = [];
     const words = message.split(' ');
@@ -68,6 +69,12 @@ function parseForEmoteCodes(message) {
         emoteCodesToLookFor.forEach((emoteCode) => {
             if (word === emoteCode) {
                 invokedEmotes.push(emoteCode);
+            } else { // check for modified emote codes (like _SA or _RD or BW or _SQ)
+                emoteSuffixes.forEach((suffix) => {
+                    if (word === `${emoteCode}${suffix}`) {
+                        invokedEmotes.push(`${emoteCode}${suffix}`);
+                    }
+                });
             }
         });
     });
