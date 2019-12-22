@@ -7,9 +7,10 @@
     "local-chatbot": "node ./src/twitch-connectors/twitch-websocket-server.js",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "build": "tsc",
-    "build-emote-widget": "npm run build && browserify src/overlay-widgets/emote-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles -f src/overlay-widgets/**/*.html src/overlay-widgets/**/*.css src/overlay-widgets/**/*.md build/overlay-widgets/emote-widget",
+    "build-emote-widget": "npm run build && browserify src/overlay-widgets/emote-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles -f src/overlay-widgets/emote-widget/*.html src/overlay-widgets/emote-widget/*.css src/overlay-widgets/emote-widget/*.md build/overlay-widgets/emote-widget",
     "build-physics-widget": "npm run build && browserify src/overlay-widgets/physics/physics-engine.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/physics/physics-bundle.js",
-    "build-all": "npm test && npm run build-emote-widget && npm run build-physics-widget"
+    "build-keyboard-widget": "npm run build && browserify src/overlay-widgets/keyboard-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/keyboard-widget/keyboard-bundle.js && copyfiles -f src/overlay-widgets/keyboard-widget/*.html src/overlay-widgets/keyboard-widget/*.css src/overlay-widgets/keyboard-widget/*.md build/overlay-widgets/keyboard-widget",
+    "build-all": "npm test && npm run build-emote-widget && npm run build-physics-widget && npm run build-keyboard-widget"
   },
   "author": "",
   "license": "ISC",
