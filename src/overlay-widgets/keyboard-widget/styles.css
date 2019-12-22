@@ -1,0 +1,25 @@
+.keyboard-container {
+    top: 0%;
+    left: 0%;
+    position: absolute;
+    background: transparent;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    outline: none;
+}
+
+.normal {
+    width: 10vw;
+    height: 10vh;
+    position: absolute;
+    top: 50vh;
+    left: 50vw;
+    background-color: transparent;
+    border: 1px solid black;
+}
+
+.active-key {
+    background-color: red;
+    border: 1px solid black;
+}
