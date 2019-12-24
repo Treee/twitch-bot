@@ -302,7 +302,6 @@ class PhysicsEngine {
     //     }
     // }
     checkForWindowCollision(movable, dt) {
-        var _a, _b, _c, _d;
         const vw = this.getViewWidth() * 0.75;
         const halfVW = vw / 2;
         const vh = this.getViewHeight();
@@ -311,10 +310,10 @@ class PhysicsEngine {
         const southWall = new axis_aligned_bounding_box_1.AABB(new tree_math_1.Vector2(halfVW, vh), new tree_math_1.Vector2(halfVW, 1));
         const eastWall = new axis_aligned_bounding_box_1.AABB(new tree_math_1.Vector2(vw, halfVH), new tree_math_1.Vector2(1, halfVH));
         const westWall = new axis_aligned_bounding_box_1.AABB(new tree_math_1.Vector2(0, halfVH), new tree_math_1.Vector2(1, halfVH));
-        (_a = document.getElementById('north')) === null || _a === void 0 ? void 0 : _a.setAttribute('style', `top:${northWall.center.values[1] - northWall.extents.values[1]}px; left:${northWall.center.values[0] - northWall.extents.values[0]}px; width:${northWall.extents.values[0] * 2}px; height:${northWall.extents.values[1] * 2}px`);
-        (_b = document.getElementById('south')) === null || _b === void 0 ? void 0 : _b.setAttribute('style', `top:${southWall.center.values[1] - southWall.extents.values[1]}px; left:${southWall.center.values[0] - southWall.extents.values[0]}px; width:${southWall.extents.values[0] * 2}px; height:${southWall.extents.values[1] * 2}px`);
-        (_c = document.getElementById('east')) === null || _c === void 0 ? void 0 : _c.setAttribute('style', `top:${eastWall.center.values[1] - eastWall.extents.values[1]}px; left:${eastWall.center.values[0] - eastWall.extents.values[0]}px; width:${eastWall.extents.values[0] * 2}px; height:${eastWall.extents.values[1] * 2}px`);
-        (_d = document.getElementById('west')) === null || _d === void 0 ? void 0 : _d.setAttribute('style', `top:${westWall.center.values[1] - westWall.extents.values[1]}px; left:${westWall.center.values[0] - westWall.extents.values[0]}px; width:${westWall.extents.values[0] * 2}px; height:${westWall.extents.values[1] * 2}px`);
+        // document.getElementById('north')?.setAttribute('style', `top:${northWall.center.values[1] - northWall.extents.values[1]}px; left:${northWall.center.values[0] - northWall.extents.values[0]}px; width:${northWall.extents.values[0] * 2}px; height:${northWall.extents.values[1] * 2}px`);
+        // document.getElementById('south')?.setAttribute('style', `top:${southWall.center.values[1] - southWall.extents.values[1]}px; left:${southWall.center.values[0] - southWall.extents.values[0]}px; width:${southWall.extents.values[0] * 2}px; height:${southWall.extents.values[1] * 2}px`);
+        // document.getElementById('east')?.setAttribute('style', `top:${eastWall.center.values[1] - eastWall.extents.values[1]}px; left:${eastWall.center.values[0] - eastWall.extents.values[0]}px; width:${eastWall.extents.values[0] * 2}px; height:${eastWall.extents.values[1] * 2}px`);
+        // document.getElementById('west')?.setAttribute('style', `top:${westWall.center.values[1] - westWall.extents.values[1]}px; left:${westWall.center.values[0] - westWall.extents.values[0]}px; width:${westWall.extents.values[0] * 2}px; height:${westWall.extents.values[1] * 2}px`);
         if (movable.aabb.isCollidingWith(northWall, dt)) {
             movable.aabb.velocity.values[1] *= -1;
             console.log('north wall collision');
