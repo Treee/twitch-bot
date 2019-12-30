@@ -11,22 +11,14 @@ const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
 Promise.all([
     twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
     twitchApiV5.getBttvEmotes(emoteWidgetConfig.channel),
-    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42, 472873131])
+    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42])
 ]).then((values) => {
-    // console.log('values', values);
-    if (emoteWidgetConfig.showGlobal) {
-        const combinedTwitchEmotes = values[0].emotes.concat(values[2]);
-        emoteWidget.twitchEmotes = combinedTwitchEmotes;
-    }
-    else {
-        emoteWidget.twitchEmotes = values[0].emotes;
-    }
-    emoteWidget.twitchSubBadges = values[0].subBadges;
-    emoteWidget.bttvEmotes = values[1].emotes;
+    // emoteWidget.twitchSubBadges = values[0].subBadges;
+    emoteWidget.masterEmotes = emoteWidget.masterEmotes.concat(values[0]).concat(values[1]).concat(values[2]);
 }).then(() => {
     if (!emoteWidgetConfig.botMode) {
         // this first interval makes it so emotes rain immediately instead of waiting for the second interval to start
-        let interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), 'emote-container', 'emote', '');
+        let interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), '');
         if (emoteWidgetConfig.numTimesToRepeat != -1) {
             // timeout to ensure the raining emotes stop after a certain amount of time
             setTimeout(() => {
@@ -36,7 +28,7 @@ Promise.all([
             // this interval will continually start and stop the raining of emotes.
             setInterval(() => {
                 if (emoteWidgetConfig.numTimesToRepeat > 0) {
-                    interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), 'emote-container', 'emote', '');
+                    interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), '');
                     setTimeout(() => {
                         clearInterval(interval);
                         emoteWidgetConfig.numTimesToRepeat--;

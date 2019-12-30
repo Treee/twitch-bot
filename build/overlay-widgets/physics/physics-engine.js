@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const emote_1 = require("../emote-widget/emote");
 const axis_aligned_bounding_box_1 = require("./axis-aligned-bounding-box");
 const tree_math_1 = require("./tree-math");
+const emote_twitch_1 = require("../emote-widget/emote-twitch");
 class MovableEmote {
     constructor(emote, aabb) {
         this.emote = emote;
@@ -33,7 +33,7 @@ class PhysicsEngine {
         //     this.emotes.push(newEmote);
         // }
         for (let index = 0; index < numEmotesToAdd; index++) {
-            const newEmote = new emote_1.Emote(2, 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x');
+            const newEmote = new emote_twitch_1.TwitchEmote('', 0, 0, 2, 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x');
             newEmote.createHtmlElement('default-emote');
             const center = new tree_math_1.Vector2(Math.random() * 500, Math.random() * 500);
             const radius = new tree_math_1.Vector2(28, 28);

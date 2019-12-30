@@ -1,6 +1,8 @@
 import { Emote } from "../emote-widget/emote";
 import { AABB } from "./axis-aligned-bounding-box";
 import { Vector2 } from "./tree-math";
+import { BttvEmote } from "../emote-widget/emote-bttv";
+import { TwitchEmote } from "../emote-widget/emote-twitch";
 
 export class MovableEmote {
     emote: Emote;
@@ -39,7 +41,7 @@ export class PhysicsEngine {
         // }
 
         for (let index = 0; index < numEmotesToAdd; index++) {
-            const newEmote = new Emote(2, 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x');
+            const newEmote = new TwitchEmote('', 0, 0, 2, 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x');
             newEmote.createHtmlElement('default-emote');
             const center = new Vector2(Math.random() * 500, Math.random() * 500);
             const radius = new Vector2(28, 28);

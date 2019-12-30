@@ -20,12 +20,12 @@ class SubBadge {
 }
 exports.SubBadge = SubBadge;
 class TwitchEmote extends emote_1.Emote {
-    constructor(code, emoticon_set, id) {
-        super();
+    constructor(code = 'FrankerZ', emoticon_set, id, scale = 1, url = '') {
+        super(scale, url, code);
         this.channelPointModifier = '';
-        this.code = code;
         this.emoticon_set = emoticon_set;
         this.id = id;
+        this.setUrl();
     }
     convertScaleToPixels() {
         if (this.emoticon_set === 42) {

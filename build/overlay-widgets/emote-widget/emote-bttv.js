@@ -10,11 +10,12 @@ class BttvEmoteResponse {
 exports.BttvEmoteResponse = BttvEmoteResponse;
 class BttvEmote extends emote_1.Emote {
     constructor(channel, code, id, imageType) {
-        super();
+        super(1, '', code);
         this.channel = channel;
         this.code = code;
         this.id = id;
         this.imageType = imageType;
+        this.setUrl();
     }
     setUrl() {
         this.url = `https://cdn.betterttv.net/emote/${this.id}/${this.scale}x`;

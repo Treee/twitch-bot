@@ -12,16 +12,16 @@ export class BttvEmoteResponse {
 
 export class BttvEmote extends Emote {
     channel: string;
-    code: string;
     id: string;
     imageType: string;
 
     constructor(channel: string, code: string, id: string, imageType: string) {
-        super();
+        super(1, '', code);
         this.channel = channel;
         this.code = code;
         this.id = id;
         this.imageType = imageType;
+        this.setUrl();
     }
 
     setUrl() {

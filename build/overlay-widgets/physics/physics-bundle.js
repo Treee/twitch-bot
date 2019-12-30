@@ -1,23 +1,57 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const emote_1 = require("./emote");
+class TwitchEmoteResponse {
+    constructor(channelId, channeName, channelDisplayName, emotes, subBadges) {
+        this.channelId = channelId;
+        this.channelName = channeName;
+        this.channelDisplayName = channelDisplayName;
+        this.emotes = emotes;
+        this.subBadges = subBadges;
+    }
+}
+exports.TwitchEmoteResponse = TwitchEmoteResponse;
+class SubBadge {
+    constructor(tier, displayName, imageSizes) {
+        this.tier = tier;
+        this.displayName = displayName;
+        this.imageSizes = imageSizes;
+    }
+}
+exports.SubBadge = SubBadge;
+class TwitchEmote extends emote_1.Emote {
+    constructor(code = 'FrankerZ', emoticon_set, id, scale = 1, url = '') {
+        super(scale, url, code);
+        this.channelPointModifier = '';
+        this.emoticon_set = emoticon_set;
+        this.id = id;
+        this.setUrl();
+    }
+    convertScaleToPixels() {
+        if (this.emoticon_set === 42) {
+            return { width: 20 * this.scale, height: 18 * this.scale };
+        }
+        else {
+            return super.convertScaleToPixels();
+        }
+    }
+    setUrl() {
+        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}${this.channelPointModifier}/${this.scale}.0`;
+    }
+}
+exports.TwitchEmote = TwitchEmote;
+
+},{"./emote":2}],2:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class Emote {
-    constructor(scale = 1, url = '') {
-        this.scale = 1;
-        // position: { x: number, y: number } = { x: 0, y: 0 };
-        // velocity: { x: number, y: number } = { x: 0, y: 0 };
+    constructor(scale, url, code) {
         this.lifespan = 0;
         this.url = url;
         this.scale = scale;
+        this.code = code;
     }
-    // setPosition(x: number, y: number) {
-    //     this.position.x = x;
-    //     this.position.y = y;
-    // }
-    // setVelocity(x: number, y: number) {
-    //     this.velocity.x = x;
-    //     this.velocity.y = y;
-    // }
     setScale(size) {
         this.scale = size;
     }
@@ -62,6 +96,9 @@ class Emote {
             this.htmlElement.css('transform', `translate(${x}px, ${y}px)`);
         }
     }
+    setUrl() {
+        throw new Error('Set Url Not Implemented In Abstract Class');
+    }
     // calculateNextMoveFrame() {
     //     const emotePixelScale = this.convertScaleToPixels();
     //     return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
@@ -72,7 +109,7 @@ class Emote {
 }
 exports.Emote = Emote;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tree_math_1 = require("./tree-math");
@@ -193,12 +230,12 @@ class AABB {
 }
 exports.AABB = AABB;
 
-},{"./tree-math":4}],3:[function(require,module,exports){
+},{"./tree-math":5}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const emote_1 = require("../emote-widget/emote");
 const axis_aligned_bounding_box_1 = require("./axis-aligned-bounding-box");
 const tree_math_1 = require("./tree-math");
+const emote_twitch_1 = require("../emote-widget/emote-twitch");
 class MovableEmote {
     constructor(emote, aabb) {
         this.emote = emote;
@@ -229,7 +266,7 @@ class PhysicsEngine {
         //     this.emotes.push(newEmote);
         // }
         for (let index = 0; index < numEmotesToAdd; index++) {
-            const newEmote = new emote_1.Emote(2, 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x');
+            const newEmote = new emote_twitch_1.TwitchEmote('', 0, 0, 2, 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x');
             newEmote.createHtmlElement('default-emote');
             const center = new tree_math_1.Vector2(Math.random() * 500, Math.random() * 500);
             const radius = new tree_math_1.Vector2(28, 28);
@@ -341,7 +378,7 @@ class PhysicsEngine {
 exports.PhysicsEngine = PhysicsEngine;
 new PhysicsEngine();
 
-},{"../emote-widget/emote":1,"./axis-aligned-bounding-box":2,"./tree-math":4}],4:[function(require,module,exports){
+},{"../emote-widget/emote-twitch":1,"./axis-aligned-bounding-box":3,"./tree-math":5}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ClockDirection;
@@ -424,4 +461,4 @@ class Vector2 {
 }
 exports.Vector2 = Vector2;
 
-},{}]},{},[3]);
+},{}]},{},[4]);
