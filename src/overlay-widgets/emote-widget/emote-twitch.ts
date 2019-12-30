@@ -29,16 +29,15 @@ export class SubBadge {
 }
 
 export class TwitchEmote extends Emote {
-    code: string;
     emoticon_set: number;
     id: number;
     channelPointModifier: string = '';
 
-    constructor(code: string, emoticon_set: number, id: number) {
-        super();
-        this.code = code;
+    constructor(code: string = 'FrankerZ', emoticon_set: number, id: number, scale: number = 1, url: string = '') {
+        super(scale, url, code);
         this.emoticon_set = emoticon_set;
         this.id = id;
+        this.setUrl();
     }
 
     convertScaleToPixels(): { width: number, height: number } {

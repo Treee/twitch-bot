@@ -57,9 +57,9 @@ export class TwitchApiV5 {
                 const subLoyaltyImages = [subBadges[objectKey].image_url_1x, subBadges[objectKey].image_url_2x, subBadges[objectKey].image_url_4x];
                 formattedSubBadges.push(new SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
             });
-            return new TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges);
+            return new TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges).emotes;
         }, (error) => {
-            return new TwitchEmoteResponse('', '', '', [], []);
+            return new TwitchEmoteResponse('', '', '', [], []).emotes;
         });
     }
 
@@ -72,9 +72,9 @@ export class TwitchApiV5 {
             emotes.forEach((emote: any) => {
                 formattedEmotes.push(new BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
             });
-            return new BttvEmoteResponse(data.urlTemplate, formattedEmotes);
+            return new BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
         }, (error) => {
-            return new BttvEmoteResponse('', []);
+            return new BttvEmoteResponse('', []).emotes;
         });
     }
 

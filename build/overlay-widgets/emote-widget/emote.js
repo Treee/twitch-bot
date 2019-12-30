@@ -1,22 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Emote {
-    constructor(scale = 1, url = '') {
-        this.scale = 1;
-        // position: { x: number, y: number } = { x: 0, y: 0 };
-        // velocity: { x: number, y: number } = { x: 0, y: 0 };
+    constructor(scale, url, code) {
         this.lifespan = 0;
         this.url = url;
         this.scale = scale;
+        this.code = code;
     }
-    // setPosition(x: number, y: number) {
-    //     this.position.x = x;
-    //     this.position.y = y;
-    // }
-    // setVelocity(x: number, y: number) {
-    //     this.velocity.x = x;
-    //     this.velocity.y = y;
-    // }
     setScale(size) {
         this.scale = size;
     }
@@ -60,6 +50,9 @@ class Emote {
         if (this.htmlElement) {
             this.htmlElement.css('transform', `translate(${x}px, ${y}px)`);
         }
+    }
+    setUrl() {
+        throw new Error('Set Url Not Implemented In Abstract Class');
     }
     // calculateNextMoveFrame() {
     //     const emotePixelScale = this.convertScaleToPixels();

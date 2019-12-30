@@ -24,7 +24,7 @@ class EmoteWidgetClient {
         const invokedEmotes = JSON.parse(event.data.toString());
         if (!!invokedEmotes && invokedEmotes.length > 0) {
             invokedEmotes.forEach((emoteCode) => {
-                this.emoteWidget.addEmoteToContainer('emote-container', 'emote', emoteCode);
+                this.emoteWidget.addEmoteToContainer(emoteCode);
             });
         }
     }

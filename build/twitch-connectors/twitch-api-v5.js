@@ -67,9 +67,9 @@ class TwitchApiV5 {
                     const subLoyaltyImages = [subBadges[objectKey].image_url_1x, subBadges[objectKey].image_url_2x, subBadges[objectKey].image_url_4x];
                     formattedSubBadges.push(new emote_twitch_1.SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
                 });
-                return new emote_twitch_1.TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges);
+                return new emote_twitch_1.TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges).emotes;
             }), (error) => {
-                return new emote_twitch_1.TwitchEmoteResponse('', '', '', [], []);
+                return new emote_twitch_1.TwitchEmoteResponse('', '', '', [], []).emotes;
             });
         });
     }
@@ -83,9 +83,9 @@ class TwitchApiV5 {
                 emotes.forEach((emote) => {
                     formattedEmotes.push(new emote_bttv_1.BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
                 });
-                return new emote_bttv_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes);
+                return new emote_bttv_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
             }), (error) => {
-                return new emote_bttv_1.BttvEmoteResponse('', []);
+                return new emote_bttv_1.BttvEmoteResponse('', []).emotes;
             });
         });
     }
@@ -113,6 +113,7 @@ class TwitchApiV5 {
         emotes.push(new emote_twitch_1.TwitchEmote('HahaReindeer', hahahalidaysEmoteSet, 301108048));
         emotes.push(new emote_twitch_1.TwitchEmote('HahaElf', hahahalidaysEmoteSet, 301108081));
         emotes.push(new emote_twitch_1.TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, 301108063));
+        emotes.push(new emote_twitch_1.TwitchEmote('HahaGoose', hahahalidaysEmoteSet, 301108075));
         return emotes;
     }
 }

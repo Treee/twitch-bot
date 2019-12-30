@@ -32,7 +32,7 @@ export class EmoteWidgetClient {
 
         if (!!invokedEmotes && invokedEmotes.length > 0) {
             invokedEmotes.forEach((emoteCode: string) => {
-                this.emoteWidget.addEmoteToContainer('emote-container', 'emote', emoteCode);
+                this.emoteWidget.addEmoteToContainer(emoteCode);
             });
         }
     }
