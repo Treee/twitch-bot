@@ -102,6 +102,7 @@ class TwitchApiV5 {
         emotes.push(new emote_twitch_1.TwitchEmote('HahaCat', hahahalidaysEmoteSet, 301108083));
         emotes.push(new emote_twitch_1.TwitchEmote('HahaLean', hahahalidaysEmoteSet, 301108068));
         emotes.push(new emote_twitch_1.TwitchEmote('HahaShrugRight', hahahalidaysEmoteSet, 301108045));
+        emotes.push(new emote_twitch_1.TwitchEmote('HahaShrugMiddle', hahahalidaysEmoteSet, 301108046));
         emotes.push(new emote_twitch_1.TwitchEmote('HahaDreidel', hahahalidaysEmoteSet, 301112663));
         emotes.push(new emote_twitch_1.TwitchEmote('HahaShrugLeft', hahahalidaysEmoteSet, 301108047));
         emotes.push(new emote_twitch_1.TwitchEmote('HahaBall', hahahalidaysEmoteSet, 301112669));
@@ -109,6 +110,9 @@ class TwitchApiV5 {
         emotes.push(new emote_twitch_1.TwitchEmote('Haha2020', hahahalidaysEmoteSet, 301112670));
         emotes.push(new emote_twitch_1.TwitchEmote('HahaThisisfine', hahahalidaysEmoteSet, 301108013));
         emotes.push(new emote_twitch_1.TwitchEmote('HahaPoint', hahahalidaysEmoteSet, 301108057));
+        emotes.push(new emote_twitch_1.TwitchEmote('HahaReindeer', hahahalidaysEmoteSet, 301108048));
+        emotes.push(new emote_twitch_1.TwitchEmote('HahaElf', hahahalidaysEmoteSet, 301108081));
+        emotes.push(new emote_twitch_1.TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, 301108063));
         return emotes;
     }
 }
