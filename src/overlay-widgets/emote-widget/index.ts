@@ -13,7 +13,7 @@ const emoteWidget = new EmoteWidget(emoteWidgetConfig);
 Promise.all([
     twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
     twitchApiV5.getBttvEmotes(emoteWidgetConfig.channel),
-    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42, 472873131])
+    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42])
 ]).then((values) => {
     // console.log('values', values);
     if (emoteWidgetConfig.showGlobal) {
