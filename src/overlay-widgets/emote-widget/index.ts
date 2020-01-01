@@ -44,5 +44,6 @@ Promise.all([
 }).then(() => {
     if (emoteWidgetConfig.botMode) {
         new EmoteWidgetClient('ws://localhost:8080', emoteWidget);
+        // emoteWidget.startSimulation();
     }
 });

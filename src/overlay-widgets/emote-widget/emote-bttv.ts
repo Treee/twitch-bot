@@ -27,4 +27,12 @@ export class BttvEmote extends Emote {
     setUrl() {
         this.url = `https://cdn.betterttv.net/emote/${this.id}/${this.scale}x`;
     }
+
+    clone(): BttvEmote {
+        const clonedEmote = new BttvEmote(this.channel, this.code, this.id, this.imageType);
+        clonedEmote.lifespan = this.lifespan;
+        clonedEmote.velocity = this.velocity;
+        clonedEmote.htmlElement = this.htmlElement;
+        return clonedEmote;
+    }
 }
