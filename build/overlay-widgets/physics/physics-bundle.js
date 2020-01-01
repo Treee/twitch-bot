@@ -43,7 +43,6 @@ class TwitchEmote extends emote_1.Emote {
         const clonedEmote = new TwitchEmote(this.code, this.emoticon_set, this.id, this.scale, this.url);
         clonedEmote.channelPointModifier = this.channelPointModifier;
         clonedEmote.lifespan = this.lifespan;
-        clonedEmote.position = this.position;
         clonedEmote.velocity = this.velocity;
         clonedEmote.htmlElement = this.htmlElement;
         return clonedEmote;
@@ -57,7 +56,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Emote {
     constructor(scale, url, code) {
         this.lifespan = 0;
-        this.position = { x: 0, y: 0 };
+        // position: { x: number, y: number } = { x: 0, y: 0 };
         this.velocity = { x: 0, y: 1 };
         this.url = url;
         this.scale = scale;
@@ -105,15 +104,16 @@ class Emote {
     moveTo(x, y) {
         if (this.htmlElement) {
             this.htmlElement.css('transform', `translate(${x}px, ${y}px)`);
-            this.position.x = x;
-            this.position.y = y;
         }
     }
     setUrl() {
         throw new Error('Set Url Not Implemented In Abstract Class');
     }
     calculateNextMoveFrame() {
-        return { x: (this.position.x + this.velocity.x), y: (this.position.y + this.velocity.y) };
+        var _a, _b, _c, _d, _e, _f;
+        const left = (_c = (_b = (_a = this.htmlElement) === null || _a === void 0 ? void 0 : _a.offset()) === null || _b === void 0 ? void 0 : _b.left, (_c !== null && _c !== void 0 ? _c : 0));
+        const top = (_f = (_e = (_d = this.htmlElement) === null || _d === void 0 ? void 0 : _d.offset()) === null || _e === void 0 ? void 0 : _e.top, (_f !== null && _f !== void 0 ? _f : 0));
+        return { x: (left + this.velocity.x), y: (top + this.velocity.y) };
     }
     randomNumberBetween(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
