@@ -38,5 +38,13 @@ class TwitchEmote extends emote_1.Emote {
     setUrl() {
         this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}${this.channelPointModifier}/${this.scale}.0`;
     }
+    clone() {
+        const clonedEmote = new TwitchEmote(this.code, this.emoticon_set, this.id, this.scale, this.url);
+        clonedEmote.channelPointModifier = this.channelPointModifier;
+        clonedEmote.lifespan = this.lifespan;
+        clonedEmote.velocity = this.velocity;
+        clonedEmote.htmlElement = this.htmlElement;
+        return clonedEmote;
+    }
 }
 exports.TwitchEmote = TwitchEmote;

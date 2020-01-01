@@ -3,6 +3,8 @@ export abstract class Emote {
     url: string;
     scale: number;
     lifespan: number = 0;
+    // position: { x: number, y: number } = { x: 0, y: 0 };
+    velocity: { x: number, y: number } = { x: 0, y: 1 };
     htmlElement: JQuery | undefined;
 
     constructor(scale: number, url: string, code: string) {
@@ -63,12 +65,17 @@ export abstract class Emote {
         throw new Error('Set Url Not Implemented In Abstract Class');
     }
 
-    // calculateNextMoveFrame() {
-    //     const emotePixelScale = this.convertScaleToPixels();
-    //     return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
-    // }
+    calculateNextMoveFrame() {
+        const left = this.htmlElement?.offset()?.left ?? 0;
+        const top = this.htmlElement?.offset()?.top ?? 0;
+        return { x: (left + this.velocity.x), y: (top + this.velocity.y) };
+    }
 
     private randomNumberBetween(min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    clone(): Emote {
+        throw new Error('Not Implemented in abstract class.');
     }
 }

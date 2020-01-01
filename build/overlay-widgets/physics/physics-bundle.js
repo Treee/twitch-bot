@@ -39,6 +39,15 @@ class TwitchEmote extends emote_1.Emote {
     setUrl() {
         this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}${this.channelPointModifier}/${this.scale}.0`;
     }
+    clone() {
+        const clonedEmote = new TwitchEmote(this.code, this.emoticon_set, this.id, this.scale, this.url);
+        clonedEmote.channelPointModifier = this.channelPointModifier;
+        clonedEmote.lifespan = this.lifespan;
+        clonedEmote.position = this.position;
+        clonedEmote.velocity = this.velocity;
+        clonedEmote.htmlElement = this.htmlElement;
+        return clonedEmote;
+    }
 }
 exports.TwitchEmote = TwitchEmote;
 
@@ -48,6 +57,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Emote {
     constructor(scale, url, code) {
         this.lifespan = 0;
+        this.position = { x: 0, y: 0 };
+        this.velocity = { x: 0, y: 1 };
         this.url = url;
         this.scale = scale;
         this.code = code;
@@ -94,17 +105,21 @@ class Emote {
     moveTo(x, y) {
         if (this.htmlElement) {
             this.htmlElement.css('transform', `translate(${x}px, ${y}px)`);
+            this.position.x = x;
+            this.position.y = y;
         }
     }
     setUrl() {
         throw new Error('Set Url Not Implemented In Abstract Class');
     }
-    // calculateNextMoveFrame() {
-    //     const emotePixelScale = this.convertScaleToPixels();
-    //     return { x: (this.position.x + this.velocity.x + emotePixelScale.width), y: (this.position.y + this.velocity.y + emotePixelScale.height) };
-    // }
+    calculateNextMoveFrame() {
+        return { x: (this.position.x + this.velocity.x), y: (this.position.y + this.velocity.y) };
+    }
     randomNumberBetween(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+    clone() {
+        throw new Error('Not Implemented in abstract class.');
     }
 }
 exports.Emote = Emote;
