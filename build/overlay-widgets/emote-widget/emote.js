@@ -1,10 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const emote_interfaces_1 = require("./emote-interfaces");
 class Emote {
     constructor(scale, url, code) {
-        this.lifespan = 0;
-        // position: { x: number, y: number } = { x: 0, y: 0 };
-        this.velocity = { x: 0, y: 1 };
         this.url = url;
         this.scale = scale;
         this.code = code;
@@ -26,47 +24,20 @@ class Emote {
             emoteWidth = 112;
             emoteHeight = 112;
         }
-        return { width: emoteWidth, height: emoteHeight };
+        return new emote_interfaces_1.Vector2(emoteWidth, emoteHeight);
     }
-    randomizeEmoteAnimation() {
-        var _a;
-        // move across the top of the screen
-        // randomize the lifetime of the animation
-        this.lifespan = this.randomNumberBetween(2.5, 8.5);
-        (_a = this.htmlElement) === null || _a === void 0 ? void 0 : _a.css({
-            'left': `${this.randomNumberBetween(0, 95)}vw`,
-            'top': `-${this.convertScaleToPixels().height}px`,
-            '-webkit-animation': `raining-rotating ${this.lifespan}s none linear, fade-out ${this.lifespan}s none linear`,
-        });
-    }
-    createHtmlElement(emoteCssClass) {
-        this.htmlElement = $('<div></div>').addClass(emoteCssClass);
-        const emoteSize = this.convertScaleToPixels();
-        this.htmlElement.width(`${emoteSize.width}px`);
-        this.htmlElement.height(`${emoteSize.height}px`);
-        this.htmlElement.css('background', `url("${this.url}")`);
-        this.htmlElement.css('background-size', 'cover');
-    }
-    // x and y should be in pixel coordinates
-    moveTo(x, y) {
-        if (this.htmlElement) {
-            this.htmlElement.css('transform', `translate(${x}px, ${y}px)`);
-        }
-    }
+    // randomizeEmoteAnimation() {
+    //     // move across the top of the screen
+    //     // randomize the lifetime of the animation
+    //     this.lifespan = this.randomNumberBetween(2.5, 8.5);
+    //     this.htmlElement?.css({
+    //         'left': `${this.randomNumberBetween(0, 95)}vw`,
+    //         'top': `-${this.convertScaleToPixels().y}px`,
+    //         '-webkit-animation': `raining-rotating ${this.lifespan}s none linear, fade-out ${this.lifespan}s none linear`,
+    //     });
+    // }
     setUrl() {
         throw new Error('Set Url Not Implemented In Abstract Class');
-    }
-    calculateNextMoveFrame() {
-        var _a, _b, _c, _d, _e, _f;
-        const left = (_c = (_b = (_a = this.htmlElement) === null || _a === void 0 ? void 0 : _a.offset()) === null || _b === void 0 ? void 0 : _b.left, (_c !== null && _c !== void 0 ? _c : 0));
-        const top = (_f = (_e = (_d = this.htmlElement) === null || _d === void 0 ? void 0 : _d.offset()) === null || _e === void 0 ? void 0 : _e.top, (_f !== null && _f !== void 0 ? _f : 0));
-        return { x: (left + this.velocity.x), y: (top + this.velocity.y) };
-    }
-    randomNumberBetween(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-    clone() {
-        throw new Error('Not Implemented in abstract class.');
     }
 }
 exports.Emote = Emote;

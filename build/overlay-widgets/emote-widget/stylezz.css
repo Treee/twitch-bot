@@ -13,6 +13,7 @@
     position: absolute;
     background: #ff0000;
     background-size: cover;
+    transform-origin: center center;
 }
 
 @-webkit-keyframes raining-rotating {
