@@ -1,4 +1,5 @@
 import { Emote } from "./emote";
+import { Vector2 } from "./emote-interfaces";
 
 export class TwitchEmoteResponse {
     channelId: string;
@@ -40,9 +41,9 @@ export class TwitchEmote extends Emote {
         this.setUrl();
     }
 
-    convertScaleToPixels(): { width: number, height: number } {
+    convertScaleToPixels(): Vector2 {
         if (this.emoticon_set === 42) {
-            return { width: 20 * this.scale, height: 18 * this.scale };
+            return new Vector2(20 * this.scale, 18 * this.scale);
         } else {
             return super.convertScaleToPixels();
         }
@@ -50,14 +51,5 @@ export class TwitchEmote extends Emote {
 
     setUrl() {
         this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}${this.channelPointModifier}/${this.scale}.0`;
-    }
-
-    clone(): TwitchEmote {
-        const clonedEmote = new TwitchEmote(this.code, this.emoticon_set, this.id, this.scale, this.url);
-        clonedEmote.channelPointModifier = this.channelPointModifier;
-        clonedEmote.lifespan = this.lifespan;
-        clonedEmote.velocity = this.velocity;
-        clonedEmote.htmlElement = this.htmlElement;
-        return clonedEmote;
     }
 }

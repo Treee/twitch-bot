@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_1 = require("./emote");
+const emote_interfaces_1 = require("./emote-interfaces");
 class TwitchEmoteResponse {
     constructor(channelId, channeName, channelDisplayName, emotes, subBadges) {
         this.channelId = channelId;
@@ -29,7 +30,7 @@ class TwitchEmote extends emote_1.Emote {
     }
     convertScaleToPixels() {
         if (this.emoticon_set === 42) {
-            return { width: 20 * this.scale, height: 18 * this.scale };
+            return new emote_interfaces_1.Vector2(20 * this.scale, 18 * this.scale);
         }
         else {
             return super.convertScaleToPixels();
@@ -37,14 +38,6 @@ class TwitchEmote extends emote_1.Emote {
     }
     setUrl() {
         this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}${this.channelPointModifier}/${this.scale}.0`;
-    }
-    clone() {
-        const clonedEmote = new TwitchEmote(this.code, this.emoticon_set, this.id, this.scale, this.url);
-        clonedEmote.channelPointModifier = this.channelPointModifier;
-        clonedEmote.lifespan = this.lifespan;
-        clonedEmote.velocity = this.velocity;
-        clonedEmote.htmlElement = this.htmlElement;
-        return clonedEmote;
     }
 }
 exports.TwitchEmote = TwitchEmote;

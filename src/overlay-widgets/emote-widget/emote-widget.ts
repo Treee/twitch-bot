@@ -1,11 +1,12 @@
 import { EmoteWidgetConfig } from "./emote-widget-config";
 import { Emote } from "./emote";
 import { TwitchEmote } from "./emote-twitch";
+import { DrawableEmote, Vector2 } from "./emote-interfaces";
 
 export class EmoteWidget {
     emoteConfig: EmoteWidgetConfig;
     masterEmotes: Emote[] = [];
-    emotesToDraw: Emote[] = [];
+    emotesToDraw: DrawableEmote[] = [];
     emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
 
     constructor(emoteConfig: EmoteWidgetConfig) {
@@ -16,6 +17,20 @@ export class EmoteWidget {
         return this.masterEmotes.map((emote) => {
             return emote.code;
         });
+    }
+
+    private getDrawableEmoteByEmote(emote: Emote): DrawableEmote {
+        const randomPosition = new Vector2(this.randomNumberBetween(0, this.getViewWidth()), 0);
+        const randomVelocity = new Vector2(0, this.randomNumberBetween(1, 5));
+        const randomLifespan = this.randomNumberBetween(1, 3);
+        emote.setScale(this.randomNumberBetween(1, 3));
+        emote.setUrl();
+        const emoteSize = emote.convertScaleToPixels();
+
+        const drawable = new DrawableEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url);
+        drawable.angularVelocityDegrees = this.randomNumberBetween(0, 12);
+
+        return drawable;
     }
 
     private getEmoteByCode(emoteCode: string): Emote {
@@ -37,8 +52,7 @@ export class EmoteWidget {
         }
         foundEmote.setScale(this.randomNumberBetween(1, 3));
         foundEmote.setUrl();
-        foundEmote.createHtmlElement('emote');
-        return foundEmote.clone();
+        return foundEmote;
     }
 
     public getRandomEmote(): Emote {
@@ -49,8 +63,7 @@ export class EmoteWidget {
         const randomEmote = this.masterEmotes[randomIndex];
         randomEmote.setScale(this.randomNumberBetween(1, 3));
         randomEmote.setUrl();
-        randomEmote.createHtmlElement('emote');
-        return randomEmote.clone();
+        return randomEmote;
     }
 
     private randomNumberBetween(min: number, max: number) {
@@ -59,31 +72,23 @@ export class EmoteWidget {
 
     public addEmoteToContainer(emoteCode: string) {
         let newEmote = this.getRandomEmote();
-        let numEmotes = 1;
+        let numEmotes = this.randomNumberBetween(3, 9);
         if (emoteCode !== '') {
             newEmote = this.getEmoteByCode(emoteCode);
-            numEmotes = this.randomNumberBetween(2, 7);
         }
         for (let index = 0; index < numEmotes; index++) {
-            newEmote?.randomizeEmoteAnimation();
-            if (newEmote?.htmlElement) {
-                $(`.emote-container`).append(newEmote.htmlElement);
-            }
-            // remove the elment
-            setTimeout((emote) => {
-                emote.htmlElement.hide(1);
-            }, (newEmote?.lifespan || 0) * 1000 + 1000, newEmote)
+            const drawableEmote = this.getDrawableEmoteByEmote(newEmote);
+            this.addEmoteToCanvasAndDrawables(drawableEmote);
         }
     }
 
-    addEmoteToCanvasAndDrawables(emote: Emote) {
-        if (emote?.htmlElement) {
-            $(`.emote-container`).append(emote.htmlElement);
-            emote.moveTo(this.randomNumberBetween(0, this.getViewWidth()), 0);
-            emote.velocity.y = this.randomNumberBetween(1, 7);
+    addEmoteToCanvasAndDrawables(drawable: DrawableEmote) {
+        if (drawable?.htmlElement) {
+            $(`.emote-container`).append(drawable.htmlElement);
         }
-        this.emotesToDraw.push(emote);
+        this.emotesToDraw.push(drawable);
     }
+
     private getViewHeight() {
         return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     }
@@ -91,19 +96,20 @@ export class EmoteWidget {
     private getViewWidth() {
         return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     }
+
     startSimulation() {
-        this.addEmoteToCanvasAndDrawables(this.getEmoteByCode('itsatrEeCool'));
-        this.addEmoteToCanvasAndDrawables(this.getEmoteByCode('itsatrEeCool'));
-        // let dt = 0.016;
+        // this.addEmoteToContainer('itsatrEeCool');
+        // this.addEmoteToContainer('itsatrEeCool');
+        let dt = 0.016;
         setInterval(() => {
-            this.oneLoop();
+            this.oneLoop(dt);
         }, 1000 / 60);
     }
 
-    oneLoop() {
+    oneLoop(dt: number) {
         this.emotesToDraw.forEach((emote) => {
-            const nextFrame = emote.calculateNextMoveFrame();
-            emote.moveTo(nextFrame.x, nextFrame.y);
-        })
+            emote.doUpdate(dt);
+            emote.draw();
+        });
     }
 }
