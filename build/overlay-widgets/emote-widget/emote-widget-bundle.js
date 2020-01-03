@@ -233,7 +233,7 @@ class EmoteWidget {
         if ((_a = drawable) === null || _a === void 0 ? void 0 : _a.htmlElement) {
             setTimeout(() => {
                 $(`.emote-container`).append(drawable.htmlElement);
-            }, this.randomNumberBetween(20, 500));
+            }, this.randomNumberBetween(100, 500));
         }
         this.emotesToDraw.push(drawable);
     }
