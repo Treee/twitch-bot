@@ -1,7 +1,7 @@
 import { EmoteWidgetConfig } from "./emote-widget-config";
-import { Emote } from "./emote";
-import { TwitchEmote } from "./emote";
-import { DrawableEmote, Vector2 } from "./emote-interfaces";
+import { Emote } from "./emotes/emote";
+import { TwitchEmote } from "./emotes/emote";
+import { DrawableEmote, Vector2 } from "./emotes/emote-interfaces";
 
 export class EmoteWidget {
     emoteConfig: EmoteWidgetConfig;

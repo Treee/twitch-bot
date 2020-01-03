@@ -1,7 +1,7 @@
 import "jasmine"
 import { EmoteWidget } from './emote-widget';
 import { EmoteWidgetConfig } from "./emote-widget-config";
-import { TwitchEmote } from "./emote";
+import { TwitchEmote } from "./emotes/emote";
 
 describe('Emote Widget Spec', () => {
 

@@ -33,6 +33,7 @@ export interface Hideable {
     opacity: number; // between 0 and 1
 
     isHidden(): boolean;
+    modifyOpacity(dt: number): void;
 }
 
 export interface Drawable {
@@ -40,6 +41,16 @@ export interface Drawable {
     imageSrc: string;
 
     createHtmlElement(cssClass: string, imageSrc: string, size: Vector2): JQuery<HTMLElement>;
+}
+
+export abstract class RenderableObject {
+    doUpdate(dt: number): void {
+        throw new Error('doUpdate is not implemented in abstract class RenderableObject');
+    }
+
+    draw(): void {
+        throw new Error('draw is not implemented in abstract class RenderableObject');
+    }
 }
 
 
@@ -83,6 +94,7 @@ export class DrawableEmote implements Movable, Rotatable, Hideable, Drawable {
         const translation = this.translate(this.position.x, this.position.y);
         const rotation = this.rotate(this.degreesRotation);
         this.htmlElement.css('transform', `${translation} ${rotation}`);
+        this.htmlElement.css('opacity', `${this.opacity}`);
     }
 
     calculateNextMoveFrame(dt: number): Vector2 {
@@ -103,7 +115,6 @@ export class DrawableEmote implements Movable, Rotatable, Hideable, Drawable {
 
     modifyOpacity(dt: number): void {
         this.opacity -= dt;
-        this.htmlElement.css('opacity', `${this.opacity}`);
     }
 
     doUpdate(dt: number): void {
