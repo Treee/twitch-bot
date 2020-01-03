@@ -83,7 +83,7 @@ export class EmoteWidget {
         if (drawable?.htmlElement) {
             setTimeout(() => {
                 $(`.emote-container`).append(drawable.htmlElement);
-            }, this.randomNumberBetween(20, 500));
+            }, this.randomNumberBetween(100, 500));
         }
         this.emotesToDraw.push(drawable);
     }
