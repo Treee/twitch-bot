@@ -9,8 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const emote_twitch_1 = require("../overlay-widgets/emote-widget/emote-twitch");
-const emote_bttv_1 = require("../overlay-widgets/emote-widget/emote-bttv");
+const emote_1 = require("../overlay-widgets/emote-widget/emote");
 class TwitchApiV5 {
     constructor() { }
     getTwitchRequestHeaders(clientId) {
@@ -30,7 +29,7 @@ class TwitchApiV5 {
                 setIds.forEach((setId) => {
                     if (emoticonSets[setId]) {
                         emoticonSets[setId].forEach((emote) => {
-                            formattedEmotes.push(new emote_twitch_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
+                            formattedEmotes.push(new emote_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
                         });
                     }
                 });
@@ -60,16 +59,16 @@ class TwitchApiV5 {
                 let formattedEmotes = [];
                 const formattedSubBadges = [];
                 emotes.forEach((emote) => {
-                    formattedEmotes.push(new emote_twitch_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
+                    formattedEmotes.push(new emote_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
                 });
                 formattedEmotes = formattedEmotes.concat(this.loadEmotesFromConfig());
                 Object.keys(subBadges).forEach((objectKey) => {
                     const subLoyaltyImages = [subBadges[objectKey].image_url_1x, subBadges[objectKey].image_url_2x, subBadges[objectKey].image_url_4x];
-                    formattedSubBadges.push(new emote_twitch_1.SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
+                    formattedSubBadges.push(new emote_1.SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
                 });
-                return new emote_twitch_1.TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges).emotes;
+                return new emote_1.TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges).emotes;
             }), (error) => {
-                return new emote_twitch_1.TwitchEmoteResponse('', '', '', [], []).emotes;
+                return new emote_1.TwitchEmoteResponse('', '', '', [], []).emotes;
             });
         });
     }
@@ -81,39 +80,39 @@ class TwitchApiV5 {
                 const emotes = data.emotes || [];
                 const formattedEmotes = [];
                 emotes.forEach((emote) => {
-                    formattedEmotes.push(new emote_bttv_1.BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
+                    formattedEmotes.push(new emote_1.BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
                 });
-                return new emote_bttv_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
+                return new emote_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
             }), (error) => {
-                return new emote_bttv_1.BttvEmoteResponse('', []).emotes;
+                return new emote_1.BttvEmoteResponse('', []).emotes;
             });
         });
     }
     loadEmotesFromConfig() {
         const emotes = [];
         const hahahalidaysEmoteSet = 472873131;
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaSleep', hahahalidaysEmoteSet, 301108041));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaThink', hahahalidaysEmoteSet, 301108032));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaTurtledove', hahahalidaysEmoteSet, 301108011));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaBaby', hahahalidaysEmoteSet, 301108084));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaDoge', hahahalidaysEmoteSet, 301108082));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaHide', hahahalidaysEmoteSet, 301108072));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaSweat', hahahalidaysEmoteSet, 301108037));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaCat', hahahalidaysEmoteSet, 301108083));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaLean', hahahalidaysEmoteSet, 301108068));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaShrugRight', hahahalidaysEmoteSet, 301108045));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaShrugMiddle', hahahalidaysEmoteSet, 301108046));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaDreidel', hahahalidaysEmoteSet, 301112663));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaShrugLeft', hahahalidaysEmoteSet, 301108047));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaBall', hahahalidaysEmoteSet, 301112669));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaNyandeer', hahahalidaysEmoteSet, 301114312));
-        emotes.push(new emote_twitch_1.TwitchEmote('Haha2020', hahahalidaysEmoteSet, 301112670));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaThisisfine', hahahalidaysEmoteSet, 301108013));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaPoint', hahahalidaysEmoteSet, 301108057));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaReindeer', hahahalidaysEmoteSet, 301108048));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaElf', hahahalidaysEmoteSet, 301108081));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, 301108063));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaGoose', hahahalidaysEmoteSet, 301108075));
+        emotes.push(new emote_1.TwitchEmote('HahaSleep', hahahalidaysEmoteSet, '301108041'));
+        emotes.push(new emote_1.TwitchEmote('HahaThink', hahahalidaysEmoteSet, '301108032'));
+        emotes.push(new emote_1.TwitchEmote('HahaTurtledove', hahahalidaysEmoteSet, '301108011'));
+        emotes.push(new emote_1.TwitchEmote('HahaBaby', hahahalidaysEmoteSet, '301108084'));
+        emotes.push(new emote_1.TwitchEmote('HahaDoge', hahahalidaysEmoteSet, '301108082'));
+        emotes.push(new emote_1.TwitchEmote('HahaHide', hahahalidaysEmoteSet, '301108072'));
+        emotes.push(new emote_1.TwitchEmote('HahaSweat', hahahalidaysEmoteSet, '301108037'));
+        emotes.push(new emote_1.TwitchEmote('HahaCat', hahahalidaysEmoteSet, '301108083'));
+        emotes.push(new emote_1.TwitchEmote('HahaLean', hahahalidaysEmoteSet, '301108068'));
+        emotes.push(new emote_1.TwitchEmote('HahaShrugRight', hahahalidaysEmoteSet, '301108045'));
+        emotes.push(new emote_1.TwitchEmote('HahaShrugMiddle', hahahalidaysEmoteSet, '301108046'));
+        emotes.push(new emote_1.TwitchEmote('HahaDreidel', hahahalidaysEmoteSet, '301112663'));
+        emotes.push(new emote_1.TwitchEmote('HahaShrugLeft', hahahalidaysEmoteSet, '301108047'));
+        emotes.push(new emote_1.TwitchEmote('HahaBall', hahahalidaysEmoteSet, '301112669'));
+        emotes.push(new emote_1.TwitchEmote('HahaNyandeer', hahahalidaysEmoteSet, '301114312'));
+        emotes.push(new emote_1.TwitchEmote('Haha2020', hahahalidaysEmoteSet, '301112670'));
+        emotes.push(new emote_1.TwitchEmote('HahaThisisfine', hahahalidaysEmoteSet, '301108013'));
+        emotes.push(new emote_1.TwitchEmote('HahaPoint', hahahalidaysEmoteSet, '301108057'));
+        emotes.push(new emote_1.TwitchEmote('HahaReindeer', hahahalidaysEmoteSet, '301108048'));
+        emotes.push(new emote_1.TwitchEmote('HahaElf', hahahalidaysEmoteSet, '301108081'));
+        emotes.push(new emote_1.TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, '301108063'));
+        emotes.push(new emote_1.TwitchEmote('HahaGoose', hahahalidaysEmoteSet, '301108075'));
         return emotes;
     }
 }

@@ -1,32 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const emote_1 = require("./emote");
-class BttvEmoteResponse {
-    constructor(urlTemplate, emotes) {
-        this.urlTemplate = urlTemplate;
-        this.emotes = emotes;
-    }
-}
-exports.BttvEmoteResponse = BttvEmoteResponse;
-class BttvEmote extends emote_1.Emote {
-    constructor(channel, code, id, imageType) {
-        super(1, '', code);
-        this.channel = channel;
-        this.code = code;
-        this.id = id;
-        this.imageType = imageType;
-        this.setUrl();
-    }
-    setUrl() {
-        this.url = `https://cdn.betterttv.net/emote/${this.id}/${this.scale}x`;
-    }
-}
-exports.BttvEmote = BttvEmote;
-
-},{"./emote":7}],2:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 class Vector2 {
     constructor(x = 0, y = 0) {
         this.x = x;
@@ -98,52 +72,7 @@ class DrawableEmote {
 }
 exports.DrawableEmote = DrawableEmote;
 
-},{}],3:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const emote_1 = require("./emote");
-const emote_interfaces_1 = require("./emote-interfaces");
-class TwitchEmoteResponse {
-    constructor(channelId, channeName, channelDisplayName, emotes, subBadges) {
-        this.channelId = channelId;
-        this.channelName = channeName;
-        this.channelDisplayName = channelDisplayName;
-        this.emotes = emotes;
-        this.subBadges = subBadges;
-    }
-}
-exports.TwitchEmoteResponse = TwitchEmoteResponse;
-class SubBadge {
-    constructor(tier, displayName, imageSizes) {
-        this.tier = tier;
-        this.displayName = displayName;
-        this.imageSizes = imageSizes;
-    }
-}
-exports.SubBadge = SubBadge;
-class TwitchEmote extends emote_1.Emote {
-    constructor(code = 'FrankerZ', emoticon_set, id, scale = 1, url = '') {
-        super(scale, url, code);
-        this.channelPointModifier = '';
-        this.emoticon_set = emoticon_set;
-        this.id = id;
-        this.setUrl();
-    }
-    convertScaleToPixels() {
-        if (this.emoticon_set === 42) {
-            return new emote_interfaces_1.Vector2(20 * this.scale, 18 * this.scale);
-        }
-        else {
-            return super.convertScaleToPixels();
-        }
-    }
-    setUrl() {
-        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}${this.channelPointModifier}/${this.scale}.0`;
-    }
-}
-exports.TwitchEmote = TwitchEmote;
-
-},{"./emote":7,"./emote-interfaces":2}],4:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class EmoteWidgetClient {
@@ -190,7 +119,7 @@ class EmoteWidgetClient {
 }
 exports.EmoteWidgetClient = EmoteWidgetClient;
 
-},{}],5:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class EmoteWidgetConfig {
@@ -233,7 +162,7 @@ class EmoteWidgetConfig {
 }
 exports.EmoteWidgetConfig = EmoteWidgetConfig;
 
-},{}],6:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -249,15 +178,16 @@ class EmoteWidget {
             return emote.code;
         });
     }
-    getDrawableEmoteByEmote(emote) {
+    getDrawableEmoteByCode(emoteCode) {
+        const emote = this.getEmoteByCode(emoteCode);
         const randomPosition = new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), 0);
         const randomVelocity = new emote_interfaces_1.Vector2(0, this.randomNumberBetween(1, 5));
-        const randomLifespan = this.randomNumberBetween(1, 3);
+        const randomLifespan = this.randomNumberBetween(1, 5);
         emote.setScale(this.randomNumberBetween(1, 3));
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
         const drawable = new emote_interfaces_1.DrawableEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url);
-        drawable.angularVelocityDegrees = this.randomNumberBetween(0, 12);
+        drawable.angularVelocityDegrees = this.randomNumberBetween(1, 4);
         return drawable;
     }
     getEmoteByCode(emoteCode) {
@@ -292,20 +222,18 @@ class EmoteWidget {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
     addEmoteToContainer(emoteCode) {
-        let newEmote = this.getRandomEmote();
         let numEmotes = this.randomNumberBetween(3, 9);
-        if (emoteCode !== '') {
-            newEmote = this.getEmoteByCode(emoteCode);
-        }
         for (let index = 0; index < numEmotes; index++) {
-            const drawableEmote = this.getDrawableEmoteByEmote(newEmote);
+            const drawableEmote = this.getDrawableEmoteByCode(emoteCode);
             this.addEmoteToCanvasAndDrawables(drawableEmote);
         }
     }
     addEmoteToCanvasAndDrawables(drawable) {
         var _a;
         if ((_a = drawable) === null || _a === void 0 ? void 0 : _a.htmlElement) {
-            $(`.emote-container`).append(drawable.htmlElement);
+            setTimeout(() => {
+                $(`.emote-container`).append(drawable.htmlElement);
+            }, this.randomNumberBetween(20, 500));
         }
         this.emotesToDraw.push(drawable);
     }
@@ -316,8 +244,6 @@ class EmoteWidget {
         return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     }
     startSimulation() {
-        // this.addEmoteToContainer('itsatrEeCool');
-        // this.addEmoteToContainer('itsatrEeCool');
         let dt = 0.016;
         setInterval(() => {
             this.oneLoop(dt);
@@ -328,19 +254,26 @@ class EmoteWidget {
             emote.doUpdate(dt);
             emote.draw();
         });
+        this.pruneRemainingEmotes();
+    }
+    pruneRemainingEmotes() {
+        this.emotesToDraw = this.emotesToDraw.filter((emote) => {
+            return emote.lifespan > 0;
+        });
     }
 }
 exports.EmoteWidget = EmoteWidget;
 
-},{"./emote-interfaces":2}],7:[function(require,module,exports){
+},{"./emote-interfaces":1}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
 class Emote {
-    constructor(scale, url, code) {
+    constructor(scale, url, code, id) {
         this.url = url;
         this.scale = scale;
         this.code = code;
+        this.id = id;
     }
     setScale(size) {
         this.scale = size;
@@ -361,23 +294,70 @@ class Emote {
         }
         return new emote_interfaces_1.Vector2(emoteWidth, emoteHeight);
     }
-    // randomizeEmoteAnimation() {
-    //     // move across the top of the screen
-    //     // randomize the lifetime of the animation
-    //     this.lifespan = this.randomNumberBetween(2.5, 8.5);
-    //     this.htmlElement?.css({
-    //         'left': `${this.randomNumberBetween(0, 95)}vw`,
-    //         'top': `-${this.convertScaleToPixels().y}px`,
-    //         '-webkit-animation': `raining-rotating ${this.lifespan}s none linear, fade-out ${this.lifespan}s none linear`,
-    //     });
-    // }
     setUrl() {
         throw new Error('Set Url Not Implemented In Abstract Class');
     }
 }
 exports.Emote = Emote;
+class BttvEmoteResponse {
+    constructor(urlTemplate, emotes) {
+        this.urlTemplate = urlTemplate;
+        this.emotes = emotes;
+    }
+}
+exports.BttvEmoteResponse = BttvEmoteResponse;
+class BttvEmote extends Emote {
+    constructor(channel, code, id, imageType) {
+        super(1, '', code, id);
+        this.channel = channel;
+        this.imageType = imageType;
+        this.setUrl();
+    }
+    setUrl() {
+        this.url = `https://cdn.betterttv.net/emote/${this.id}/${this.scale}x`;
+    }
+}
+exports.BttvEmote = BttvEmote;
+class TwitchEmoteResponse {
+    constructor(channelId, channeName, channelDisplayName, emotes, subBadges) {
+        this.channelId = channelId;
+        this.channelName = channeName;
+        this.channelDisplayName = channelDisplayName;
+        this.emotes = emotes;
+        this.subBadges = subBadges;
+    }
+}
+exports.TwitchEmoteResponse = TwitchEmoteResponse;
+class SubBadge {
+    constructor(tier, displayName, imageSizes) {
+        this.tier = tier;
+        this.displayName = displayName;
+        this.imageSizes = imageSizes;
+    }
+}
+exports.SubBadge = SubBadge;
+class TwitchEmote extends Emote {
+    constructor(code = 'FrankerZ', emoticon_set, id, scale = 1, url = '') {
+        super(scale, url, code, id);
+        this.channelPointModifier = '';
+        this.emoticon_set = emoticon_set;
+        this.setUrl();
+    }
+    convertScaleToPixels() {
+        if (this.emoticon_set === 42) {
+            return new emote_interfaces_1.Vector2(20 * this.scale, 18 * this.scale);
+        }
+        else {
+            return super.convertScaleToPixels();
+        }
+    }
+    setUrl() {
+        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}${this.channelPointModifier}/${this.scale}.0`;
+    }
+}
+exports.TwitchEmote = TwitchEmote;
 
-},{"./emote-interfaces":2}],8:[function(require,module,exports){
+},{"./emote-interfaces":1}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const twitch_api_v5_1 = require("../../twitch-connectors/twitch-api-v5");
@@ -424,7 +404,7 @@ Promise.all([
     }
 });
 
-},{"../../twitch-connectors/twitch-api-v5":9,"./emote-widget":6,"./emote-widget-client":4,"./emote-widget-config":5}],9:[function(require,module,exports){
+},{"../../twitch-connectors/twitch-api-v5":7,"./emote-widget":4,"./emote-widget-client":2,"./emote-widget-config":3}],7:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -436,8 +416,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const emote_twitch_1 = require("../overlay-widgets/emote-widget/emote-twitch");
-const emote_bttv_1 = require("../overlay-widgets/emote-widget/emote-bttv");
+const emote_1 = require("../overlay-widgets/emote-widget/emote");
 class TwitchApiV5 {
     constructor() { }
     getTwitchRequestHeaders(clientId) {
@@ -457,7 +436,7 @@ class TwitchApiV5 {
                 setIds.forEach((setId) => {
                     if (emoticonSets[setId]) {
                         emoticonSets[setId].forEach((emote) => {
-                            formattedEmotes.push(new emote_twitch_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
+                            formattedEmotes.push(new emote_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
                         });
                     }
                 });
@@ -487,16 +466,16 @@ class TwitchApiV5 {
                 let formattedEmotes = [];
                 const formattedSubBadges = [];
                 emotes.forEach((emote) => {
-                    formattedEmotes.push(new emote_twitch_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
+                    formattedEmotes.push(new emote_1.TwitchEmote(emote.code, emote.emoticon_set, emote.id));
                 });
                 formattedEmotes = formattedEmotes.concat(this.loadEmotesFromConfig());
                 Object.keys(subBadges).forEach((objectKey) => {
                     const subLoyaltyImages = [subBadges[objectKey].image_url_1x, subBadges[objectKey].image_url_2x, subBadges[objectKey].image_url_4x];
-                    formattedSubBadges.push(new emote_twitch_1.SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
+                    formattedSubBadges.push(new emote_1.SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
                 });
-                return new emote_twitch_1.TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges).emotes;
+                return new emote_1.TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges).emotes;
             }), (error) => {
-                return new emote_twitch_1.TwitchEmoteResponse('', '', '', [], []).emotes;
+                return new emote_1.TwitchEmoteResponse('', '', '', [], []).emotes;
             });
         });
     }
@@ -508,42 +487,42 @@ class TwitchApiV5 {
                 const emotes = data.emotes || [];
                 const formattedEmotes = [];
                 emotes.forEach((emote) => {
-                    formattedEmotes.push(new emote_bttv_1.BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
+                    formattedEmotes.push(new emote_1.BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
                 });
-                return new emote_bttv_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
+                return new emote_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
             }), (error) => {
-                return new emote_bttv_1.BttvEmoteResponse('', []).emotes;
+                return new emote_1.BttvEmoteResponse('', []).emotes;
             });
         });
     }
     loadEmotesFromConfig() {
         const emotes = [];
         const hahahalidaysEmoteSet = 472873131;
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaSleep', hahahalidaysEmoteSet, 301108041));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaThink', hahahalidaysEmoteSet, 301108032));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaTurtledove', hahahalidaysEmoteSet, 301108011));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaBaby', hahahalidaysEmoteSet, 301108084));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaDoge', hahahalidaysEmoteSet, 301108082));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaHide', hahahalidaysEmoteSet, 301108072));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaSweat', hahahalidaysEmoteSet, 301108037));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaCat', hahahalidaysEmoteSet, 301108083));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaLean', hahahalidaysEmoteSet, 301108068));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaShrugRight', hahahalidaysEmoteSet, 301108045));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaShrugMiddle', hahahalidaysEmoteSet, 301108046));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaDreidel', hahahalidaysEmoteSet, 301112663));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaShrugLeft', hahahalidaysEmoteSet, 301108047));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaBall', hahahalidaysEmoteSet, 301112669));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaNyandeer', hahahalidaysEmoteSet, 301114312));
-        emotes.push(new emote_twitch_1.TwitchEmote('Haha2020', hahahalidaysEmoteSet, 301112670));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaThisisfine', hahahalidaysEmoteSet, 301108013));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaPoint', hahahalidaysEmoteSet, 301108057));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaReindeer', hahahalidaysEmoteSet, 301108048));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaElf', hahahalidaysEmoteSet, 301108081));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, 301108063));
-        emotes.push(new emote_twitch_1.TwitchEmote('HahaGoose', hahahalidaysEmoteSet, 301108075));
+        emotes.push(new emote_1.TwitchEmote('HahaSleep', hahahalidaysEmoteSet, '301108041'));
+        emotes.push(new emote_1.TwitchEmote('HahaThink', hahahalidaysEmoteSet, '301108032'));
+        emotes.push(new emote_1.TwitchEmote('HahaTurtledove', hahahalidaysEmoteSet, '301108011'));
+        emotes.push(new emote_1.TwitchEmote('HahaBaby', hahahalidaysEmoteSet, '301108084'));
+        emotes.push(new emote_1.TwitchEmote('HahaDoge', hahahalidaysEmoteSet, '301108082'));
+        emotes.push(new emote_1.TwitchEmote('HahaHide', hahahalidaysEmoteSet, '301108072'));
+        emotes.push(new emote_1.TwitchEmote('HahaSweat', hahahalidaysEmoteSet, '301108037'));
+        emotes.push(new emote_1.TwitchEmote('HahaCat', hahahalidaysEmoteSet, '301108083'));
+        emotes.push(new emote_1.TwitchEmote('HahaLean', hahahalidaysEmoteSet, '301108068'));
+        emotes.push(new emote_1.TwitchEmote('HahaShrugRight', hahahalidaysEmoteSet, '301108045'));
+        emotes.push(new emote_1.TwitchEmote('HahaShrugMiddle', hahahalidaysEmoteSet, '301108046'));
+        emotes.push(new emote_1.TwitchEmote('HahaDreidel', hahahalidaysEmoteSet, '301112663'));
+        emotes.push(new emote_1.TwitchEmote('HahaShrugLeft', hahahalidaysEmoteSet, '301108047'));
+        emotes.push(new emote_1.TwitchEmote('HahaBall', hahahalidaysEmoteSet, '301112669'));
+        emotes.push(new emote_1.TwitchEmote('HahaNyandeer', hahahalidaysEmoteSet, '301114312'));
+        emotes.push(new emote_1.TwitchEmote('Haha2020', hahahalidaysEmoteSet, '301112670'));
+        emotes.push(new emote_1.TwitchEmote('HahaThisisfine', hahahalidaysEmoteSet, '301108013'));
+        emotes.push(new emote_1.TwitchEmote('HahaPoint', hahahalidaysEmoteSet, '301108057'));
+        emotes.push(new emote_1.TwitchEmote('HahaReindeer', hahahalidaysEmoteSet, '301108048'));
+        emotes.push(new emote_1.TwitchEmote('HahaElf', hahahalidaysEmoteSet, '301108081'));
+        emotes.push(new emote_1.TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, '301108063'));
+        emotes.push(new emote_1.TwitchEmote('HahaGoose', hahahalidaysEmoteSet, '301108075'));
         return emotes;
     }
 }
 exports.TwitchApiV5 = TwitchApiV5;
 
-},{"../overlay-widgets/emote-widget/emote-bttv":1,"../overlay-widgets/emote-widget/emote-twitch":3}]},{},[8]);
+},{"../overlay-widgets/emote-widget/emote":5}]},{},[6]);

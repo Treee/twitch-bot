@@ -13,15 +13,16 @@ class EmoteWidget {
             return emote.code;
         });
     }
-    getDrawableEmoteByEmote(emote) {
+    getDrawableEmoteByCode(emoteCode) {
+        const emote = this.getEmoteByCode(emoteCode);
         const randomPosition = new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), 0);
         const randomVelocity = new emote_interfaces_1.Vector2(0, this.randomNumberBetween(1, 5));
-        const randomLifespan = this.randomNumberBetween(1, 3);
+        const randomLifespan = this.randomNumberBetween(1, 5);
         emote.setScale(this.randomNumberBetween(1, 3));
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
         const drawable = new emote_interfaces_1.DrawableEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url);
-        drawable.angularVelocityDegrees = this.randomNumberBetween(0, 12);
+        drawable.angularVelocityDegrees = this.randomNumberBetween(1, 4);
         return drawable;
     }
     getEmoteByCode(emoteCode) {
@@ -56,20 +57,18 @@ class EmoteWidget {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
     addEmoteToContainer(emoteCode) {
-        let newEmote = this.getRandomEmote();
         let numEmotes = this.randomNumberBetween(3, 9);
-        if (emoteCode !== '') {
-            newEmote = this.getEmoteByCode(emoteCode);
-        }
         for (let index = 0; index < numEmotes; index++) {
-            const drawableEmote = this.getDrawableEmoteByEmote(newEmote);
+            const drawableEmote = this.getDrawableEmoteByCode(emoteCode);
             this.addEmoteToCanvasAndDrawables(drawableEmote);
         }
     }
     addEmoteToCanvasAndDrawables(drawable) {
         var _a;
         if ((_a = drawable) === null || _a === void 0 ? void 0 : _a.htmlElement) {
-            $(`.emote-container`).append(drawable.htmlElement);
+            setTimeout(() => {
+                $(`.emote-container`).append(drawable.htmlElement);
+            }, this.randomNumberBetween(20, 500));
         }
         this.emotesToDraw.push(drawable);
     }
@@ -80,8 +79,6 @@ class EmoteWidget {
         return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     }
     startSimulation() {
-        // this.addEmoteToContainer('itsatrEeCool');
-        // this.addEmoteToContainer('itsatrEeCool');
         let dt = 0.016;
         setInterval(() => {
             this.oneLoop(dt);
@@ -91,6 +88,12 @@ class EmoteWidget {
         this.emotesToDraw.forEach((emote) => {
             emote.doUpdate(dt);
             emote.draw();
+        });
+        this.pruneRemainingEmotes();
+    }
+    pruneRemainingEmotes() {
+        this.emotesToDraw = this.emotesToDraw.filter((emote) => {
+            return emote.lifespan > 0;
         });
     }
 }
