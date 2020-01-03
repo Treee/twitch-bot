@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("jasmine");
 const emote_widget_1 = require("./emote-widget");
 const emote_widget_config_1 = require("./emote-widget-config");
-const emote_twitch_1 = require("./emote-twitch");
+const emote_1 = require("./emote");
 describe('Emote Widget Spec', () => {
     let emoteConfig;
     let testWidget;
@@ -13,15 +13,15 @@ describe('Emote Widget Spec', () => {
         testWidget = new emote_widget_1.EmoteWidget(emoteConfig);
     });
     it('gets the list of emote codes available', () => {
-        let emote1 = new emote_twitch_1.TwitchEmote('code1', 0, 0);
-        let emote2 = new emote_twitch_1.TwitchEmote('code2', 0, 0);
-        let emote3 = new emote_twitch_1.TwitchEmote('code3', 0, 0);
+        let emote1 = new emote_1.TwitchEmote('code1', 0, '0');
+        let emote2 = new emote_1.TwitchEmote('code2', 0, '0');
+        let emote3 = new emote_1.TwitchEmote('code3', 0, '0');
         testWidget.masterEmotes = [emote1, emote2, emote3];
         const expectedReturnedCodes = [emote1.code, emote2.code, emote3.code];
         let actualReturnedCodes = testWidget.getEmoteCodes();
         expect(actualReturnedCodes).toEqual(expectedReturnedCodes);
         const newCode = 'someNewCode';
-        testWidget.masterEmotes.push(new emote_twitch_1.TwitchEmote(newCode, 0, 0));
+        testWidget.masterEmotes.push(new emote_1.TwitchEmote(newCode, 0, '0'));
         expectedReturnedCodes.push(newCode);
         actualReturnedCodes = testWidget.getEmoteCodes();
         expect(actualReturnedCodes).toEqual(expectedReturnedCodes);

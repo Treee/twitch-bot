@@ -2,10 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
 class Emote {
-    constructor(scale, url, code) {
+    constructor(scale, url, code, id) {
         this.url = url;
         this.scale = scale;
         this.code = code;
+        this.id = id;
     }
     setScale(size) {
         this.scale = size;
@@ -26,18 +27,65 @@ class Emote {
         }
         return new emote_interfaces_1.Vector2(emoteWidth, emoteHeight);
     }
-    // randomizeEmoteAnimation() {
-    //     // move across the top of the screen
-    //     // randomize the lifetime of the animation
-    //     this.lifespan = this.randomNumberBetween(2.5, 8.5);
-    //     this.htmlElement?.css({
-    //         'left': `${this.randomNumberBetween(0, 95)}vw`,
-    //         'top': `-${this.convertScaleToPixels().y}px`,
-    //         '-webkit-animation': `raining-rotating ${this.lifespan}s none linear, fade-out ${this.lifespan}s none linear`,
-    //     });
-    // }
     setUrl() {
         throw new Error('Set Url Not Implemented In Abstract Class');
     }
 }
 exports.Emote = Emote;
+class BttvEmoteResponse {
+    constructor(urlTemplate, emotes) {
+        this.urlTemplate = urlTemplate;
+        this.emotes = emotes;
+    }
+}
+exports.BttvEmoteResponse = BttvEmoteResponse;
+class BttvEmote extends Emote {
+    constructor(channel, code, id, imageType) {
+        super(1, '', code, id);
+        this.channel = channel;
+        this.imageType = imageType;
+        this.setUrl();
+    }
+    setUrl() {
+        this.url = `https://cdn.betterttv.net/emote/${this.id}/${this.scale}x`;
+    }
+}
+exports.BttvEmote = BttvEmote;
+class TwitchEmoteResponse {
+    constructor(channelId, channeName, channelDisplayName, emotes, subBadges) {
+        this.channelId = channelId;
+        this.channelName = channeName;
+        this.channelDisplayName = channelDisplayName;
+        this.emotes = emotes;
+        this.subBadges = subBadges;
+    }
+}
+exports.TwitchEmoteResponse = TwitchEmoteResponse;
+class SubBadge {
+    constructor(tier, displayName, imageSizes) {
+        this.tier = tier;
+        this.displayName = displayName;
+        this.imageSizes = imageSizes;
+    }
+}
+exports.SubBadge = SubBadge;
+class TwitchEmote extends Emote {
+    constructor(code = 'FrankerZ', emoticon_set, id, scale = 1, url = '') {
+        super(scale, url, code, id);
+        this.channelPointModifier = '';
+        this.emoticon_set = emoticon_set;
+        this.setUrl();
+    }
+    convertScaleToPixels() {
+        if (this.emoticon_set === 42) {
+            return new emote_interfaces_1.Vector2(20 * this.scale, 18 * this.scale);
+        }
+        else {
+            return super.convertScaleToPixels();
+        }
+    }
+    setUrl() {
+        this.url = `https://static-cdn.jtvnw.net/emoticons/v1/${this.id}${this.channelPointModifier}/${this.scale}.0`;
+    }
+}
+exports.TwitchEmote = TwitchEmote;
