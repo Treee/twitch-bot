@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const emote_1 = require("../overlay-widgets/emote-widget/emote");
+const emote_1 = require("../overlay-widgets/emote-widget/emotes/emote");
 class TwitchApiV5 {
     constructor() { }
     getTwitchRequestHeaders(clientId) {

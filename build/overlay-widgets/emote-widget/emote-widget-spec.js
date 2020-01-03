@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("jasmine");
 const emote_widget_1 = require("./emote-widget");
 const emote_widget_config_1 = require("./emote-widget-config");
-const emote_1 = require("./emote");
+const emote_1 = require("./emotes/emote");
 describe('Emote Widget Spec', () => {
     let emoteConfig;
     let testWidget;

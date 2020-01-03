@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const emote_interfaces_1 = require("./emote-interfaces");
+const emote_interfaces_1 = require("./emotes/emote-interfaces");
 class EmoteWidget {
     constructor(emoteConfig) {
         this.masterEmotes = [];
