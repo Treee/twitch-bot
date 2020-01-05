@@ -1,12 +1,13 @@
-import { EmoteWidgetConfig } from "./emote-widget-config";
-import { Emote } from "./emotes/emote";
-import { TwitchEmote } from "./emotes/emote";
-import { DrawableEmote, Vector2 } from "./emotes/emote-interfaces";
+import { EmoteWidgetConfig } from './emote-widget-config';
+import { Emote } from './emotes/emote';
+import { TwitchEmote } from './emotes/emote';
+import { Vector2, RenderableObject } from './emotes/emote-interfaces';
+import { RainingEmote } from './emotes/raining-emote';
 
 export class EmoteWidget {
     emoteConfig: EmoteWidgetConfig;
     masterEmotes: Emote[] = [];
-    emotesToDraw: DrawableEmote[] = [];
+    emotesToDraw: RenderableObject[] = [];
     emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
 
     constructor(emoteConfig: EmoteWidgetConfig) {
@@ -19,7 +20,7 @@ export class EmoteWidget {
         });
     }
 
-    private getDrawableEmoteByCode(emoteCode: string): DrawableEmote {
+    private getDrawableEmoteByCode(emoteCode: string): RainingEmote {
         const emote = this.getEmoteByCode(emoteCode);
         const randomPosition = new Vector2(this.randomNumberBetween(0, this.getViewWidth()), 0);
         const randomVelocity = new Vector2(0, this.randomNumberBetween(1, 5));
@@ -28,7 +29,7 @@ export class EmoteWidget {
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
 
-        const drawable = new DrawableEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url);
+        const drawable = new RainingEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url);
         drawable.angularVelocityDegrees = this.randomNumberBetween(1, 4);
 
         return drawable;
@@ -79,7 +80,7 @@ export class EmoteWidget {
         }
     }
 
-    private addEmoteToCanvasAndDrawables(drawable: DrawableEmote) {
+    private addEmoteToCanvasAndDrawables(drawable: RainingEmote) {
         if (drawable?.htmlElement) {
             setTimeout(() => {
                 $(`.emote-container`).append(drawable.htmlElement);
@@ -113,8 +114,8 @@ export class EmoteWidget {
     }
 
     pruneRemainingEmotes() {
-        this.emotesToDraw = this.emotesToDraw.filter((emote) => {
-            return emote.lifespan > 0;
+        this.emotesToDraw = this.emotesToDraw.filter((emote: any) => {
+            return emote?.lifespan > 0;
         });
     }
 }

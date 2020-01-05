@@ -2,6 +2,8 @@ import "jasmine"
 import { EmoteWidget } from './emote-widget';
 import { EmoteWidgetConfig } from "./emote-widget-config";
 import { TwitchEmote } from "./emotes/emote";
+import { RenderableObject, Vector2 } from "./emotes/emote-interfaces";
+import { RainingEmote } from "./emotes/raining-emote";
 
 describe('Emote Widget Spec', () => {
 
