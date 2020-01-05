@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emotes/emote-interfaces");
+const raining_emote_1 = require("./emotes/raining-emote");
 class EmoteWidget {
     constructor(emoteConfig) {
         this.masterEmotes = [];
@@ -21,7 +22,7 @@ class EmoteWidget {
         emote.setScale(this.randomNumberBetween(1, 3));
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
-        const drawable = new emote_interfaces_1.DrawableEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url);
+        const drawable = new raining_emote_1.RainingEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url);
         drawable.angularVelocityDegrees = this.randomNumberBetween(1, 4);
         return drawable;
     }
@@ -93,7 +94,8 @@ class EmoteWidget {
     }
     pruneRemainingEmotes() {
         this.emotesToDraw = this.emotesToDraw.filter((emote) => {
-            return emote.lifespan > 0;
+            var _a;
+            return ((_a = emote) === null || _a === void 0 ? void 0 : _a.lifespan) > 0;
         });
     }
 }
