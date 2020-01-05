@@ -3,6 +3,7 @@ import { Emote } from './emotes/emote';
 import { TwitchEmote } from './emotes/emote';
 import { Vector2, RenderableObject } from './emotes/emote-interfaces';
 import { RainingEmote } from './emotes/raining-emote';
+import { WavyEmote } from './emotes/wavy-emote';
 
 export class EmoteWidget {
     emoteConfig: EmoteWidgetConfig;
@@ -20,19 +21,56 @@ export class EmoteWidget {
         });
     }
 
-    private getDrawableEmoteByCode(emoteCode: string): RainingEmote {
+    private getDrawableEmoteByCode(emoteCode: string): RenderableObject {
+        let drawable = this.createRainingEmote(emoteCode);
+        const randomAnimationType = this.randomNumberBetween(1, 2);
+        if (randomAnimationType === 2) {
+            drawable = this.createWavyEmote(emoteCode);
+        }
+        return drawable;
+    }
+
+    createRainingEmote(emoteCode: string): RainingEmote {
         const emote = this.getEmoteByCode(emoteCode);
         const randomPosition = new Vector2(this.randomNumberBetween(0, this.getViewWidth()), 0);
         const randomVelocity = new Vector2(0, this.randomNumberBetween(1, 5));
-        const randomLifespan = this.randomNumberBetween(1, 5);
+        const randomLifespan = this.randomNumberBetween(1, 6);
+        const randomAngularVelocity = this.randomNumberBetween(1, 4);
+
         emote.setScale(this.randomNumberBetween(1, 3));
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
 
-        const drawable = new RainingEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url);
-        drawable.angularVelocityDegrees = this.randomNumberBetween(1, 4);
+        return new RainingEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
+    }
 
-        return drawable;
+    createWavyEmote(emoteCode: string): RainingEmote {
+        const emote = this.getEmoteByCode(emoteCode);
+        const randomVelocity = new Vector2(this.randomNumberBetween(1, 5), this.randomNumberBetween(1, 5));
+        const randomLifespan = this.randomNumberBetween(3, 9);
+        const randomAngularVelocity = this.randomNumberBetween(1, 4);
+
+        emote.setScale(this.randomNumberBetween(1, 3));
+        emote.setUrl();
+        const emoteSize = emote.convertScaleToPixels();
+        const randomPosition = new Vector2(0, this.randomNumberBetween(0, this.getViewHeight() - emoteSize.y));
+
+        const max = 2;
+        const toggle = this.randomNumberBetween(1, max); //left
+        if (toggle % max === 1) { // right
+            randomPosition.x = this.getViewWidth();
+            randomVelocity.x *= -1;
+        }
+        // else if (toggle % max === 2) { // top
+        //     randomPosition.x = this.randomNumberBetween(0, this.getViewWidth());
+        //     randomPosition.y = 0;
+        // } else if (toggle % max === 3) {// bot
+        //     randomPosition.x = this.randomNumberBetween(0, this.getViewWidth());
+        //     randomPosition.y = this.getViewHeight();
+        //     randomVelocity.y *= -1;
+        // }
+
+        return new WavyEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
     }
 
     private getEmoteByCode(emoteCode: string): Emote {
@@ -73,17 +111,19 @@ export class EmoteWidget {
     }
 
     public addEmoteToContainer(emoteCode: string) {
-        let numEmotes = this.randomNumberBetween(3, 9);
+        let numEmotes = this.randomNumberBetween(3, 6);
         for (let index = 0; index < numEmotes; index++) {
             const drawableEmote = this.getDrawableEmoteByCode(emoteCode);
             this.addEmoteToCanvasAndDrawables(drawableEmote);
         }
     }
 
-    private addEmoteToCanvasAndDrawables(drawable: RainingEmote) {
+    private addEmoteToCanvasAndDrawables(drawable: RenderableObject) {
         if (drawable?.htmlElement) {
             setTimeout(() => {
-                $(`.emote-container`).append(drawable.htmlElement);
+                if (drawable.htmlElement) {
+                    $(`.emote-container`).append(drawable.htmlElement);
+                }
             }, this.randomNumberBetween(100, 500));
         }
         this.emotesToDraw.push(drawable);

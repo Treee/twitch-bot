@@ -36,15 +36,15 @@ export interface Hideable {
     modifyOpacity(dt: number): void;
 }
 
-export interface Drawable {
-    htmlElement: JQuery<HTMLElement>;
-    imageSrc: string;
-
-    createHtmlElement(cssClass: string, imageSrc: string, size: Vector2): JQuery<HTMLElement>;
-}
-
 export abstract class RenderableObject {
+    htmlElement?: JQuery<HTMLElement>;
+    imageSrc?: string;
+
     constructor() { }
+
+    createHtmlElement(cssClass: string, imageSrc: string, size: Vector2): JQuery<HTMLElement> {
+        throw new Error('createHtmlElement is not implemented in abstract class RenderableObject');
+    }
 
     doUpdate(dt: number): void {
         throw new Error('doUpdate is not implemented in abstract class RenderableObject');

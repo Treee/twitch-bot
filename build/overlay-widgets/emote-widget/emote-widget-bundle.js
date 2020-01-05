@@ -93,6 +93,7 @@ exports.EmoteWidgetConfig = EmoteWidgetConfig;
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emotes/emote-interfaces");
 const raining_emote_1 = require("./emotes/raining-emote");
+const wavy_emote_1 = require("./emotes/wavy-emote");
 class EmoteWidget {
     constructor(emoteConfig) {
         this.masterEmotes = [];
@@ -106,16 +107,48 @@ class EmoteWidget {
         });
     }
     getDrawableEmoteByCode(emoteCode) {
+        let drawable = this.createRainingEmote(emoteCode);
+        const randomAnimationType = this.randomNumberBetween(1, 2);
+        if (randomAnimationType === 2) {
+            drawable = this.createWavyEmote(emoteCode);
+        }
+        return drawable;
+    }
+    createRainingEmote(emoteCode) {
         const emote = this.getEmoteByCode(emoteCode);
         const randomPosition = new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), 0);
         const randomVelocity = new emote_interfaces_1.Vector2(0, this.randomNumberBetween(1, 5));
-        const randomLifespan = this.randomNumberBetween(1, 5);
+        const randomLifespan = this.randomNumberBetween(1, 6);
+        const randomAngularVelocity = this.randomNumberBetween(1, 4);
         emote.setScale(this.randomNumberBetween(1, 3));
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
-        const drawable = new raining_emote_1.RainingEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url);
-        drawable.angularVelocityDegrees = this.randomNumberBetween(1, 4);
-        return drawable;
+        return new raining_emote_1.RainingEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
+    }
+    createWavyEmote(emoteCode) {
+        const emote = this.getEmoteByCode(emoteCode);
+        const randomVelocity = new emote_interfaces_1.Vector2(this.randomNumberBetween(1, 5), this.randomNumberBetween(1, 5));
+        const randomLifespan = this.randomNumberBetween(3, 9);
+        const randomAngularVelocity = this.randomNumberBetween(1, 4);
+        emote.setScale(this.randomNumberBetween(1, 3));
+        emote.setUrl();
+        const emoteSize = emote.convertScaleToPixels();
+        const randomPosition = new emote_interfaces_1.Vector2(0, this.randomNumberBetween(0, this.getViewHeight() - emoteSize.y));
+        const max = 2;
+        const toggle = this.randomNumberBetween(1, max); //left
+        if (toggle % max === 1) { // right
+            randomPosition.x = this.getViewWidth();
+            randomVelocity.x *= -1;
+        }
+        // else if (toggle % max === 2) { // top
+        //     randomPosition.x = this.randomNumberBetween(0, this.getViewWidth());
+        //     randomPosition.y = 0;
+        // } else if (toggle % max === 3) {// bot
+        //     randomPosition.x = this.randomNumberBetween(0, this.getViewWidth());
+        //     randomPosition.y = this.getViewHeight();
+        //     randomVelocity.y *= -1;
+        // }
+        return new wavy_emote_1.WavyEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
     }
     getEmoteByCode(emoteCode) {
         const splitCode = emoteCode.split('_');
@@ -149,7 +182,7 @@ class EmoteWidget {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
     addEmoteToContainer(emoteCode) {
-        let numEmotes = this.randomNumberBetween(3, 9);
+        let numEmotes = this.randomNumberBetween(3, 6);
         for (let index = 0; index < numEmotes; index++) {
             const drawableEmote = this.getDrawableEmoteByCode(emoteCode);
             this.addEmoteToCanvasAndDrawables(drawableEmote);
@@ -159,7 +192,9 @@ class EmoteWidget {
         var _a;
         if ((_a = drawable) === null || _a === void 0 ? void 0 : _a.htmlElement) {
             setTimeout(() => {
-                $(`.emote-container`).append(drawable.htmlElement);
+                if (drawable.htmlElement) {
+                    $(`.emote-container`).append(drawable.htmlElement);
+                }
             }, this.randomNumberBetween(100, 500));
         }
         this.emotesToDraw.push(drawable);
@@ -192,7 +227,7 @@ class EmoteWidget {
 }
 exports.EmoteWidget = EmoteWidget;
 
-},{"./emotes/emote-interfaces":4,"./emotes/raining-emote":6}],4:[function(require,module,exports){
+},{"./emotes/emote-interfaces":4,"./emotes/raining-emote":6,"./emotes/wavy-emote":7}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Vector2 {
@@ -204,6 +239,9 @@ class Vector2 {
 exports.Vector2 = Vector2;
 class RenderableObject {
     constructor() { }
+    createHtmlElement(cssClass, imageSrc, size) {
+        throw new Error('createHtmlElement is not implemented in abstract class RenderableObject');
+    }
     doUpdate(dt) {
         throw new Error('doUpdate is not implemented in abstract class RenderableObject');
     }
@@ -311,7 +349,7 @@ exports.TwitchEmote = TwitchEmote;
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
 class RainingEmote extends emote_interfaces_1.RenderableObject {
-    constructor(position = new emote_interfaces_1.Vector2(), velocity = new emote_interfaces_1.Vector2(), lifespan = 0, size, imageSrc) {
+    constructor(position = new emote_interfaces_1.Vector2(), velocity = new emote_interfaces_1.Vector2(), lifespan = 0, size, imageSrc, angularVelocity) {
         super();
         this.opacity = 1;
         this.angularVelocityDegrees = 0;
@@ -320,6 +358,7 @@ class RainingEmote extends emote_interfaces_1.RenderableObject {
         this.velocity = velocity;
         this.lifespan = lifespan;
         this.imageSrc = imageSrc;
+        this.angularVelocityDegrees = angularVelocity;
         this.htmlElement = this.createHtmlElement('emote', imageSrc, size);
         this.translate(position.x, position.y);
     }
@@ -378,6 +417,89 @@ exports.RainingEmote = RainingEmote;
 },{"./emote-interfaces":4}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const emote_interfaces_1 = require("./emote-interfaces");
+class WavyEmote extends emote_interfaces_1.RenderableObject {
+    constructor(position = new emote_interfaces_1.Vector2(), velocity = new emote_interfaces_1.Vector2(), lifespan = 0, size, imageSrc, angularVelocity) {
+        super();
+        this.opacity = 1;
+        this.angularVelocityDegrees = 0;
+        this.degreesRotation = 0;
+        this.movementTheta = 0;
+        this.movementToggle = true;
+        this.position = position;
+        this.velocity = velocity;
+        this.lifespan = lifespan;
+        this.imageSrc = imageSrc;
+        this.angularVelocityDegrees = angularVelocity;
+        this.htmlElement = this.createHtmlElement('emote', imageSrc, size);
+        this.translate(position.x, position.y);
+    }
+    createHtmlElement(cssClass, imageUrl, size) {
+        const element = $('<div></div>').addClass(cssClass);
+        element.width(`${size.x}px`);
+        element.height(`${size.y}px`);
+        element.css('background', `url("${imageUrl}")`);
+        element.css('background-size', 'cover');
+        return element;
+    }
+    translate(x, y) {
+        return `translate(${x}px, ${y}px)`;
+    }
+    rotate(degrees) {
+        return `rotate(${degrees}deg)`;
+    }
+    applyTransform() {
+        const translation = this.translate(this.position.x, this.position.y);
+        const rotation = this.rotate(this.degreesRotation);
+        this.htmlElement.css('transform', `${translation} ${rotation}`);
+        this.htmlElement.css('opacity', `${this.opacity}`);
+    }
+    calculateNextMoveFrame(dt) {
+        if (this.movementToggle) {
+            this.movementTheta += dt;
+        }
+        else {
+            this.movementTheta -= dt;
+        }
+        if (this.movementTheta > 1 || this.movementTheta < -1) {
+            this.movementToggle = !this.movementToggle;
+        }
+        const x = this.position.x + (this.velocity.x * Math.cos(this.movementTheta));
+        const y = this.position.y + (this.velocity.y * Math.sin(this.movementTheta));
+        return new emote_interfaces_1.Vector2(x, y);
+    }
+    calculateNextRotationFrame(dt) {
+        let nextRotation = this.degreesRotation + this.angularVelocityDegrees;
+        if (nextRotation > 360) {
+            nextRotation = nextRotation - 360;
+        }
+        return nextRotation;
+    }
+    isHidden() {
+        return this.lifespan < 0;
+    }
+    modifyOpacity(dt) {
+        this.opacity -= dt;
+    }
+    doUpdate(dt) {
+        this.lifespan -= dt;
+        if (!this.isHidden()) {
+            this.position = this.calculateNextMoveFrame(dt);
+            this.degreesRotation = this.calculateNextRotationFrame(dt);
+        }
+        if (this.lifespan < 1) {
+            this.modifyOpacity(dt);
+        }
+    }
+    draw() {
+        this.applyTransform();
+    }
+}
+exports.WavyEmote = WavyEmote;
+
+},{"./emote-interfaces":4}],8:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const twitch_api_v5_1 = require("../../twitch-connectors/twitch-api-v5");
 const emote_widget_config_1 = require("./emote-widget-config");
 const emote_widget_1 = require("./emote-widget");
@@ -422,7 +544,7 @@ Promise.all([
     }
 });
 
-},{"../../twitch-connectors/twitch-api-v5":8,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],8:[function(require,module,exports){
+},{"../../twitch-connectors/twitch-api-v5":9,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],9:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -543,4 +665,4 @@ class TwitchApiV5 {
 }
 exports.TwitchApiV5 = TwitchApiV5;
 
-},{"../overlay-widgets/emote-widget/emotes/emote":5}]},{},[7]);
+},{"../overlay-widgets/emote-widget/emotes/emote":5}]},{},[8]);
