@@ -10,11 +10,12 @@ emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
 Promise.all([
     twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
-    twitchApiV5.getBttvEmotes(emoteWidgetConfig.channel),
-    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42])
+    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42]),
+    twitchApiV5.getBttvEmotesByChannel(emoteWidgetConfig.channel),
+    twitchApiV5.getGlobalBttvEmotes()
 ]).then((values) => {
     // emoteWidget.twitchSubBadges = values[0].subBadges;
-    emoteWidget.masterEmotes = emoteWidget.masterEmotes.concat(values[0]).concat(values[1]).concat(values[2]);
+    emoteWidget.masterEmotes = emoteWidget.masterEmotes.concat(values[0]).concat(values[1]).concat(values[2]).concat(values[3]);
 }).then(() => {
     if (!emoteWidgetConfig.botMode) {
         // this first interval makes it so emotes rain immediately instead of waiting for the second interval to start

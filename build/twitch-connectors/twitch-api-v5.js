@@ -72,7 +72,7 @@ class TwitchApiV5 {
             });
         });
     }
-    getBttvEmotes(channelName) {
+    getBttvEmotesByChannel(channelName) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield fetch(`https://api.betterttv.net/2/channels/${channelName}`).then((response) => __awaiter(this, void 0, void 0, function* () {
                 // console.log('unmanaged emotes', data);
@@ -88,6 +88,25 @@ class TwitchApiV5 {
             });
         });
     }
+    getGlobalBttvEmotes() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield fetch(`https://api.betterttv.net/3/cached/emotes/global`).then((response) => __awaiter(this, void 0, void 0, function* () {
+                // console.log('unmanaged emotes', data);
+                let data = yield response.json();
+                const emotes = data || [];
+                const formattedEmotes = [];
+                emotes.forEach((emote) => {
+                    formattedEmotes.push(new emote_1.BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
+                });
+                return new emote_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
+            }), (error) => {
+                return new emote_1.BttvEmoteResponse('', []).emotes;
+            });
+        });
+    }
+    // get all bttv emotes available
+    // https://api.betterttv.net/3/emotes/shared?limit=100
+    // https://api.betterttv.net/3/emotes/shared?before=5e176c89b9741121048064c0&limit=100
     loadEmotesFromConfig() {
         const emotes = [];
         const hahahalidaysEmoteSet = 472873131;

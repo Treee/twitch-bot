@@ -510,11 +510,12 @@ emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
 Promise.all([
     twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
-    twitchApiV5.getBttvEmotes(emoteWidgetConfig.channel),
-    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42])
+    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42]),
+    twitchApiV5.getBttvEmotesByChannel(emoteWidgetConfig.channel),
+    twitchApiV5.getGlobalBttvEmotes()
 ]).then((values) => {
     // emoteWidget.twitchSubBadges = values[0].subBadges;
-    emoteWidget.masterEmotes = emoteWidget.masterEmotes.concat(values[0]).concat(values[1]).concat(values[2]);
+    emoteWidget.masterEmotes = emoteWidget.masterEmotes.concat(values[0]).concat(values[1]).concat(values[2]).concat(values[3]);
 }).then(() => {
     if (!emoteWidgetConfig.botMode) {
         // this first interval makes it so emotes rain immediately instead of waiting for the second interval to start
@@ -619,7 +620,7 @@ class TwitchApiV5 {
             });
         });
     }
-    getBttvEmotes(channelName) {
+    getBttvEmotesByChannel(channelName) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield fetch(`https://api.betterttv.net/2/channels/${channelName}`).then((response) => __awaiter(this, void 0, void 0, function* () {
                 // console.log('unmanaged emotes', data);
@@ -635,6 +636,25 @@ class TwitchApiV5 {
             });
         });
     }
+    getGlobalBttvEmotes() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield fetch(`https://api.betterttv.net/3/cached/emotes/global`).then((response) => __awaiter(this, void 0, void 0, function* () {
+                // console.log('unmanaged emotes', data);
+                let data = yield response.json();
+                const emotes = data || [];
+                const formattedEmotes = [];
+                emotes.forEach((emote) => {
+                    formattedEmotes.push(new emote_1.BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
+                });
+                return new emote_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
+            }), (error) => {
+                return new emote_1.BttvEmoteResponse('', []).emotes;
+            });
+        });
+    }
+    // get all bttv emotes available
+    // https://api.betterttv.net/3/emotes/shared?limit=100
+    // https://api.betterttv.net/3/emotes/shared?before=5e176c89b9741121048064c0&limit=100
     loadEmotesFromConfig() {
         const emotes = [];
         const hahahalidaysEmoteSet = 472873131;

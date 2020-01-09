@@ -62,7 +62,7 @@ export class TwitchApiV5 {
         });
     }
 
-    async getBttvEmotes(channelName: string) {
+    async getBttvEmotesByChannel(channelName: string) {
         return await fetch(`https://api.betterttv.net/2/channels/${channelName}`).then(async (response) => {
             // console.log('unmanaged emotes', data);
             let data = await response.json();
@@ -76,6 +76,25 @@ export class TwitchApiV5 {
             return new BttvEmoteResponse('', []).emotes;
         });
     }
+
+    async getGlobalBttvEmotes() {
+        return await fetch(`https://api.betterttv.net/3/cached/emotes/global`).then(async (response) => {
+            // console.log('unmanaged emotes', data);
+            let data = await response.json();
+            const emotes = data || [];
+            const formattedEmotes: BttvEmote[] = [];
+            emotes.forEach((emote: any) => {
+                formattedEmotes.push(new BttvEmote(emote.channel, emote.code, emote.id, emote.imageType));
+            });
+            return new BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
+        }, (error) => {
+            return new BttvEmoteResponse('', []).emotes;
+        });
+    }
+
+    // get all bttv emotes available
+    // https://api.betterttv.net/3/emotes/shared?limit=100
+    // https://api.betterttv.net/3/emotes/shared?before=5e176c89b9741121048064c0&limit=100
 
     loadEmotesFromConfig(): TwitchEmote[] {
         const emotes = [];
