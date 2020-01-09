@@ -13,7 +13,7 @@
     "build-all": "npm test && npm run build-emote-widget && npm run build-physics-widget && npm run build-keyboard-widget"
   },
   "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "dependencies": {
     "node-fetch": "^2.6.0",
     "tmi.js": "^1.5.0",
