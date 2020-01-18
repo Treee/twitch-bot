@@ -6,6 +6,10 @@ export class Vector2 {
         this.x = x;
         this.y = y;
     }
+
+    toString(): string {
+        return `(${this.x},${this.y})`;
+    }
 }
 
 export interface Movable {
@@ -34,6 +38,12 @@ export interface Hideable {
 
     isHidden(): boolean;
     modifyOpacity(dt: number): void;
+}
+
+export interface Acceleratable {
+    acceleration: Vector2;
+
+    accelerate(dt: number): void;
 }
 
 export abstract class RenderableObject {

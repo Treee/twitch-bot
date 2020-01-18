@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emotes/emote-interfaces");
 const raining_emote_1 = require("./emotes/raining-emote");
 const wavy_emote_1 = require("./emotes/wavy-emote");
+const firework_emote_1 = require("./emotes/firework-emote");
 class EmoteWidget {
     constructor(emoteConfig) {
         this.masterEmotes = [];
@@ -22,6 +23,17 @@ class EmoteWidget {
             drawable = this.createWavyEmote(emoteCode);
         }
         return drawable;
+    }
+    createFireworkEmote(emoteCode) {
+        const emote = this.getEmoteByCode(emoteCode);
+        const randomPosition = new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.getViewHeight());
+        const randomVelocity = new emote_interfaces_1.Vector2(1, this.randomNumberBetween(2, 5) * -1);
+        const randomLifespan = this.randomNumberBetween(1, 6);
+        const randomAngularVelocity = this.randomNumberBetween(1, 4);
+        emote.setScale(this.randomNumberBetween(2, 3));
+        emote.setUrl();
+        const emoteSize = emote.convertScaleToPixels();
+        return new firework_emote_1.FireworkEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
     }
     createRainingEmote(emoteCode) {
         const emote = this.getEmoteByCode(emoteCode);

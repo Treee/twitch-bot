@@ -1,6 +1,7 @@
-import { RenderableObject, Movable, Rotatable, Hideable, Vector2 } from './emote-interfaces';
+import { RenderableObject, Movable, Rotatable, Hideable, Vector2, Acceleratable } from './emote-interfaces';
 
-export class FireworkEmote extends RenderableObject implements Movable, Rotatable, Hideable {
+export class FireworkEmote extends RenderableObject implements Movable, Rotatable, Hideable, Acceleratable {
+
     opacity: number = 1;
     angularVelocityDegrees: number = 0;
     degreesRotation: number = 0;
@@ -8,12 +9,15 @@ export class FireworkEmote extends RenderableObject implements Movable, Rotatabl
     htmlElement: JQuery<HTMLElement>;
     position: Vector2;
     velocity: Vector2;
+    lastFrameVelocity: Vector2;
+    acceleration: Vector2 = new Vector2(0, -1);
     lifespan: number;
 
     constructor(position: Vector2 = new Vector2(), velocity: Vector2 = new Vector2(), lifespan: number = 0, size: Vector2, imageSrc: string, angularVelocity: number) {
         super();
         this.position = position;
         this.velocity = velocity;
+        this.lastFrameVelocity = velocity;
         this.lifespan = lifespan;
         this.imageSrc = imageSrc;
         this.angularVelocityDegrees = angularVelocity;
@@ -38,14 +42,24 @@ export class FireworkEmote extends RenderableObject implements Movable, Rotatabl
         return `rotate(${degrees}deg)`;
     }
 
+    accelerate(dt: number): void {
+        // this.acceleration.x -= dt;
+        this.acceleration.y += dt;
+        this.lastFrameVelocity = new Vector2(this.velocity.x, this.velocity.y);
+        this.velocity = new Vector2(this.velocity.x + (this.acceleration.x * dt), this.velocity.y + (this.acceleration.y * dt));
+        // console.log(`Accel: ${this.acceleration} Last Frame: ${this.lastFrameVelocity} Current: ${this.velocity}`);
+    }
+
     applyTransform() {
         const translation = this.translate(this.position.x, this.position.y);
         const rotation = this.rotate(this.degreesRotation);
-        this.htmlElement.css('transform', `${translation} ${rotation}`);
-        this.htmlElement.css('opacity', `${this.opacity}`);
+        // this.htmlElement.css('transform', `${translation} ${rotation}`);
+        this.htmlElement.css('transform', `${translation}`);
+        // this.htmlElement.css('opacity', `${this.opacity}`);
     }
 
     calculateNextMoveFrame(dt: number): Vector2 {
+        this.accelerate(dt);
         return new Vector2(this.position.x + this.velocity.x, this.position.y + this.velocity.y);
     }
 
@@ -58,7 +72,11 @@ export class FireworkEmote extends RenderableObject implements Movable, Rotatabl
     }
 
     isHidden(): boolean {
-        return this.lifespan < 0
+        return this.didSignsChange();
+    }
+
+    didSignsChange(): boolean {
+        return (this.lastFrameVelocity.y < 0) ? (this.velocity.y >= 0) : (this.velocity.y < 0);
     }
 
     modifyOpacity(dt: number): void {
@@ -66,12 +84,15 @@ export class FireworkEmote extends RenderableObject implements Movable, Rotatabl
     }
 
     doUpdate(dt: number): void {
-        this.lifespan -= dt;
         if (!this.isHidden()) {
             this.position = this.calculateNextMoveFrame(dt);
             this.degreesRotation = this.calculateNextRotationFrame(dt);
         }
-        if (this.lifespan < 1) {
+        else {
+            this.lifespan = 0;
+        }
+
+        if (this.velocity.y < 1) {
             this.modifyOpacity(dt);
         }
     }
