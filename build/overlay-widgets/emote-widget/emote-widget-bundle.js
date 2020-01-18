@@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class EmoteWidgetClient {
     constructor(serverUrl, emoteWidget) {
         this.serverUrl = 'ws://localhost:8080';
-        this.emoteCodesToLookFor = [];
         this.serverUrl = serverUrl;
         this.emoteWidget = emoteWidget;
         this.socket = new WebSocket(serverUrl);
@@ -14,19 +13,27 @@ class EmoteWidgetClient {
         this.socket.onerror = this.onError;
     }
     onOpen(event) {
-        const emoteCodes = this.emoteWidget.getEmoteCodes();
         console.log('[open] Connection established');
-        console.log('Sending list of emotes to look for', emoteCodes);
-        this.socket.send(JSON.stringify({ dataType: 'emoteCodes', data: emoteCodes }));
+        console.log('Checking server for cached emotes');
+        this.socket.send(JSON.stringify({ dataType: 'checkEmoteCache', data: '' }));
     }
     onMessage(event) {
         console.log(`[message] Data received from server: ${event.data}`);
-        // TODO handle when json parse fails
-        const invokedEmotes = JSON.parse(event.data.toString());
-        if (!!invokedEmotes && invokedEmotes.length > 0) {
-            invokedEmotes.forEach((emoteCode) => {
-                this.emoteWidget.addEmoteToContainer(emoteCode);
-            });
+        const eventData = JSON.parse(event.data);
+        if (eventData.dataType === 'checkEmoteCache') {
+            if (eventData.data.length < 1) {
+                const emoteCodes = this.emoteWidget.getEmoteCodes();
+                console.log('Sending list of emotes to look for', emoteCodes);
+                this.socket.send(JSON.stringify({ dataType: 'emoteCodes', data: emoteCodes }));
+            }
+        }
+        else if (eventData.dataType === 'foundEmotes') {
+            const invokedEmotes = eventData.data;
+            if (!!invokedEmotes && invokedEmotes.length > 0) {
+                invokedEmotes.forEach((emoteCode) => {
+                    this.emoteWidget.addEmoteToContainer(emoteCode);
+                });
+            }
         }
     }
     onClose(event) {
@@ -231,7 +238,6 @@ class EmoteWidget {
         }, 1000 / 60);
     }
     oneLoop(dt) {
-        console.log(`emotes ${this.emotesToDraw}`);
         this.emotesToDraw.forEach((emote) => {
             emote.doUpdate(dt);
             emote.draw();

@@ -140,7 +140,6 @@ class EmoteWidget {
         }, 1000 / 60);
     }
     oneLoop(dt) {
-        console.log(`emotes ${this.emotesToDraw}`);
         this.emotesToDraw.forEach((emote) => {
             emote.doUpdate(dt);
             emote.draw();

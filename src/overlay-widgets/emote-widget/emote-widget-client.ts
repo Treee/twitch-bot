@@ -6,8 +6,6 @@ export class EmoteWidgetClient {
     socket: WebSocket;
     emoteWidget: EmoteWidget;
 
-    emoteCodesToLookFor: string[] = [];
-
     constructor(serverUrl: string, emoteWidget: EmoteWidget) {
         this.serverUrl = serverUrl;
         this.emoteWidget = emoteWidget;
@@ -19,21 +17,29 @@ export class EmoteWidgetClient {
     }
 
     onOpen(event: any) {
-        const emoteCodes = this.emoteWidget.getEmoteCodes();
         console.log('[open] Connection established');
-        console.log('Sending list of emotes to look for', emoteCodes);
-        this.socket.send(JSON.stringify({ dataType: 'emoteCodes', data: emoteCodes }));
+        console.log('Checking server for cached emotes');
+        this.socket.send(JSON.stringify({ dataType: 'checkEmoteCache', data: '' }));
     }
 
     onMessage(event: any) {
         console.log(`[message] Data received from server: ${event.data}`);
-        // TODO handle when json parse fails
-        const invokedEmotes = JSON.parse(event.data.toString());
+        const eventData = JSON.parse(event.data);
+        if (eventData.dataType === 'checkEmoteCache') {
+            if (eventData.data.length < 1) {
+                const emoteCodes = this.emoteWidget.getEmoteCodes();
+                console.log('Sending list of emotes to look for', emoteCodes);
+                this.socket.send(JSON.stringify({ dataType: 'emoteCodes', data: emoteCodes }));
+            }
+        }
+        else if (eventData.dataType === 'foundEmotes') {
+            const invokedEmotes = eventData.data;
 
-        if (!!invokedEmotes && invokedEmotes.length > 0) {
-            invokedEmotes.forEach((emoteCode: string) => {
-                this.emoteWidget.addEmoteToContainer(emoteCode);
-            });
+            if (!!invokedEmotes && invokedEmotes.length > 0) {
+                invokedEmotes.forEach((emoteCode: string) => {
+                    this.emoteWidget.addEmoteToContainer(emoteCode);
+                });
+            }
         }
     }
 
