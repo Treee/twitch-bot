@@ -121,6 +121,7 @@ export class TwitchApiV5 {
         emotes.push(new TwitchEmote('HahaElf', hahahalidaysEmoteSet, '301108081'));
         emotes.push(new TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, '301108063'));
         emotes.push(new TwitchEmote('HahaGoose', hahahalidaysEmoteSet, '301108075'));
+        emotes.push(new TwitchEmote('HahaGingercat', hahahalidaysEmoteSet, '301108078'));
         return emotes;
     }
 

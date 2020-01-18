@@ -67,11 +67,11 @@ function parseForEmoteCodes(message) {
     const words = message.split(' ');
     words.forEach((word) => {
         emoteCodesToLookFor.forEach((emoteCode) => {
-            if (word === emoteCode) {
+            if (word.toLowerCase() === emoteCode.toLowerCase()) {
                 invokedEmotes.push(emoteCode);
             } else { // check for modified emote codes (like _SA or _RD or BW or _SQ)
                 emoteSuffixes.forEach((suffix) => {
-                    if (word === `${emoteCode}${suffix}`) {
+                    if (word.toLowerCase() === `${emoteCode}${suffix}`.toLowerCase()) {
                         invokedEmotes.push(`${emoteCode}${suffix}`);
                     }
                 });
