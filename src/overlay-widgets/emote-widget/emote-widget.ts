@@ -24,9 +24,11 @@ export class EmoteWidget {
 
     private getDrawableEmoteByCode(emoteCode: string): RenderableObject {
         let drawable = this.createRainingEmote(emoteCode);
-        const randomAnimationType = this.randomNumberBetween(1, 2);
+        const randomAnimationType = this.randomNumberBetween(1, 3);
         if (randomAnimationType === 2) {
             drawable = this.createWavyEmote(emoteCode);
+        } if (randomAnimationType === 3) {
+            drawable = this.createFireworkEmote(emoteCode);
         }
         return drawable;
     }
