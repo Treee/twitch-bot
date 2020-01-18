@@ -46,15 +46,5 @@ Promise.all([
     if (emoteWidgetConfig.botMode) {
         new EmoteWidgetClient('ws://localhost:8080', emoteWidget);
         emoteWidget.startSimulation();
-
-        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
-        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
-        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
-        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
-        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
-        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
-        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
-        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
-        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
     }
 });
