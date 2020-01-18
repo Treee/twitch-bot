@@ -4,6 +4,7 @@ import { TwitchEmote } from './emotes/emote';
 import { Vector2, RenderableObject } from './emotes/emote-interfaces';
 import { RainingEmote } from './emotes/raining-emote';
 import { WavyEmote } from './emotes/wavy-emote';
+import { FireworkEmote } from './emotes/firework-emote';
 
 export class EmoteWidget {
     emoteConfig: EmoteWidgetConfig;
@@ -28,6 +29,20 @@ export class EmoteWidget {
             drawable = this.createWavyEmote(emoteCode);
         }
         return drawable;
+    }
+
+    createFireworkEmote(emoteCode: string): FireworkEmote {
+        const emote = this.getEmoteByCode(emoteCode);
+        const randomPosition = new Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.getViewHeight());
+        const randomVelocity = new Vector2(1, this.randomNumberBetween(2, 5) * -1);
+        const randomLifespan = this.randomNumberBetween(1, 6);
+        const randomAngularVelocity = this.randomNumberBetween(1, 4);
+
+        emote.setScale(this.randomNumberBetween(2, 3));
+        emote.setUrl();
+        const emoteSize = emote.convertScaleToPixels();
+
+        return new FireworkEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
     }
 
     createRainingEmote(emoteCode: string): RainingEmote {
@@ -118,7 +133,7 @@ export class EmoteWidget {
         }
     }
 
-    private addEmoteToCanvasAndDrawables(drawable: RenderableObject) {
+    addEmoteToCanvasAndDrawables(drawable: RenderableObject) {
         if (drawable?.htmlElement) {
             setTimeout(() => {
                 if (drawable.htmlElement) {

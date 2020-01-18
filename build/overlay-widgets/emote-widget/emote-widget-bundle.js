@@ -94,6 +94,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emotes/emote-interfaces");
 const raining_emote_1 = require("./emotes/raining-emote");
 const wavy_emote_1 = require("./emotes/wavy-emote");
+const firework_emote_1 = require("./emotes/firework-emote");
 class EmoteWidget {
     constructor(emoteConfig) {
         this.masterEmotes = [];
@@ -113,6 +114,17 @@ class EmoteWidget {
             drawable = this.createWavyEmote(emoteCode);
         }
         return drawable;
+    }
+    createFireworkEmote(emoteCode) {
+        const emote = this.getEmoteByCode(emoteCode);
+        const randomPosition = new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.getViewHeight());
+        const randomVelocity = new emote_interfaces_1.Vector2(1, this.randomNumberBetween(2, 5) * -1);
+        const randomLifespan = this.randomNumberBetween(1, 6);
+        const randomAngularVelocity = this.randomNumberBetween(1, 4);
+        emote.setScale(this.randomNumberBetween(2, 3));
+        emote.setUrl();
+        const emoteSize = emote.convertScaleToPixels();
+        return new firework_emote_1.FireworkEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
     }
     createRainingEmote(emoteCode) {
         const emote = this.getEmoteByCode(emoteCode);
@@ -227,13 +239,16 @@ class EmoteWidget {
 }
 exports.EmoteWidget = EmoteWidget;
 
-},{"./emotes/emote-interfaces":4,"./emotes/raining-emote":6,"./emotes/wavy-emote":7}],4:[function(require,module,exports){
+},{"./emotes/emote-interfaces":4,"./emotes/firework-emote":6,"./emotes/raining-emote":7,"./emotes/wavy-emote":8}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Vector2 {
     constructor(x = 0, y = 0) {
         this.x = x;
         this.y = y;
+    }
+    toString() {
+        return `(${this.x},${this.y})`;
     }
 }
 exports.Vector2 = Vector2;
@@ -348,6 +363,93 @@ exports.TwitchEmote = TwitchEmote;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
+class FireworkEmote extends emote_interfaces_1.RenderableObject {
+    constructor(position = new emote_interfaces_1.Vector2(), velocity = new emote_interfaces_1.Vector2(), lifespan = 0, size, imageSrc, angularVelocity) {
+        super();
+        this.opacity = 1;
+        this.angularVelocityDegrees = 0;
+        this.degreesRotation = 0;
+        this.acceleration = new emote_interfaces_1.Vector2(0, -1);
+        this.position = position;
+        this.velocity = velocity;
+        this.lastFrameVelocity = velocity;
+        this.lifespan = lifespan;
+        this.imageSrc = imageSrc;
+        this.angularVelocityDegrees = angularVelocity;
+        this.htmlElement = this.createHtmlElement('emote', imageSrc, size);
+        this.translate(position.x, position.y);
+    }
+    createHtmlElement(cssClass, imageUrl, size) {
+        const element = $('<div></div>').addClass(cssClass);
+        element.width(`${size.x}px`);
+        element.height(`${size.y}px`);
+        element.css('background', `url("${imageUrl}")`);
+        element.css('background-size', 'cover');
+        return element;
+    }
+    translate(x, y) {
+        return `translate(${x}px, ${y}px)`;
+    }
+    rotate(degrees) {
+        return `rotate(${degrees}deg)`;
+    }
+    accelerate(dt) {
+        // this.acceleration.x -= dt;
+        this.acceleration.y += dt;
+        this.lastFrameVelocity = new emote_interfaces_1.Vector2(this.velocity.x, this.velocity.y);
+        this.velocity = new emote_interfaces_1.Vector2(this.velocity.x + (this.acceleration.x * dt), this.velocity.y + (this.acceleration.y * dt));
+        console.log(`Accel: ${this.acceleration} Last Frame: ${this.lastFrameVelocity} Current: ${this.velocity}`);
+    }
+    applyTransform() {
+        const translation = this.translate(this.position.x, this.position.y);
+        const rotation = this.rotate(this.degreesRotation);
+        // this.htmlElement.css('transform', `${translation} ${rotation}`);
+        this.htmlElement.css('transform', `${translation}`);
+        // this.htmlElement.css('opacity', `${this.opacity}`);
+    }
+    calculateNextMoveFrame(dt) {
+        this.accelerate(dt);
+        return new emote_interfaces_1.Vector2(this.position.x + this.velocity.x, this.position.y + this.velocity.y);
+    }
+    calculateNextRotationFrame(dt) {
+        let nextRotation = this.degreesRotation + this.angularVelocityDegrees;
+        if (nextRotation > 360) {
+            nextRotation = nextRotation - 360;
+        }
+        return nextRotation;
+    }
+    isHidden() {
+        return this.didSignsChange();
+    }
+    didSignsChange() {
+        return this.lastFrameVelocity.y < 0 ? this.velocity.y >= 0 : this.velocity.y < 0;
+    }
+    modifyOpacity(dt) {
+        this.opacity -= dt;
+    }
+    doUpdate(dt) {
+        if (!this.isHidden()) {
+            this.position = this.calculateNextMoveFrame(dt);
+            this.degreesRotation = this.calculateNextRotationFrame(dt);
+        }
+        else {
+            console.log('DEAD!!!');
+            this.lifespan = 0;
+        }
+        if (this.velocity.y < 1) {
+            this.modifyOpacity(dt);
+        }
+    }
+    draw() {
+        this.applyTransform();
+    }
+}
+exports.FireworkEmote = FireworkEmote;
+
+},{"./emote-interfaces":4}],7:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const emote_interfaces_1 = require("./emote-interfaces");
 class RainingEmote extends emote_interfaces_1.RenderableObject {
     constructor(position = new emote_interfaces_1.Vector2(), velocity = new emote_interfaces_1.Vector2(), lifespan = 0, size, imageSrc, angularVelocity) {
         super();
@@ -414,7 +516,7 @@ class RainingEmote extends emote_interfaces_1.RenderableObject {
 }
 exports.RainingEmote = RainingEmote;
 
-},{"./emote-interfaces":4}],7:[function(require,module,exports){
+},{"./emote-interfaces":4}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -497,7 +599,7 @@ class WavyEmote extends emote_interfaces_1.RenderableObject {
 }
 exports.WavyEmote = WavyEmote;
 
-},{"./emote-interfaces":4}],8:[function(require,module,exports){
+},{"./emote-interfaces":4}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const twitch_api_v5_1 = require("../../twitch-connectors/twitch-api-v5");
@@ -542,10 +644,12 @@ Promise.all([
     if (emoteWidgetConfig.botMode) {
         new emote_widget_client_1.EmoteWidgetClient('ws://localhost:8080', emoteWidget);
         emoteWidget.startSimulation();
+        const test = emoteWidget.createFireworkEmote('itsatrEeCool');
+        emoteWidget.addEmoteToCanvasAndDrawables(test);
     }
 });
 
-},{"../../twitch-connectors/twitch-api-v5":9,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],9:[function(require,module,exports){
+},{"../../twitch-connectors/twitch-api-v5":10,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],10:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -686,4 +790,4 @@ class TwitchApiV5 {
 }
 exports.TwitchApiV5 = TwitchApiV5;
 
-},{"../overlay-widgets/emote-widget/emotes/emote":5}]},{},[8]);
+},{"../overlay-widgets/emote-widget/emotes/emote":5}]},{},[9]);

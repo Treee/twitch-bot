@@ -5,6 +5,9 @@ class Vector2 {
         this.x = x;
         this.y = y;
     }
+    toString() {
+        return `(${this.x},${this.y})`;
+    }
 }
 exports.Vector2 = Vector2;
 class RenderableObject {

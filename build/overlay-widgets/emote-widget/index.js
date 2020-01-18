@@ -42,5 +42,7 @@ Promise.all([
     if (emoteWidgetConfig.botMode) {
         new emote_widget_client_1.EmoteWidgetClient('ws://localhost:8080', emoteWidget);
         emoteWidget.startSimulation();
+        const test = emoteWidget.createFireworkEmote('itsatrEeCool');
+        emoteWidget.addEmoteToCanvasAndDrawables(test);
     }
 });
