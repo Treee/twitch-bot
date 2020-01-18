@@ -24,6 +24,8 @@ client.on('connected', onConnectedHandler);
 client.connect();
 
 let emoteCodesToLookFor = [];
+
+
 // Called every time a message comes in
 function onMessageHandler(target, context, msg, self) {
     if (self) { return; } // Ignore messages from the bot
@@ -46,8 +48,10 @@ function onMessageHandler(target, context, msg, self) {
         console.log(`* Executed ${commandName} command`);
     } else if (parsedEmotes.length > 0) {
         // broadcast to the client side
-        if (!!emoteWidgetSocketClient) {
-            emoteWidgetSocketClient.send(JSON.stringify(parsedEmotes));
+        if (emoteWidgetSocketServer.clients.size > 0) {
+            emoteWidgetSocketServer.clients.forEach((client) => {
+                client.send(JSON.stringify({ dataType: 'foundEmotes', data: parsedEmotes }));
+            });
         }
     }
     else {
@@ -87,20 +91,33 @@ function onConnectedHandler(addr, port) {
 }
 
 let emoteWidgetSocketServer = new WebSocket.Server({ port: 8080 });
-let emoteWidgetSocketClient = undefined;
 
 emoteWidgetSocketServer.on('connection', (ws) => {
-    emoteWidgetSocketClient = ws;
-    emoteWidgetSocketClient.on('message', (message) => {
-        const data = JSON.parse(message);
-        console.log('received: %s', message);
-        if (data.dataType === 'emoteCodes') {
-            emoteCodesToLookFor = data.data;
-        }
-    });
+    emoteWidgetSocketServer.clients.add(ws);
 
-    emoteWidgetSocketClient.on('error', (error) => {
-        console.log(error);
+    emoteWidgetSocketServer.clients.forEach((client) => {
+
+        client.on('message', (message) => {
+            const data = JSON.parse(message);
+            console.log('received: %s', message);
+            if (data.dataType === 'emoteCodes') {
+                emoteCodesToLookFor = data.data;
+            }
+            else if (data.dataType === 'checkEmoteCache') {
+                if (emoteCodesToLookFor.length > 0) {
+                    console.log(`Cached ${emoteCodesToLookFor.length} emotes`);
+                    client.send(JSON.stringify({ dataType: 'checkEmoteCache', data: emoteCodesToLookFor }));
+                } else {
+                    console.log(`No emotes in list`);
+                    client.send(JSON.stringify({ dataType: 'checkEmoteCache', data: [] }));
+                }
+            }
+        });
+
+        client.on('error', (error) => {
+            console.log(error);
+        });
+
+        client.send(JSON.stringify({ dataType: 'connected', data: 'client connected' }));
     });
-    emoteWidgetSocketClient.send(JSON.stringify({ dataType: 'connected', data: 'client connected' }));
 });

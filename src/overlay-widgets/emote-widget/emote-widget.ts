@@ -166,7 +166,6 @@ export class EmoteWidget {
     }
 
     oneLoop(dt: number) {
-        console.log(`emotes ${this.emotesToDraw}`);
         this.emotesToDraw.forEach((emote) => {
             emote.doUpdate(dt);
             emote.draw();
