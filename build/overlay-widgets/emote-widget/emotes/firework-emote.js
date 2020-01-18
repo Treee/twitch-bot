@@ -4,10 +4,12 @@ const emote_interfaces_1 = require("./emote-interfaces");
 class FireworkEmote extends emote_interfaces_1.RenderableObject {
     constructor(position = new emote_interfaces_1.Vector2(), velocity = new emote_interfaces_1.Vector2(), lifespan = 0, size, imageSrc, angularVelocity) {
         super();
+        this.code = '';
         this.opacity = 1;
         this.angularVelocityDegrees = 0;
         this.degreesRotation = 0;
         this.acceleration = new emote_interfaces_1.Vector2(0, -1);
+        this.isExploded = false;
         this.position = position;
         this.velocity = velocity;
         this.lastFrameVelocity = velocity;
@@ -36,14 +38,13 @@ class FireworkEmote extends emote_interfaces_1.RenderableObject {
         this.acceleration.y += dt;
         this.lastFrameVelocity = new emote_interfaces_1.Vector2(this.velocity.x, this.velocity.y);
         this.velocity = new emote_interfaces_1.Vector2(this.velocity.x + (this.acceleration.x * dt), this.velocity.y + (this.acceleration.y * dt));
-        console.log(`Accel: ${this.acceleration} Last Frame: ${this.lastFrameVelocity} Current: ${this.velocity}`);
+        // console.log(`Accel: ${this.acceleration} Last Frame: ${this.lastFrameVelocity} Current: ${this.velocity}`);
     }
     applyTransform() {
         const translation = this.translate(this.position.x, this.position.y);
         const rotation = this.rotate(this.degreesRotation);
-        // this.htmlElement.css('transform', `${translation} ${rotation}`);
-        this.htmlElement.css('transform', `${translation}`);
-        // this.htmlElement.css('opacity', `${this.opacity}`);
+        this.htmlElement.css('transform', `${translation} ${rotation}`);
+        this.htmlElement.css('opacity', `${this.opacity}`);
     }
     calculateNextMoveFrame(dt) {
         this.accelerate(dt);
@@ -57,24 +58,18 @@ class FireworkEmote extends emote_interfaces_1.RenderableObject {
         return nextRotation;
     }
     isHidden() {
-        return this.didSignsChange();
-    }
-    didSignsChange() {
-        return this.lastFrameVelocity.y < 0 ? this.velocity.y >= 0 : this.velocity.y < 0;
+        return this.lifespan < 0;
     }
     modifyOpacity(dt) {
-        this.opacity -= dt;
+        this.opacity -= dt * 2;
     }
     doUpdate(dt) {
+        this.lifespan -= dt;
         if (!this.isHidden()) {
             this.position = this.calculateNextMoveFrame(dt);
             this.degreesRotation = this.calculateNextRotationFrame(dt);
         }
-        else {
-            console.log('DEAD!!!');
-            this.lifespan = 0;
-        }
-        if (this.velocity.y < 1) {
+        if (this.lifespan < 1) {
             this.modifyOpacity(dt);
         }
     }

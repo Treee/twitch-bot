@@ -2,6 +2,7 @@ import { RenderableObject, Movable, Rotatable, Hideable, Vector2, Acceleratable 
 
 export class FireworkEmote extends RenderableObject implements Movable, Rotatable, Hideable, Acceleratable {
 
+    code: string = '';
     opacity: number = 1;
     angularVelocityDegrees: number = 0;
     degreesRotation: number = 0;
@@ -12,6 +13,7 @@ export class FireworkEmote extends RenderableObject implements Movable, Rotatabl
     lastFrameVelocity: Vector2;
     acceleration: Vector2 = new Vector2(0, -1);
     lifespan: number;
+    isExploded: boolean = false;
 
     constructor(position: Vector2 = new Vector2(), velocity: Vector2 = new Vector2(), lifespan: number = 0, size: Vector2, imageSrc: string, angularVelocity: number) {
         super();
@@ -53,9 +55,8 @@ export class FireworkEmote extends RenderableObject implements Movable, Rotatabl
     applyTransform() {
         const translation = this.translate(this.position.x, this.position.y);
         const rotation = this.rotate(this.degreesRotation);
-        // this.htmlElement.css('transform', `${translation} ${rotation}`);
-        this.htmlElement.css('transform', `${translation}`);
-        // this.htmlElement.css('opacity', `${this.opacity}`);
+        this.htmlElement.css('transform', `${translation} ${rotation}`);
+        this.htmlElement.css('opacity', `${this.opacity}`);
     }
 
     calculateNextMoveFrame(dt: number): Vector2 {
@@ -72,27 +73,20 @@ export class FireworkEmote extends RenderableObject implements Movable, Rotatabl
     }
 
     isHidden(): boolean {
-        return this.didSignsChange();
-    }
-
-    didSignsChange(): boolean {
-        return (this.lastFrameVelocity.y < 0) ? (this.velocity.y >= 0) : (this.velocity.y < 0);
+        return this.lifespan < 0;
     }
 
     modifyOpacity(dt: number): void {
-        this.opacity -= dt;
+        this.opacity -= dt * 2;
     }
 
     doUpdate(dt: number): void {
+        this.lifespan -= dt;
         if (!this.isHidden()) {
             this.position = this.calculateNextMoveFrame(dt);
             this.degreesRotation = this.calculateNextRotationFrame(dt);
         }
-        else {
-            this.lifespan = 0;
-        }
-
-        if (this.velocity.y < 1) {
+        if (this.lifespan < 1) {
             this.modifyOpacity(dt);
         }
     }

@@ -46,7 +46,15 @@ Promise.all([
     if (emoteWidgetConfig.botMode) {
         new EmoteWidgetClient('ws://localhost:8080', emoteWidget);
         emoteWidget.startSimulation();
-        const test = emoteWidget.createFireworkEmote('itsatrEeCool');
-        emoteWidget.addEmoteToCanvasAndDrawables(test);
+
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
     }
 });
