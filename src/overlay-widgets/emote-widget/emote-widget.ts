@@ -34,15 +34,19 @@ export class EmoteWidget {
     createFireworkEmote(emoteCode: string): FireworkEmote {
         const emote = this.getEmoteByCode(emoteCode);
         const randomPosition = new Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.getViewHeight());
-        const randomVelocity = new Vector2(1, this.randomNumberBetween(2, 5) * -1);
-        const randomLifespan = this.randomNumberBetween(1, 6);
-        const randomAngularVelocity = this.randomNumberBetween(1, 4);
+
+        const xVelocityDirection = randomPosition.x < this.getViewWidth() / 2 ? 1 : -1;
+
+        const randomVelocity = new Vector2(this.randomNumberBetween(1, 2) * xVelocityDirection, this.randomNumberBetween(2, 4.5) * -1);
+        const randomLifespan = this.randomNumberBetween(3, 4.2);
+        const randomAngularVelocity = this.randomNumberBetween(1, 2);
 
         emote.setScale(this.randomNumberBetween(2, 3));
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
-
-        return new FireworkEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
+        const fireworkEmote = new FireworkEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
+        fireworkEmote.code = emoteCode;
+        return fireworkEmote;
     }
 
     createRainingEmote(emoteCode: string): RainingEmote {
@@ -160,17 +164,52 @@ export class EmoteWidget {
     }
 
     oneLoop(dt: number) {
+        console.log(`emotes ${this.emotesToDraw}`);
         this.emotesToDraw.forEach((emote) => {
             emote.doUpdate(dt);
             emote.draw();
         });
-
+        this.checkForExplodedEmotes();
         this.pruneRemainingEmotes();
     }
 
+    explodedEmotes: any[] = [];
     pruneRemainingEmotes() {
         this.emotesToDraw = this.emotesToDraw.filter((emote: any) => {
             return emote?.lifespan > 0;
         });
+    }
+
+    checkForExplodedEmotes() {
+        const explodedEmotes = this.emotesToDraw.filter((emote: any) => {
+            if (emote instanceof FireworkEmote) {
+                return emote.opacity < 1 && !emote.isExploded;
+            }
+        });
+        explodedEmotes.forEach((explodedEmote: any) => {
+            this.explodeIntoEmotes(explodedEmote.code, explodedEmote.position);
+            explodedEmote.isExploded = true;
+        });
+    }
+
+    explodeIntoEmotes(emoteCode: string, position: Vector2) {
+        const twoPi = Math.PI * 2;
+        const radians = twoPi / 360;
+        const emote = this.getEmoteByCode(emoteCode);
+
+        const randomNumberOfEmoteParticles = this.randomNumberBetween(5, 12);
+        for (let numEmotes = 0; numEmotes < randomNumberOfEmoteParticles; numEmotes++) {
+            const randomLifespan = this.randomNumberBetween(1, 2);
+            const randomAngularVelocity = this.randomNumberBetween(-4, 4);
+            emote.setScale(this.randomNumberBetween(1, 2));
+            emote.setUrl();
+            const emoteSize = emote.convertScaleToPixels();
+            const randomDegrees = this.randomNumberBetween(0, 360);
+            const theta = randomDegrees * radians; // some random number between 0 and 2pi
+            const randomVelocity = new Vector2(Math.cos(theta), Math.sin(theta));
+
+            const fireworkEmote = new RainingEmote(position, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
+            this.addEmoteToCanvasAndDrawables(fireworkEmote);
+        }
     }
 }

@@ -100,6 +100,7 @@ class EmoteWidget {
         this.masterEmotes = [];
         this.emotesToDraw = [];
         this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
+        this.explodedEmotes = [];
         this.emoteConfig = emoteConfig;
     }
     getEmoteCodes() {
@@ -118,13 +119,16 @@ class EmoteWidget {
     createFireworkEmote(emoteCode) {
         const emote = this.getEmoteByCode(emoteCode);
         const randomPosition = new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.getViewHeight());
-        const randomVelocity = new emote_interfaces_1.Vector2(1, this.randomNumberBetween(2, 5) * -1);
-        const randomLifespan = this.randomNumberBetween(1, 6);
-        const randomAngularVelocity = this.randomNumberBetween(1, 4);
+        const xVelocityDirection = randomPosition.x < this.getViewWidth() / 2 ? 1 : -1;
+        const randomVelocity = new emote_interfaces_1.Vector2(this.randomNumberBetween(1, 2) * xVelocityDirection, this.randomNumberBetween(2, 4.5) * -1);
+        const randomLifespan = this.randomNumberBetween(3, 4.2);
+        const randomAngularVelocity = this.randomNumberBetween(1, 2);
         emote.setScale(this.randomNumberBetween(2, 3));
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
-        return new firework_emote_1.FireworkEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
+        const fireworkEmote = new firework_emote_1.FireworkEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
+        fireworkEmote.code = emoteCode;
+        return fireworkEmote;
     }
     createRainingEmote(emoteCode) {
         const emote = this.getEmoteByCode(emoteCode);
@@ -224,10 +228,12 @@ class EmoteWidget {
         }, 1000 / 60);
     }
     oneLoop(dt) {
+        console.log(`emotes ${this.emotesToDraw}`);
         this.emotesToDraw.forEach((emote) => {
             emote.doUpdate(dt);
             emote.draw();
         });
+        this.checkForExplodedEmotes();
         this.pruneRemainingEmotes();
     }
     pruneRemainingEmotes() {
@@ -235,6 +241,35 @@ class EmoteWidget {
             var _a;
             return ((_a = emote) === null || _a === void 0 ? void 0 : _a.lifespan) > 0;
         });
+    }
+    checkForExplodedEmotes() {
+        const explodedEmotes = this.emotesToDraw.filter((emote) => {
+            if (emote instanceof firework_emote_1.FireworkEmote) {
+                return emote.opacity < 1 && !emote.isExploded;
+            }
+        });
+        explodedEmotes.forEach((explodedEmote) => {
+            this.explodeIntoEmotes(explodedEmote.code, explodedEmote.position);
+            explodedEmote.isExploded = true;
+        });
+    }
+    explodeIntoEmotes(emoteCode, position) {
+        const twoPi = Math.PI * 2;
+        const radians = twoPi / 360;
+        const emote = this.getEmoteByCode(emoteCode);
+        const randomNumberOfEmoteParticles = this.randomNumberBetween(5, 12);
+        for (let numEmotes = 0; numEmotes < randomNumberOfEmoteParticles; numEmotes++) {
+            const randomLifespan = this.randomNumberBetween(1, 2);
+            const randomAngularVelocity = this.randomNumberBetween(-4, 4);
+            emote.setScale(this.randomNumberBetween(1, 2));
+            emote.setUrl();
+            const emoteSize = emote.convertScaleToPixels();
+            const randomDegrees = this.randomNumberBetween(0, 360);
+            const theta = randomDegrees * radians; // some random number between 0 and 2pi
+            const randomVelocity = new emote_interfaces_1.Vector2(Math.cos(theta), Math.sin(theta));
+            const fireworkEmote = new raining_emote_1.RainingEmote(position, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
+            this.addEmoteToCanvasAndDrawables(fireworkEmote);
+        }
     }
 }
 exports.EmoteWidget = EmoteWidget;
@@ -366,10 +401,12 @@ const emote_interfaces_1 = require("./emote-interfaces");
 class FireworkEmote extends emote_interfaces_1.RenderableObject {
     constructor(position = new emote_interfaces_1.Vector2(), velocity = new emote_interfaces_1.Vector2(), lifespan = 0, size, imageSrc, angularVelocity) {
         super();
+        this.code = '';
         this.opacity = 1;
         this.angularVelocityDegrees = 0;
         this.degreesRotation = 0;
         this.acceleration = new emote_interfaces_1.Vector2(0, -1);
+        this.isExploded = false;
         this.position = position;
         this.velocity = velocity;
         this.lastFrameVelocity = velocity;
@@ -398,14 +435,13 @@ class FireworkEmote extends emote_interfaces_1.RenderableObject {
         this.acceleration.y += dt;
         this.lastFrameVelocity = new emote_interfaces_1.Vector2(this.velocity.x, this.velocity.y);
         this.velocity = new emote_interfaces_1.Vector2(this.velocity.x + (this.acceleration.x * dt), this.velocity.y + (this.acceleration.y * dt));
-        console.log(`Accel: ${this.acceleration} Last Frame: ${this.lastFrameVelocity} Current: ${this.velocity}`);
+        // console.log(`Accel: ${this.acceleration} Last Frame: ${this.lastFrameVelocity} Current: ${this.velocity}`);
     }
     applyTransform() {
         const translation = this.translate(this.position.x, this.position.y);
         const rotation = this.rotate(this.degreesRotation);
-        // this.htmlElement.css('transform', `${translation} ${rotation}`);
-        this.htmlElement.css('transform', `${translation}`);
-        // this.htmlElement.css('opacity', `${this.opacity}`);
+        this.htmlElement.css('transform', `${translation} ${rotation}`);
+        this.htmlElement.css('opacity', `${this.opacity}`);
     }
     calculateNextMoveFrame(dt) {
         this.accelerate(dt);
@@ -419,24 +455,18 @@ class FireworkEmote extends emote_interfaces_1.RenderableObject {
         return nextRotation;
     }
     isHidden() {
-        return this.didSignsChange();
-    }
-    didSignsChange() {
-        return this.lastFrameVelocity.y < 0 ? this.velocity.y >= 0 : this.velocity.y < 0;
+        return this.lifespan < 0;
     }
     modifyOpacity(dt) {
-        this.opacity -= dt;
+        this.opacity -= dt * 2;
     }
     doUpdate(dt) {
+        this.lifespan -= dt;
         if (!this.isHidden()) {
             this.position = this.calculateNextMoveFrame(dt);
             this.degreesRotation = this.calculateNextRotationFrame(dt);
         }
-        else {
-            console.log('DEAD!!!');
-            this.lifespan = 0;
-        }
-        if (this.velocity.y < 1) {
+        if (this.lifespan < 1) {
             this.modifyOpacity(dt);
         }
     }
@@ -644,8 +674,15 @@ Promise.all([
     if (emoteWidgetConfig.botMode) {
         new emote_widget_client_1.EmoteWidgetClient('ws://localhost:8080', emoteWidget);
         emoteWidget.startSimulation();
-        const test = emoteWidget.createFireworkEmote('itsatrEeCool');
-        emoteWidget.addEmoteToCanvasAndDrawables(test);
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
+        emoteWidget.addEmoteToCanvasAndDrawables(emoteWidget.createFireworkEmote('itsatrEeCool'));
     }
 });
 
