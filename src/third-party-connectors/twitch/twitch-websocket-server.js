@@ -36,7 +36,7 @@ async function getSteamAoeLobby() {
         }
         return result;
     }, (error) => {
-        // console.error('Error', error);
+        console.error('Error', error);
         return [];
     });
 }
@@ -54,7 +54,7 @@ function onMessageHandler(target, context, msg, self) {
     // Remove whitespace from chat message
     const commandName = msg.trim();
     const parsedEmotes = parseForEmoteCodes(commandName);
-    console.log('found these emotes', parsedEmotes);
+    console.log('commandName', commandName);
 
     // If the command is known, let's execute it
     if (commandName === '!dice') {
@@ -70,7 +70,8 @@ function onMessageHandler(target, context, msg, self) {
         }
     } else if (commandName.toLowerCase() === '!joinlobby') {
         getSteamAoeLobby().then((steamJoinLink) => {
-            client.say(opts.channels[0], `Copy and paste this into your browser to join my game directly through steam!! ${steamJoinLink}`);
+            client.say(opts.channels[0], 'Copy and paste the below into your browser to join my game directly through steam!!');
+            client.say(opts.channels[0], `${steamJoinLink}`);
         });
     }
     else {

@@ -132,7 +132,7 @@ export class EmoteWidget {
     }
 
     public addEmoteToContainer(emoteCode: string) {
-        let numEmotes = this.randomNumberBetween(3, 6);
+        let numEmotes = this.randomNumberBetween(1, 3);
         for (let index = 0; index < numEmotes; index++) {
             const drawableEmote = this.getDrawableEmoteByCode(emoteCode);
             this.addEmoteToCanvasAndDrawables(drawableEmote);

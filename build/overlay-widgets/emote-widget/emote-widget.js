@@ -110,7 +110,7 @@ class EmoteWidget {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
     addEmoteToContainer(emoteCode) {
-        let numEmotes = this.randomNumberBetween(3, 6);
+        let numEmotes = this.randomNumberBetween(1, 3);
         for (let index = 0; index < numEmotes; index++) {
             const drawableEmote = this.getDrawableEmoteByCode(emoteCode);
             this.addEmoteToCanvasAndDrawables(drawableEmote);
