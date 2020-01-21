@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "local-chatbot": "node ./src/twitch-connectors/twitch-websocket-server.js",
+    "local-chatbot": "node ./src/third-party-connectors/twitch/twitch-websocket-server.js",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "build": "tsc",
     "build-emote-widget": "npm run build && browserify src/overlay-widgets/emote-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles -f src/overlay-widgets/emote-widget/*.html src/overlay-widgets/emote-widget/*.css src/overlay-widgets/emote-widget/*.md build/overlay-widgets/emote-widget",

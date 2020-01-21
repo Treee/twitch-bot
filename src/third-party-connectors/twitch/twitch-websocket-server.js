@@ -1,5 +1,5 @@
 const tmi = require('tmi.js');
-const SECRETS = require('../secrets.js');
+const SECRETS = require('../../secrets.js');
 const WebSocket = require('ws');
 
 // // Define configuration options
