@@ -1,9 +1,19 @@
+// https://steamcommunity.com/dev
+import { PlayerSummary } from "./player-summary";
+
 export class SteamApi {
     constructor() { }
 
+    private getSteamRequestHeaders(): Headers {
+        const headers = new Headers();
+        headers.append('mode', 'no-cors');
+        return headers;
+    }
 
     async getAoEJoinLink(apiKey: string, steamUserId: string): Promise<string> {
-        return await fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamUserId}`).then((response) => {
+        const headers = this.getSteamRequestHeaders();
+        return await fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamUserId}`, { headers }).then((response) => {
+
             return '';
         }, (error) => {
             throw new Error(error);
@@ -11,16 +21,16 @@ export class SteamApi {
     }
 
 
-    private async getPlayerSummaries(): Promise<any> {
-
+    async getPlayerSummaries(apiKey: string, steamUserId: string): Promise<PlayerSummary[]> {
+        const headers = this.getSteamRequestHeaders();
+        return await fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamUserId}`).then((response) => {
+            console.log('steam resposne', response);
+            return [];
+        }, (error) => {
+            console.error('Error', error);
+            return [];
+        });
     }
-    // getTwitchRequestHeaders(clientId: string): Headers {
-    //     const headers = new Headers();
-    //     headers.append('Client-ID', clientId);
-    //     headers.append('Accept', 'application/vnd.twitchtv.v5+json');
-    //     return headers;
-    // }
-
     // async getTwitchEmotesBySets(clientId: string, setIds: number[]): Promise<TwitchEmote[]> {
     //     const headers = this.getTwitchRequestHeaders(clientId);
     //     return await fetch(`https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=${setIds.join(',')}`, { headers }).then(async (response) => {

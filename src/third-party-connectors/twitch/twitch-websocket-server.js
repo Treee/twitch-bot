@@ -1,7 +1,8 @@
 const tmi = require('tmi.js');
+const fetch = require('node-fetch');
+
 const SECRETS = require('../../secrets.js');
 const WebSocket = require('ws');
-
 // // Define configuration options
 const opts = {
     identity: {
@@ -25,6 +26,20 @@ client.connect();
 
 let emoteCodesToLookFor = [];
 
+async function getSteamAoeLobby() {
+    return await fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${SECRETS.steam.apiKey}&steamids=${SECRETS.steam.userId}`).then(async (response) => {
+        const data = await response.json();
+        const players = data.response.players;
+        let result = `${players[0].personaname} does not have an open lobby.`;
+        if (players[0] && players[0].lobbysteamid) {
+            result = `steam://joinlobby/${SECRETS.steam.gameIds.aoe2de}/${players[0].lobbysteamid}/${SECRETS.steam.userId}`;
+        }
+        return result;
+    }, (error) => {
+        // console.error('Error', error);
+        return [];
+    });
+}
 
 // Called every time a message comes in
 function onMessageHandler(target, context, msg, self) {
@@ -53,6 +68,10 @@ function onMessageHandler(target, context, msg, self) {
                 client.send(JSON.stringify({ dataType: 'foundEmotes', data: parsedEmotes }));
             });
         }
+    } else if (commandName.toLowerCase() === '!joinlobby') {
+        getSteamAoeLobby().then((steamJoinLink) => {
+            client.say(opts.channels[0], `Copy and paste this into your browser to join my game directly through steam!! ${steamJoinLink}`);
+        });
     }
     else {
         console.log(`* Unknown command ${commandName}`);

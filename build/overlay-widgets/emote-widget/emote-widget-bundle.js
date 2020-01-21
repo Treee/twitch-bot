@@ -36,6 +36,7 @@ class EmoteWidgetClient {
             }
         }
     }
+    // need to handle cwhen clients close their conenction
     onClose(event) {
         if (event.wasClean) {
             console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
@@ -641,11 +642,13 @@ exports.WavyEmote = WavyEmote;
 },{"./emote-interfaces":4}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const twitch_api_v5_1 = require("../../twitch-connectors/twitch-api-v5");
+const twitch_api_v5_1 = require("../../third-party-connectors/twitch/twitch-api-v5");
+const steam_api_1 = require("../../third-party-connectors/steam/steam-api");
 const emote_widget_config_1 = require("./emote-widget-config");
 const emote_widget_1 = require("./emote-widget");
 const emote_widget_client_1 = require("./emote-widget-client");
 const twitchApiV5 = new twitch_api_v5_1.TwitchApiV5();
+const steamApi = new steam_api_1.SteamApi();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
@@ -686,7 +689,7 @@ Promise.all([
     }
 });
 
-},{"../../twitch-connectors/twitch-api-v5":10,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],10:[function(require,module,exports){
+},{"../../third-party-connectors/steam/steam-api":10,"../../third-party-connectors/twitch/twitch-api-v5":11,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],10:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -698,7 +701,51 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const emote_1 = require("../overlay-widgets/emote-widget/emotes/emote");
+class SteamApi {
+    constructor() { }
+    getSteamRequestHeaders() {
+        const headers = new Headers();
+        headers.append('mode', 'no-cors');
+        return headers;
+    }
+    getAoEJoinLink(apiKey, steamUserId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const headers = this.getSteamRequestHeaders();
+            return yield fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamUserId}`, { headers }).then((response) => {
+                return '';
+            }, (error) => {
+                throw new Error(error);
+            });
+        });
+    }
+    getPlayerSummaries(apiKey, steamUserId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const headers = this.getSteamRequestHeaders();
+            return yield fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamUserId}`).then((response) => {
+                console.log('steam resposne', response);
+                return [];
+            }, (error) => {
+                console.error('Error', error);
+                return [];
+            });
+        });
+    }
+}
+exports.SteamApi = SteamApi;
+
+},{}],11:[function(require,module,exports){
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const emote_1 = require("../../overlay-widgets/emote-widget/emotes/emote");
 class TwitchApiV5 {
     constructor() { }
     getTwitchRequestHeaders(clientId) {
@@ -827,4 +874,4 @@ class TwitchApiV5 {
 }
 exports.TwitchApiV5 = TwitchApiV5;
 
-},{"../overlay-widgets/emote-widget/emotes/emote":5}]},{},[9]);
+},{"../../overlay-widgets/emote-widget/emotes/emote":5}]},{},[9]);

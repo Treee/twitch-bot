@@ -1,9 +1,12 @@
 import { TwitchApiV5 } from '../../third-party-connectors/twitch/twitch-api-v5';
+import { SteamApi } from '../../third-party-connectors/steam/steam-api';
 import { EmoteWidgetConfig } from './emote-widget-config';
 import { EmoteWidget } from './emote-widget';
 import { EmoteWidgetClient } from './emote-widget-client';
+import SECRETS from '../../secrets';
 
 const twitchApiV5 = new TwitchApiV5();
+const steamApi = new SteamApi();
 
 const emoteWidgetConfig = new EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1))
