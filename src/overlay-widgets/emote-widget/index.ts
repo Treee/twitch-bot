@@ -1,4 +1,4 @@
-import { TwitchApiV5 } from '../../twitch-connectors/twitch-api-v5';
+import { TwitchApiV5 } from '../../third-party-connectors/twitch/twitch-api-v5';
 import { EmoteWidgetConfig } from './emote-widget-config';
 import { EmoteWidget } from './emote-widget';
 import { EmoteWidgetClient } from './emote-widget-client';

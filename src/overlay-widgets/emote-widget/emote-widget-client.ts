@@ -43,6 +43,7 @@ export class EmoteWidgetClient {
         }
     }
 
+    // need to handle cwhen clients close their conenction
     onClose(event: any) {
         if (event.wasClean) {
             console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
