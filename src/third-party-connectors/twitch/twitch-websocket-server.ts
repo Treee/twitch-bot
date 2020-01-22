@@ -33,7 +33,7 @@ twitchClient.connect();
 // Called every time a message comes in
 function onMessageHandler(target: string, context: ChatUserstate, msg: string, self: boolean) {
     const handledResult = twitchChatbot.handleMessage(target, context, msg, self);
-
+    console.log(handledResult);
     if (handledResult?.emotes && handledResult.emotes.length > 0) {
         emoteWidgetSocketServer.clients.forEach((client) => {
             client.send(JSON.stringify({ dataType: SocketMessageEnum.FoundEmotes, data: handledResult.emotes }));
@@ -43,9 +43,12 @@ function onMessageHandler(target: string, context: ChatUserstate, msg: string, s
     if (handledResult?.commands && handledResult.commands.length > 0) {
         handledResult.commands.forEach((command) => {
             if (command.toLowerCase() === '!joinlobby') {
-                const steamJoinLink = steamApi.getSteamJoinableLobbyLink(SECRETS.steam.apiKey, SECRETS.steam.userId);
-                twitchClient.say(opts.channels[0], 'Copy and paste the below into your browser to join my game directly through steam!!');
-                twitchClient.say(opts.channels[0], `${steamJoinLink}`);
+                steamApi.getSteamJoinableLobbyLink(SECRETS.steam.apiKey, SECRETS.steam.userId).then((steamJoinLink) => {
+                    if (steamJoinLink?.startsWith('steam://joinlobby/')) {
+                        twitchClient.say(opts.channels[0], 'Copy and paste the below into your browser to join my game directly through steam!!');
+                    }
+                    twitchClient.say(opts.channels[0], `${steamJoinLink}`);
+                });
             }
         });
     }
@@ -56,7 +59,6 @@ function onConnectedHandler(addr: string, port: number) {
     console.log(`* Connected to ${addr}:${port}`);
 }
 
-let emoteCodesToLookFor: string[] = [];
 let emoteWidgetSocketServer = new WebSocket.Server({ port: 8080 });
 
 emoteWidgetSocketServer.on('connection', (ws) => {
@@ -67,16 +69,16 @@ emoteWidgetSocketServer.on('connection', (ws) => {
         client.on('message', (message: string) => {
             const data = JSON.parse(message);
             console.log('received: %s', message);
-            if (data.dataType === 'emoteCodes') {
-                emoteCodesToLookFor = data.data;
+            if (data.dataType === SocketMessageEnum.EmoteCodes) {
+                twitchChatbot.setEmoteCodes(data.data);
             }
-            else if (data.dataType === 'checkEmoteCache') {
-                if (emoteCodesToLookFor.length > 0) {
-                    console.log(`Cached ${emoteCodesToLookFor.length} emotes`);
-                    client.send(JSON.stringify({ dataType: 'checkEmoteCache', data: emoteCodesToLookFor }));
+            else if (data.dataType === SocketMessageEnum.CheckEmoteCache) {
+                if (twitchChatbot.emotesExist()) {
+                    console.log(`Cached ${twitchChatbot.getEmoteCodes().length} emotes`);
+                    client.send(JSON.stringify({ dataType: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.getEmoteCodes() }));
                 } else {
                     console.log(`No emotes in list`);
-                    client.send(JSON.stringify({ dataType: 'checkEmoteCache', data: [] }));
+                    client.send(JSON.stringify({ dataType: SocketMessageEnum.CheckEmoteCache, data: [] }));
                 }
             }
         });

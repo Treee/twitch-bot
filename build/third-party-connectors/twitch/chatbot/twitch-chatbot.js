@@ -1,58 +1,55 @@
-import { ChatUserstate } from "tmi.js";
-
-export class TwitchChatbot {
-
-    private debugMode: boolean = false;
-    private chatCommands: string[] = ['!joinlobby'];
-    private emoteCodesToLookFor: string[] = [];
-    private emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
-
-    constructor(debugMode: boolean = false) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class TwitchChatbot {
+    constructor(debugMode = false) {
+        this.debugMode = false;
+        this.chatCommands = ['!joinlobby'];
+        this.emoteCodesToLookFor = [];
+        this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
         this.debugMode = debugMode;
     }
-
-    setEmoteCodes(emotes: string[]): void {
+    setEmoteCodes(emotes) {
         this.emoteCodesToLookFor = emotes;
     }
-
-    getEmoteCodes(): string[] {
+    getEmoteCodes() {
         return this.emoteCodesToLookFor;
     }
-
-    emotesExist(): boolean {
+    emotesExist() {
         return this.emoteCodesToLookFor.length > 0;
     }
-
-    handleMessage(target: string, context: ChatUserstate, msg: string, self: boolean) {
-        if (this.debugMode) { this.debugMessages(target, context, msg, self); } // print if debug
-        if (self) { return; } // Ignore messages from the bot
-
+    handleMessage(target, context, msg, self) {
+        if (this.debugMode) {
+            this.debugMessages(target, context, msg, self);
+        } // print if debug
+        if (self) {
+            return;
+        } // Ignore messages from the bot
         const invokedCommands = this.parseForCommands(msg);
         const invokedEmotes = this.parseForEmotes(msg);
-        if (this.debugMode) { this.debugMessages(invokedCommands, invokedEmotes); }
-
+        if (this.debugMode) {
+            this.debugMessages(invokedCommands, invokedEmotes);
+        }
         return { commands: invokedCommands, emotes: invokedEmotes };
     }
-
-    private parseForCommands(msg: string): string[] {
-        const invokedCommands: string[] = [];
+    parseForCommands(msg) {
+        const invokedCommands = [];
         const commandName = msg.trim();
-        this.chatCommands.forEach((command: string) => {
+        this.chatCommands.forEach((command) => {
             if (commandName.startsWith(command)) {
                 invokedCommands.push(command);
             }
         });
         return invokedCommands;
     }
-
-    private parseForEmotes(msg: string): string[] {
-        const invokedEmotes: string[] = [];
+    parseForEmotes(msg) {
+        const invokedEmotes = [];
         const words = msg.split(' ');
-        words.forEach((word: string) => {
+        words.forEach((word) => {
             this.emoteCodesToLookFor.forEach((emoteCode) => {
                 if (word.toLowerCase() === emoteCode.toLowerCase()) {
                     invokedEmotes.push(emoteCode);
-                } else { // check for modified emote codes (like _SA or _RD or BW or _SQ)
+                }
+                else { // check for modified emote codes (like _SA or _RD or BW or _SQ)
                     this.emoteSuffixes.forEach((suffix) => {
                         if (word.toLowerCase() === `${emoteCode}${suffix}`.toLowerCase()) {
                             invokedEmotes.push(`${emoteCode}${suffix}`);
@@ -63,14 +60,13 @@ export class TwitchChatbot {
         });
         return invokedEmotes;
     }
-
-    private debugMessages(...args: any) {
+    debugMessages(...args) {
         let messageCounter = 0;
         let message = '';
-        args.forEach((arg: any) => {
+        args.forEach((arg) => {
             message = message.concat(`Param${++messageCounter}: ${JSON.stringify(arg)}, `);
         });
         console.log('Debug Log: ', message);
     }
-
 }
+exports.TwitchChatbot = TwitchChatbot;

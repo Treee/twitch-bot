@@ -1,6 +1,33 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function (global){
+"use strict";
+
+// ref: https://github.com/tc39/proposal-global
+var getGlobal = function () {
+	// the only reliable means to get the global object is
+	// `Function('return this')()`
+	// However, this causes CSP violations in Chrome apps.
+	if (typeof self !== 'undefined') { return self; }
+	if (typeof window !== 'undefined') { return window; }
+	if (typeof global !== 'undefined') { return global; }
+	throw new Error('unable to locate global object');
+}
+
+var global = getGlobal();
+
+module.exports = exports = global.fetch;
+
+// Needed for TypeScript and Webpack.
+exports.default = global.fetch.bind(global);
+
+exports.Headers = global.Headers;
+exports.Request = global.Request;
+exports.Response = global.Response;
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const socket_message_enum_1 = require("../../third-party-connectors/twitch/socket-message-enum");
 class EmoteWidgetClient {
     constructor(serverUrl, emoteWidget) {
         this.serverUrl = 'ws://localhost:8080';
@@ -15,19 +42,19 @@ class EmoteWidgetClient {
     onOpen(event) {
         console.log('[open] Connection established');
         console.log('Checking server for cached emotes');
-        this.socket.send(JSON.stringify({ dataType: 'checkEmoteCache', data: '' }));
+        this.socket.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, data: '' }));
     }
     onMessage(event) {
         console.log(`[message] Data received from server: ${event.data}`);
         const eventData = JSON.parse(event.data);
-        if (eventData.dataType === 'checkEmoteCache') {
+        if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.CheckEmoteCache) {
             if (eventData.data.length < 1) {
                 const emoteCodes = this.emoteWidget.getEmoteCodes();
                 console.log('Sending list of emotes to look for', emoteCodes);
-                this.socket.send(JSON.stringify({ dataType: 'emoteCodes', data: emoteCodes }));
+                this.socket.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.EmoteCodes, data: emoteCodes }));
             }
         }
-        else if (eventData.dataType === 'foundEmotes') {
+        else if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.FoundEmotes) {
             const invokedEmotes = eventData.data;
             if (!!invokedEmotes && invokedEmotes.length > 0) {
                 invokedEmotes.forEach((emoteCode) => {
@@ -53,7 +80,7 @@ class EmoteWidgetClient {
 }
 exports.EmoteWidgetClient = EmoteWidgetClient;
 
-},{}],2:[function(require,module,exports){
+},{"../../third-party-connectors/twitch/socket-message-enum":13}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class EmoteWidgetConfig {
@@ -96,7 +123,7 @@ class EmoteWidgetConfig {
 }
 exports.EmoteWidgetConfig = EmoteWidgetConfig;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emotes/emote-interfaces");
@@ -284,7 +311,7 @@ class EmoteWidget {
 }
 exports.EmoteWidget = EmoteWidget;
 
-},{"./emotes/emote-interfaces":4,"./emotes/firework-emote":6,"./emotes/raining-emote":7,"./emotes/wavy-emote":8}],4:[function(require,module,exports){
+},{"./emotes/emote-interfaces":5,"./emotes/firework-emote":7,"./emotes/raining-emote":8,"./emotes/wavy-emote":9}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Vector2 {
@@ -311,7 +338,7 @@ class RenderableObject {
 }
 exports.RenderableObject = RenderableObject;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -404,7 +431,7 @@ class TwitchEmote extends Emote {
 }
 exports.TwitchEmote = TwitchEmote;
 
-},{"./emote-interfaces":4}],6:[function(require,module,exports){
+},{"./emote-interfaces":5}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -486,7 +513,7 @@ class FireworkEmote extends emote_interfaces_1.RenderableObject {
 }
 exports.FireworkEmote = FireworkEmote;
 
-},{"./emote-interfaces":4}],7:[function(require,module,exports){
+},{"./emote-interfaces":5}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -556,7 +583,7 @@ class RainingEmote extends emote_interfaces_1.RenderableObject {
 }
 exports.RainingEmote = RainingEmote;
 
-},{"./emote-interfaces":4}],8:[function(require,module,exports){
+},{"./emote-interfaces":5}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -639,7 +666,7 @@ class WavyEmote extends emote_interfaces_1.RenderableObject {
 }
 exports.WavyEmote = WavyEmote;
 
-},{"./emote-interfaces":4}],9:[function(require,module,exports){
+},{"./emote-interfaces":5}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const twitch_api_v5_1 = require("../../third-party-connectors/twitch/twitch-api-v5");
@@ -689,7 +716,65 @@ Promise.all([
     }
 });
 
-},{"../../third-party-connectors/steam/steam-api":10,"../../third-party-connectors/twitch/twitch-api-v5":11,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],10:[function(require,module,exports){
+},{"../../third-party-connectors/steam/steam-api":12,"../../third-party-connectors/twitch/twitch-api-v5":14,"./emote-widget":4,"./emote-widget-client":2,"./emote-widget-config":3}],11:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class PlayerSummary {
+    constructor(rawJsonData) {
+        this.convertJsonToObject(rawJsonData);
+    }
+    getJoinableGameLink() {
+        let result = `${this.personaName} does not have a joinable open lobby. Are you in offline mode?`;
+        if (this.lobbySteamId && this.gameId && this.steamId) {
+            result = `steam://joinlobby/${this.gameId}/${this.lobbySteamId}/${this.steamId}`;
+        }
+        return result;
+    }
+    convertJsonToObject(rawJson) {
+        this.steamId = rawJson.steamid;
+        this.communityVisibilityState = rawJson.communityvisibilitystate;
+        this.profileState = rawJson.profilestate;
+        this.personaName = rawJson.personaname;
+        this.lastLogoff = rawJson.lastlogoff;
+        this.profileUrl = rawJson.profileurl;
+        this.avatar = rawJson.avatar;
+        this.avatarMedium = rawJson.avatarmedium;
+        this.avatarFull = rawJson.avatarfull;
+        this.personaState = rawJson.personastate;
+        this.primaryClanId = rawJson.primaryclanid;
+        this.timeCreated = rawJson.timecreated;
+        this.personaStateFlags = rawJson.personastateflags;
+        this.gameExtraInfo = rawJson.gameextrainfo;
+        this.gameId = rawJson.gameid;
+        this.lobbySteamId = rawJson.lobbysteamid;
+        this.locCountryCode = rawJson.loccountrycode;
+        this.locStateCode = rawJson.locstatecode;
+        this.locCityId = rawJson.loccityid;
+    }
+}
+exports.PlayerSummary = PlayerSummary;
+// example response
+// "steamid": "76561197985160398",
+// "communityvisibilitystate": 3,
+// "profilestate": 1,
+// "personaname": "Treeeeeee",
+// "lastlogoff": 1579486408,
+// "profileurl": "https://steamcommunity.com/id/itsatreee/",
+// "avatar": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/f6/f632f7d542d2bf56a178a65eebc8e40ce40ad359.jpg",
+// "avatarmedium": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/f6/f632f7d542d2bf56a178a65eebc8e40ce40ad359_medium.jpg",
+// "avatarfull": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/f6/f632f7d542d2bf56a178a65eebc8e40ce40ad359_full.jpg",
+// "personastate": 1,
+// "primaryclanid": "103582791461182090",
+// "timecreated": 1159150464,
+// "personastateflags": 0,
+// "gameextrainfo": "Age of Empires II: Definitive Edition",
+// "gameid": "813780",
+// "lobbysteamid": "109775241019660960",
+// "loccountrycode": "US",
+// "locstatecode": "AK",
+// "loccityid": 61
+
+},{}],12:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -701,30 +786,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// https://steamcommunity.com/dev
+const fetch = require('node-fetch');
+const player_summary_1 = require("./player-summary");
 class SteamApi {
     constructor() { }
-    getSteamRequestHeaders() {
-        const headers = new Headers();
-        headers.append('mode', 'no-cors');
-        return headers;
-    }
-    getAoEJoinLink(apiKey, steamUserId) {
+    // if you are invisible in steam, this will return no lobby
+    getSteamJoinableLobbyLink(apiKey, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const headers = this.getSteamRequestHeaders();
-            return yield fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamUserId}`, { headers }).then((response) => {
-                return '';
+            return this.getPlayerSummaries(apiKey, userId).then((playerSummarys) => {
+                if (playerSummarys.length > 0) {
+                    return playerSummarys[0].getJoinableGameLink();
+                }
             }, (error) => {
-                throw new Error(error);
+                console.error('Error', error);
+                return '';
             });
         });
     }
     getPlayerSummaries(apiKey, steamUserId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const headers = this.getSteamRequestHeaders();
-            return yield fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamUserId}`).then((response) => {
-                console.log('steam resposne', response);
-                return [];
-            }, (error) => {
+            return yield fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamUserId}`).then((response) => __awaiter(this, void 0, void 0, function* () {
+                const data = yield response.json();
+                const playerSummariesRaw = data.response.players;
+                const playerSummaries = [];
+                playerSummariesRaw.forEach((playerSummary) => {
+                    playerSummaries.push(new player_summary_1.PlayerSummary(playerSummary));
+                });
+                return playerSummaries;
+            }), (error) => {
                 console.error('Error', error);
                 return [];
             });
@@ -733,7 +823,17 @@ class SteamApi {
 }
 exports.SteamApi = SteamApi;
 
-},{}],11:[function(require,module,exports){
+},{"./player-summary":11,"node-fetch":1}],13:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var SocketMessageEnum;
+(function (SocketMessageEnum) {
+    SocketMessageEnum[SocketMessageEnum["FoundEmotes"] = 0] = "FoundEmotes";
+    SocketMessageEnum[SocketMessageEnum["CheckEmoteCache"] = 1] = "CheckEmoteCache";
+    SocketMessageEnum[SocketMessageEnum["EmoteCodes"] = 2] = "EmoteCodes";
+})(SocketMessageEnum = exports.SocketMessageEnum || (exports.SocketMessageEnum = {}));
+
+},{}],14:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -874,4 +974,4 @@ class TwitchApiV5 {
 }
 exports.TwitchApiV5 = TwitchApiV5;
 
-},{"../../overlay-widgets/emote-widget/emotes/emote":5}]},{},[9]);
+},{"../../overlay-widgets/emote-widget/emotes/emote":6}]},{},[10]);

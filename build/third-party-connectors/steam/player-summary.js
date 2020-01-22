@@ -1,7 +1,37 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class PlayerSummary {
-    constructor() { }
+    constructor(rawJsonData) {
+        this.convertJsonToObject(rawJsonData);
+    }
+    getJoinableGameLink() {
+        let result = `${this.personaName} does not have a joinable open lobby. Are you in offline mode?`;
+        if (this.lobbySteamId && this.gameId && this.steamId) {
+            result = `steam://joinlobby/${this.gameId}/${this.lobbySteamId}/${this.steamId}`;
+        }
+        return result;
+    }
+    convertJsonToObject(rawJson) {
+        this.steamId = rawJson.steamid;
+        this.communityVisibilityState = rawJson.communityvisibilitystate;
+        this.profileState = rawJson.profilestate;
+        this.personaName = rawJson.personaname;
+        this.lastLogoff = rawJson.lastlogoff;
+        this.profileUrl = rawJson.profileurl;
+        this.avatar = rawJson.avatar;
+        this.avatarMedium = rawJson.avatarmedium;
+        this.avatarFull = rawJson.avatarfull;
+        this.personaState = rawJson.personastate;
+        this.primaryClanId = rawJson.primaryclanid;
+        this.timeCreated = rawJson.timecreated;
+        this.personaStateFlags = rawJson.personastateflags;
+        this.gameExtraInfo = rawJson.gameextrainfo;
+        this.gameId = rawJson.gameid;
+        this.lobbySteamId = rawJson.lobbysteamid;
+        this.locCountryCode = rawJson.loccountrycode;
+        this.locStateCode = rawJson.locstatecode;
+        this.locCityId = rawJson.loccityid;
+    }
 }
 exports.PlayerSummary = PlayerSummary;
 // example response
