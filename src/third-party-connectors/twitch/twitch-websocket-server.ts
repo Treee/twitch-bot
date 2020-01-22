@@ -20,8 +20,8 @@ const opts = {
 
 // Create a client with our options
 const twitchClient: Client = client(opts);
-const twitchChatbot = new TwitchChatbot();
 const steamApi = new SteamApi();
+const twitchChatbot = new TwitchChatbot(steamApi);
 
 // Register our event handlers (defined below)
 twitchClient.on('message', onMessageHandler);
@@ -32,30 +32,21 @@ twitchClient.connect();
 
 // Called every time a message comes in
 function onMessageHandler(target: string, context: ChatUserstate, msg: string, self: boolean) {
-    const handledResult = twitchChatbot.handleMessage(target, context, msg, self);
-    console.log(handledResult);
-    if (handledResult?.emotes && handledResult.emotes.length > 0) {
-        emoteWidgetSocketServer.clients.forEach((client) => {
-            client.send(JSON.stringify({ dataType: SocketMessageEnum.FoundEmotes, data: handledResult.emotes }));
-        });
-    }
+    twitchChatbot.handleMessage(target, context, msg, self, websocketSend, twitchClientSay);
+}
 
-    if (handledResult?.commands && handledResult.commands.length > 0) {
-        handledResult.commands.forEach((command) => {
-            if (command.toLowerCase() === '!joinlobby') {
-                steamApi.getSteamJoinableLobbyLink(SECRETS.steam.apiKey, SECRETS.steam.userId).then((steamJoinLink) => {
-                    if (steamJoinLink?.startsWith('steam://joinlobby/')) {
-                        twitchClient.say(opts.channels[0], 'Copy and paste the below into your browser to join my game directly through steam!!');
-                    }
-                    twitchClient.say(opts.channels[0], `${steamJoinLink}`);
-                });
-            }
-        });
-    }
+function websocketSend(dataType: SocketMessageEnum, data: any): void {
+    emoteWidgetSocketServer.clients.forEach((client) => {
+        client.send(JSON.stringify({ dataType: dataType, data: data }));
+    });
+}
+
+function twitchClientSay(msg: string): void {
+    twitchClient.say(opts.channels[0], `${msg}`);
 }
 
 // Called every time the bot connects to Twitch chat
-function onConnectedHandler(addr: string, port: number) {
+function onConnectedHandler(addr: string, port: number): void {
     console.log(`* Connected to ${addr}:${port}`);
 }
 

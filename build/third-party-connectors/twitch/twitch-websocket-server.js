@@ -21,8 +21,8 @@ const opts = {
 };
 // Create a client with our options
 const twitchClient = tmi_js_1.client(opts);
-const twitchChatbot = new twitch_chatbot_1.TwitchChatbot();
 const steamApi = new steam_api_1.SteamApi();
+const twitchChatbot = new twitch_chatbot_1.TwitchChatbot(steamApi);
 // Register our event handlers (defined below)
 twitchClient.on('message', onMessageHandler);
 twitchClient.on('connected', onConnectedHandler);
@@ -30,27 +30,15 @@ twitchClient.on('connected', onConnectedHandler);
 twitchClient.connect();
 // Called every time a message comes in
 function onMessageHandler(target, context, msg, self) {
-    var _a, _b;
-    const handledResult = twitchChatbot.handleMessage(target, context, msg, self);
-    console.log(handledResult);
-    if (((_a = handledResult) === null || _a === void 0 ? void 0 : _a.emotes) && handledResult.emotes.length > 0) {
-        emoteWidgetSocketServer.clients.forEach((client) => {
-            client.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.FoundEmotes, data: handledResult.emotes }));
-        });
-    }
-    if (((_b = handledResult) === null || _b === void 0 ? void 0 : _b.commands) && handledResult.commands.length > 0) {
-        handledResult.commands.forEach((command) => {
-            if (command.toLowerCase() === '!joinlobby') {
-                steamApi.getSteamJoinableLobbyLink(secrets_1.default.steam.apiKey, secrets_1.default.steam.userId).then((steamJoinLink) => {
-                    var _a;
-                    if ((_a = steamJoinLink) === null || _a === void 0 ? void 0 : _a.startsWith('steam://joinlobby/')) {
-                        twitchClient.say(opts.channels[0], 'Copy and paste the below into your browser to join my game directly through steam!!');
-                    }
-                    twitchClient.say(opts.channels[0], `${steamJoinLink}`);
-                });
-            }
-        });
-    }
+    twitchChatbot.handleMessage(target, context, msg, self, websocketSend, twitchClientSay);
+}
+function websocketSend(dataType, data) {
+    emoteWidgetSocketServer.clients.forEach((client) => {
+        client.send(JSON.stringify({ dataType: dataType, data: data }));
+    });
+}
+function twitchClientSay(msg) {
+    twitchClient.say(opts.channels[0], `${msg}`);
 }
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler(addr, port) {

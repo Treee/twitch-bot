@@ -1,11 +1,17 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const socket_message_enum_1 = require("../socket-message-enum");
+const secrets_1 = __importDefault(require("../../../secrets"));
 class TwitchChatbot {
-    constructor(debugMode = false) {
+    constructor(steamApi, debugMode = false) {
         this.debugMode = false;
         this.chatCommands = ['!joinlobby'];
         this.emoteCodesToLookFor = [];
         this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
+        this.steamApi = steamApi;
         this.debugMode = debugMode;
     }
     setEmoteCodes(emotes) {
@@ -17,7 +23,7 @@ class TwitchChatbot {
     emotesExist() {
         return this.emoteCodesToLookFor.length > 0;
     }
-    handleMessage(target, context, msg, self) {
+    handleMessage(target, context, msg, self, webSocketCb, twitchClientCb) {
         if (this.debugMode) {
             this.debugMessages(target, context, msg, self);
         } // print if debug
@@ -29,7 +35,25 @@ class TwitchChatbot {
         if (this.debugMode) {
             this.debugMessages(invokedCommands, invokedEmotes);
         }
-        return { commands: invokedCommands, emotes: invokedEmotes };
+        if (invokedEmotes.length > 0 && webSocketCb) {
+            webSocketCb(socket_message_enum_1.SocketMessageEnum.FoundEmotes, invokedEmotes);
+        }
+        if (invokedCommands.length > 0 && twitchClientCb) {
+            invokedCommands.forEach((command) => {
+                this.commandManager(command, twitchClientCb);
+            });
+        }
+    }
+    commandManager(command, twitchClientCb) {
+        if (command.toLowerCase() === '!joinlobby') {
+            this.steamApi.getSteamJoinableLobbyLink(secrets_1.default.steam.apiKey, secrets_1.default.steam.userId).then((steamJoinLink) => {
+                var _a;
+                if ((_a = steamJoinLink) === null || _a === void 0 ? void 0 : _a.startsWith('steam://joinlobby/')) {
+                    twitchClientCb('Copy and paste the below into your browser to join my game directly through steam!!');
+                }
+                twitchClientCb(steamJoinLink);
+            });
+        }
     }
     parseForCommands(msg) {
         const invokedCommands = [];
