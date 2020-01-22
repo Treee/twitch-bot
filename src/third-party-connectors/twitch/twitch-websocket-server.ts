@@ -1,9 +1,13 @@
-import { client, ChatUserstate } from 'tmi.js';
-import SECRETS from '../../secrets';
 import WebSocket = require('ws');
 
-// const WebSocket = require('ws');
-// // Define configuration options
+import { client, Client, ChatUserstate } from 'tmi.js';
+import SECRETS from '../../secrets';
+
+import { TwitchChatbot } from './chatbot/twitch-chatbot';
+import { SteamApi } from '../steam/steam-api';
+import { SocketMessageEnum } from './socket-message-enum';
+
+// Define configuration options
 const opts = {
     identity: {
         username: 'itsatreee',
@@ -15,7 +19,9 @@ const opts = {
 };
 
 // Create a client with our options
-const twitchClient = client(opts);
+const twitchClient: Client = client(opts);
+const twitchChatbot = new TwitchChatbot();
+const steamApi = new SteamApi();
 
 // Register our event handlers (defined below)
 twitchClient.on('message', onMessageHandler);
@@ -24,31 +30,25 @@ twitchClient.on('connected', onConnectedHandler);
 // Connect to Twitch:
 twitchClient.connect();
 
-
 // Called every time a message comes in
 function onMessageHandler(target: string, context: ChatUserstate, msg: string, self: boolean) {
-    if (self) { return; } // Ignore messages from the bot
-    console.log(`target: ${target} msg: ${msg} self: ${self}`);
-    console.log('context:', context);
-    // Remove whitespace from chat message
-    const commandName = msg.trim();
-    console.log('commandName', commandName);
+    const handledResult = twitchChatbot.handleMessage(target, context, msg, self);
 
-    // If the command is known, let's execute it
-    if (commandName === '!dice') {
-        const num = rollDice();
-        twitchClient.say(target, `You rolled a ${num}`);
-        console.log(`* Executed ${commandName} command`);
+    if (handledResult?.emotes && handledResult.emotes.length > 0) {
+        emoteWidgetSocketServer.clients.forEach((client) => {
+            client.send(JSON.stringify({ dataType: SocketMessageEnum.FoundEmotes, data: handledResult.emotes }));
+        });
     }
-    else {
-        console.log(`* Unknown command ${commandName}`);
-    }
-}
 
-// Function called when the "dice" command is issued
-function rollDice() {
-    const sides = 6;
-    return Math.floor(Math.random() * sides) + 1;
+    if (handledResult?.commands && handledResult.commands.length > 0) {
+        handledResult.commands.forEach((command) => {
+            if (command.toLowerCase() === '!joinlobby') {
+                const steamJoinLink = steamApi.getSteamJoinableLobbyLink(SECRETS.steam.apiKey, SECRETS.steam.userId);
+                twitchClient.say(opts.channels[0], 'Copy and paste the below into your browser to join my game directly through steam!!');
+                twitchClient.say(opts.channels[0], `${steamJoinLink}`);
+            }
+        });
+    }
 }
 
 // Called every time the bot connects to Twitch chat

@@ -1,25 +1,57 @@
 export class PlayerSummary {
-    steamId!: string;
-    communityVisibilityState!: number;
-    profileState!: number;
-    personaName!: string;
-    lastlogoff!: number;
-    profileurl!: string;
-    avatar!: string;
-    avatarMedium!: string;
-    avatarFull!: string;
-    personaState!: number;
-    primaryClanId!: string;
-    timeCreated!: number;
-    personaStateFlags!: number;
-    gameExtraInfo!: string;
-    gameId!: string;
-    lobbySteamId!: string;
-    locCountryCode!: string;
-    locStateCode!: string;
-    locCityId!: number;
+    private steamId!: string;
+    private communityVisibilityState!: number;
+    private profileState!: number;
+    private personaName!: string;
+    private lastLogoff!: number;
+    private profileUrl!: string;
+    private avatar!: string;
+    private avatarMedium!: string;
+    private avatarFull!: string;
+    private personaState!: number;
+    private primaryClanId!: string;
+    private timeCreated!: number;
+    private personaStateFlags!: number;
+    private gameExtraInfo!: string;
+    private gameId!: string;
+    private lobbySteamId!: string;
+    private locCountryCode!: string;
+    private locStateCode!: string;
+    private locCityId!: number;
 
-    constructor() { }
+    constructor(rawJsonData: string) {
+        this.convertJsonToObject(rawJsonData);
+    }
+
+    getJoinableGameLink(): string {
+        let result = `${this.personaName} does not have an open lobby.`;
+        if (this.lobbySteamId && this.gameId && this.steamId) {
+            result = `steam://joinlobby/${this.gameId}/${this.lobbySteamId}/${this.steamId}`;
+        }
+        return result;
+    }
+
+    private convertJsonToObject(rawJson: any): void {
+        this.steamId = rawJson.steamid;
+        this.communityVisibilityState = rawJson.communityvisibilitystate;
+        this.profileState = rawJson.profilestate;
+        this.personaName = rawJson.personaname;
+        this.lastLogoff = rawJson.lastlogoff;
+        this.profileUrl = rawJson.profileurl;
+        this.avatar = rawJson.avatar;
+        this.avatarMedium = rawJson.avatarmedium;
+        this.avatarFull = rawJson.avatarfull;
+        this.personaState = rawJson.personastate;
+        this.primaryClanId = rawJson.primaryclanid;
+        this.timeCreated = rawJson.timecreated;
+        this.personaStateFlags = rawJson.personastateflags;
+        this.gameExtraInfo = rawJson.gameextrainfo;
+        this.gameId = rawJson.gameid;
+        this.lobbySteamId = rawJson.lobbysteamid;
+        this.locCountryCode = rawJson.loccountrycode;
+        this.locStateCode = rawJson.locstatecode;
+        this.locCityId = rawJson.loccityid;
+    }
 }
 
 // example response
