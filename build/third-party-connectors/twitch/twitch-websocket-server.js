@@ -21,7 +21,7 @@ const opts = {
 };
 // Create a client with our options
 const twitchClient = tmi_js_1.client(opts);
-const twitchChatbot = new twitch_chatbot_1.TwitchChatbot(true);
+const twitchChatbot = new twitch_chatbot_1.TwitchChatbot();
 const steamApi = new steam_api_1.SteamApi();
 // Register our event handlers (defined below)
 twitchClient.on('message', onMessageHandler);
