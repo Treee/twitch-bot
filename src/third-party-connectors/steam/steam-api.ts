@@ -1,4 +1,5 @@
 // https://steamcommunity.com/dev
+const fetch = require('node-fetch');
 import { PlayerSummary } from "./player-summary";
 
 export class SteamApi {
@@ -17,7 +18,7 @@ export class SteamApi {
     }
 
     private async getPlayerSummaries(apiKey: string, steamUserId: string): Promise<PlayerSummary[]> {
-        return await fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamUserId}`).then(async (response) => {
+        return await fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamUserId}`).then(async (response: any) => {
             const data = await response.json();
             const playerSummariesRaw = data.response.players;
             const playerSummaries: PlayerSummary[] = [];
@@ -25,7 +26,7 @@ export class SteamApi {
                 playerSummaries.push(new PlayerSummary(playerSummary));
             });
             return playerSummaries;
-        }, (error) => {
+        }, (error: any) => {
             console.error('Error', error);
             return [];
         });

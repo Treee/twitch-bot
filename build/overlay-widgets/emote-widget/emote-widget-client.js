@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const socket_message_enum_1 = require("../../third-party-connectors/twitch/socket-message-enum");
 class EmoteWidgetClient {
     constructor(serverUrl, emoteWidget) {
         this.serverUrl = 'ws://localhost:8080';
@@ -14,19 +15,19 @@ class EmoteWidgetClient {
     onOpen(event) {
         console.log('[open] Connection established');
         console.log('Checking server for cached emotes');
-        this.socket.send(JSON.stringify({ dataType: 'checkEmoteCache', data: '' }));
+        this.socket.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, data: '' }));
     }
     onMessage(event) {
         console.log(`[message] Data received from server: ${event.data}`);
         const eventData = JSON.parse(event.data);
-        if (eventData.dataType === 'checkEmoteCache') {
+        if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.CheckEmoteCache) {
             if (eventData.data.length < 1) {
                 const emoteCodes = this.emoteWidget.getEmoteCodes();
                 console.log('Sending list of emotes to look for', emoteCodes);
-                this.socket.send(JSON.stringify({ dataType: 'emoteCodes', data: emoteCodes }));
+                this.socket.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.EmoteCodes, data: emoteCodes }));
             }
         }
-        else if (eventData.dataType === 'foundEmotes') {
+        else if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.FoundEmotes) {
             const invokedEmotes = eventData.data;
             if (!!invokedEmotes && invokedEmotes.length > 0) {
                 invokedEmotes.forEach((emoteCode) => {

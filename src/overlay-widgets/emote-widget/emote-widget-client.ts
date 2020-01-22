@@ -1,4 +1,5 @@
 import { EmoteWidget } from './emote-widget';
+import { SocketMessageEnum } from '../../third-party-connectors/twitch/socket-message-enum';
 
 export class EmoteWidgetClient {
 
@@ -19,20 +20,20 @@ export class EmoteWidgetClient {
     onOpen(event: any) {
         console.log('[open] Connection established');
         console.log('Checking server for cached emotes');
-        this.socket.send(JSON.stringify({ dataType: 'checkEmoteCache', data: '' }));
+        this.socket.send(JSON.stringify({ dataType: SocketMessageEnum.CheckEmoteCache, data: '' }));
     }
 
     onMessage(event: any) {
         console.log(`[message] Data received from server: ${event.data}`);
         const eventData = JSON.parse(event.data);
-        if (eventData.dataType === 'checkEmoteCache') {
+        if (eventData.dataType === SocketMessageEnum.CheckEmoteCache) {
             if (eventData.data.length < 1) {
                 const emoteCodes = this.emoteWidget.getEmoteCodes();
                 console.log('Sending list of emotes to look for', emoteCodes);
-                this.socket.send(JSON.stringify({ dataType: 'emoteCodes', data: emoteCodes }));
+                this.socket.send(JSON.stringify({ dataType: SocketMessageEnum.EmoteCodes, data: emoteCodes }));
             }
         }
-        else if (eventData.dataType === 'foundEmotes') {
+        else if (eventData.dataType === SocketMessageEnum.FoundEmotes) {
             const invokedEmotes = eventData.data;
 
             if (!!invokedEmotes && invokedEmotes.length > 0) {

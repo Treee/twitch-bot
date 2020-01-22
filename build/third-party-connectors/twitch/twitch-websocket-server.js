@@ -3,11 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const WebSocket = require("ws");
 const tmi_js_1 = require("tmi.js");
 const secrets_1 = __importDefault(require("../../secrets"));
-const WebSocket = require("ws");
-// const WebSocket = require('ws');
-// // Define configuration options
+const twitch_chatbot_1 = require("./chatbot/twitch-chatbot");
+const steam_api_1 = require("../steam/steam-api");
+const socket_message_enum_1 = require("./socket-message-enum");
+// Define configuration options
 const opts = {
     identity: {
         username: 'itsatreee',
@@ -19,6 +21,8 @@ const opts = {
 };
 // Create a client with our options
 const twitchClient = tmi_js_1.client(opts);
+const twitchChatbot = new twitch_chatbot_1.TwitchChatbot(true);
+const steamApi = new steam_api_1.SteamApi();
 // Register our event handlers (defined below)
 twitchClient.on('message', onMessageHandler);
 twitchClient.on('connected', onConnectedHandler);
@@ -26,34 +30,32 @@ twitchClient.on('connected', onConnectedHandler);
 twitchClient.connect();
 // Called every time a message comes in
 function onMessageHandler(target, context, msg, self) {
-    if (self) {
-        return;
-    } // Ignore messages from the bot
-    console.log(`target: ${target} msg: ${msg} self: ${self}`);
-    console.log('context:', context);
-    // Remove whitespace from chat message
-    const commandName = msg.trim();
-    console.log('commandName', commandName);
-    // If the command is known, let's execute it
-    if (commandName === '!dice') {
-        const num = rollDice();
-        twitchClient.say(target, `You rolled a ${num}`);
-        console.log(`* Executed ${commandName} command`);
+    var _a, _b;
+    const handledResult = twitchChatbot.handleMessage(target, context, msg, self);
+    console.log(handledResult);
+    if (((_a = handledResult) === null || _a === void 0 ? void 0 : _a.emotes) && handledResult.emotes.length > 0) {
+        emoteWidgetSocketServer.clients.forEach((client) => {
+            client.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.FoundEmotes, data: handledResult.emotes }));
+        });
     }
-    else {
-        console.log(`* Unknown command ${commandName}`);
+    if (((_b = handledResult) === null || _b === void 0 ? void 0 : _b.commands) && handledResult.commands.length > 0) {
+        handledResult.commands.forEach((command) => {
+            if (command.toLowerCase() === '!joinlobby') {
+                steamApi.getSteamJoinableLobbyLink(secrets_1.default.steam.apiKey, secrets_1.default.steam.userId).then((steamJoinLink) => {
+                    var _a;
+                    if ((_a = steamJoinLink) === null || _a === void 0 ? void 0 : _a.startsWith('steam://joinlobby/')) {
+                        twitchClient.say(opts.channels[0], 'Copy and paste the below into your browser to join my game directly through steam!!');
+                    }
+                    twitchClient.say(opts.channels[0], `${steamJoinLink}`);
+                });
+            }
+        });
     }
-}
-// Function called when the "dice" command is issued
-function rollDice() {
-    const sides = 6;
-    return Math.floor(Math.random() * sides) + 1;
 }
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler(addr, port) {
     console.log(`* Connected to ${addr}:${port}`);
 }
-let emoteCodesToLookFor = [];
 let emoteWidgetSocketServer = new WebSocket.Server({ port: 8080 });
 emoteWidgetSocketServer.on('connection', (ws) => {
     emoteWidgetSocketServer.clients.add(ws);
@@ -61,17 +63,17 @@ emoteWidgetSocketServer.on('connection', (ws) => {
         client.on('message', (message) => {
             const data = JSON.parse(message);
             console.log('received: %s', message);
-            if (data.dataType === 'emoteCodes') {
-                emoteCodesToLookFor = data.data;
+            if (data.dataType === socket_message_enum_1.SocketMessageEnum.EmoteCodes) {
+                twitchChatbot.setEmoteCodes(data.data);
             }
-            else if (data.dataType === 'checkEmoteCache') {
-                if (emoteCodesToLookFor.length > 0) {
-                    console.log(`Cached ${emoteCodesToLookFor.length} emotes`);
-                    client.send(JSON.stringify({ dataType: 'checkEmoteCache', data: emoteCodesToLookFor }));
+            else if (data.dataType === socket_message_enum_1.SocketMessageEnum.CheckEmoteCache) {
+                if (twitchChatbot.emotesExist()) {
+                    console.log(`Cached ${twitchChatbot.getEmoteCodes().length} emotes`);
+                    client.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.getEmoteCodes() }));
                 }
                 else {
                     console.log(`No emotes in list`);
-                    client.send(JSON.stringify({ dataType: 'checkEmoteCache', data: [] }));
+                    client.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, data: [] }));
                 }
             }
         });

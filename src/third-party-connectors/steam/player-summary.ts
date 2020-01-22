@@ -24,7 +24,7 @@ export class PlayerSummary {
     }
 
     getJoinableGameLink(): string {
-        let result = `${this.personaName} does not have an open lobby.`;
+        let result = `${this.personaName} does not have a joinable open lobby. Are you in offline mode?`;
         if (this.lobbySteamId && this.gameId && this.steamId) {
             result = `steam://joinlobby/${this.gameId}/${this.lobbySteamId}/${this.steamId}`;
         }
