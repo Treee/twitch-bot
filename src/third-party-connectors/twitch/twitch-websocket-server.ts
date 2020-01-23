@@ -61,6 +61,7 @@ emoteWidgetSocketServer.on('connection', (ws) => {
             const data = JSON.parse(message);
             console.log('received: %s', message);
             if (data.dataType === SocketMessageEnum.EmoteCodes) {
+
                 twitchChatbot.setEmoteCodes(data.data);
             }
             else if (data.dataType === SocketMessageEnum.CheckEmoteCache) {

@@ -37,8 +37,10 @@ export class EmoteWidgetClient {
             const invokedEmotes = eventData.data;
 
             if (!!invokedEmotes && invokedEmotes.length > 0) {
-                invokedEmotes.forEach((emoteCode: string) => {
-                    this.emoteWidget.addEmoteToContainer(emoteCode);
+                invokedEmotes.forEach((emoteCode: string[]) => {
+                    emoteCode.forEach((emote) => {
+                        this.emoteWidget.addEmoteToContainer(emote);
+                    });
                 });
             }
         }
