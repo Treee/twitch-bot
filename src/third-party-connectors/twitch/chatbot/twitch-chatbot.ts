@@ -36,7 +36,7 @@ export class TwitchChatbot {
         if (self) { return; } // Ignore messages from the bot
 
         const invokedCommands = this.parseForCommands(msg);
-        const invokedEmotes = this.emoteParser.parseForEmotes(msg, this.emoteCodesToLookFor);
+        const invokedEmotes = this.emoteParser.parseComplete(msg, this.emoteCodesToLookFor);
         if (this.debugMode) { this.debugMessages(invokedCommands, invokedEmotes); }
 
         if (invokedEmotes.length > 0 && webSocketCb) {

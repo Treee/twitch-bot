@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const socket_message_enum_1 = require("../../third-party-connectors/twitch/socket-message-enum");
+const emote_parser_1 = require("../../third-party-connectors/twitch/chatbot/parsers/emote-parser");
 class EmoteWidgetClient {
     constructor(serverUrl, emoteWidget) {
         this.serverUrl = 'ws://localhost:8080';
@@ -18,7 +19,7 @@ class EmoteWidgetClient {
         this.socket.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, data: '' }));
     }
     onMessage(event) {
-        console.log(`[message] Data received from server: ${event.data}`);
+        // console.log(`[message] Data received from server: ${event.data}`);
         const eventData = JSON.parse(event.data);
         if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.CheckEmoteCache) {
             if (eventData.data.length < 1) {
@@ -29,11 +30,20 @@ class EmoteWidgetClient {
         }
         else if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.FoundEmotes) {
             const invokedEmotes = eventData.data;
+            console.log('invoked emotes', invokedEmotes);
             if (!!invokedEmotes && invokedEmotes.length > 0) {
                 invokedEmotes.forEach((emoteCode) => {
-                    emoteCode.forEach((emote) => {
-                        this.emoteWidget.addEmoteToContainer(emote);
-                    });
+                    console.log(`data type ${emoteCode.type} enum ${emote_parser_1.ComboType.None}`);
+                    if (emoteCode.type === emote_parser_1.ComboType.None) {
+                        console.log('none');
+                        emoteCode.data.forEach((emote) => {
+                            this.emoteWidget.addEmoteToContainer(emote);
+                        });
+                    }
+                    else if (emoteCode.type === emote_parser_1.ComboType.Sequence || emoteCode.type === emote_parser_1.ComboType.LeftRight) { // these are combo emotes
+                        console.log('combo');
+                        this.emoteWidget.addGroupedEmoteToContainer(emoteCode.data);
+                    }
                 });
             }
         }

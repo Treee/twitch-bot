@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var ComboType;
 (function (ComboType) {
-    ComboType[ComboType["Sequence"] = 0] = "Sequence";
-    ComboType[ComboType["LeftRight"] = 1] = "LeftRight";
-})(ComboType || (ComboType = {}));
+    ComboType[ComboType["None"] = 0] = "None";
+    ComboType[ComboType["Sequence"] = 1] = "Sequence";
+    ComboType[ComboType["LeftRight"] = 2] = "LeftRight";
+})(ComboType = exports.ComboType || (exports.ComboType = {}));
 class ComboEmote {
     constructor(comboType, combo) {
         this.comboType = comboType;
@@ -25,13 +26,14 @@ class EmoteParser {
             foundEmotes.push(emote);
         });
         this.parseForEmotes(msg, parsableEmotes).forEach((emote) => {
-            foundEmotes.push(emote);
+            foundEmotes.push({ type: ComboType.None, data: emote });
         });
         return foundEmotes;
     }
     parseForEmotes(msg, parsableEmotes) {
         const validEmotes = parsableEmotes.join('|');
-        const regex = new RegExp(`(${validEmotes})`, 'gi');
+        const validSuffixes = this.emoteSuffixes.join('|');
+        const regex = new RegExp(`(${validEmotes})(${validSuffixes})?`, 'gi');
         let comboEmotes = [];
         if (msg.match(regex)) {
             const matches = msg.match(regex);
@@ -41,27 +43,6 @@ class EmoteParser {
         }
         return comboEmotes;
     }
-    checkWordForParsableEmote(word, parsableEmotes) {
-        let invokedEmote = '';
-        parsableEmotes.forEach((emoteCode) => {
-            if (word.toLowerCase() === emoteCode.toLowerCase()) {
-                invokedEmote = emoteCode;
-            }
-            else if (invokedEmote === '') { // check for modified emote codes (like _SA or _RD or BW or _SQ)
-                invokedEmote = this.checkForEmoteSuffix(word, emoteCode);
-            }
-        });
-        return invokedEmote;
-    }
-    checkForEmoteSuffix(word, emoteCode) {
-        let invokedEmote = '';
-        this.emoteSuffixes.forEach((suffix) => {
-            if (word.toLowerCase() === `${emoteCode}${suffix}`.toLowerCase()) {
-                invokedEmote = `${emoteCode}${suffix}`;
-            }
-        });
-        return invokedEmote;
-    }
     checkForComboEmotes(msg, parsableEmotes) {
         let comboEmotes = [];
         const validMiddles = parsableEmotes.join('|');
@@ -69,13 +50,13 @@ class EmoteParser {
             const sequentialCombo = this.checkForSequentialEmotes(msg, comboEmote);
             if (sequentialCombo.length > 0) {
                 sequentialCombo.forEach((combo) => {
-                    comboEmotes.push(combo);
+                    comboEmotes.push({ type: ComboType.Sequence, data: combo });
                 });
             }
             const leftRightCombo = this.checkForLeftRightEmotes(msg, comboEmote, validMiddles);
             if (leftRightCombo.length > 0) {
                 leftRightCombo.forEach((combo) => {
-                    comboEmotes.push(combo);
+                    comboEmotes.push({ type: ComboType.LeftRight, data: combo });
                 });
             }
         });
@@ -83,7 +64,8 @@ class EmoteParser {
     }
     checkForLeftRightEmotes(msg, comboEmote, validMiddles) {
         var _a;
-        const regex = new RegExp(`${comboEmote.combo[0]} (${validMiddles}) ${comboEmote.combo[1]}`, 'gi');
+        const validSuffixes = this.emoteSuffixes.join('|');
+        const regex = new RegExp(`${comboEmote.combo[0]} (${validMiddles})(${validSuffixes})? ${comboEmote.combo[1]}`, 'gi');
         let comboEmotes = [];
         if (msg.match(regex)) {
             const matches = msg.match(regex);
