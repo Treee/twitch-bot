@@ -3,6 +3,7 @@ import { ChatUserstate } from "tmi.js";
 import { SteamApi } from '../../steam/steam-api';
 import { SocketMessageEnum } from "../socket-message-enum";
 import SECRETS from '../../../secrets';
+import { EmoteParser } from "./parsers/emote-parser";
 
 export class TwitchChatbot {
 
@@ -10,7 +11,8 @@ export class TwitchChatbot {
     private debugMode: boolean = false;
     private chatCommands: string[] = ['!joinlobby'];
     private emoteCodesToLookFor: string[] = [];
-    private emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
+
+    private emoteParser = new EmoteParser();
 
     constructor(steamApi: SteamApi, debugMode: boolean = false) {
         this.steamApi = steamApi;
@@ -34,7 +36,7 @@ export class TwitchChatbot {
         if (self) { return; } // Ignore messages from the bot
 
         const invokedCommands = this.parseForCommands(msg);
-        const invokedEmotes = this.parseForEmotes(msg);
+        const invokedEmotes = this.emoteParser.parseForEmotes(msg, this.emoteCodesToLookFor);
         if (this.debugMode) { this.debugMessages(invokedCommands, invokedEmotes); }
 
         if (invokedEmotes.length > 0 && webSocketCb) {
@@ -68,25 +70,6 @@ export class TwitchChatbot {
             }
         });
         return invokedCommands;
-    }
-
-    private parseForEmotes(msg: string): string[] {
-        const invokedEmotes: string[] = [];
-        const words = msg.split(' ');
-        words.forEach((word: string) => {
-            this.emoteCodesToLookFor.forEach((emoteCode) => {
-                if (word.toLowerCase() === emoteCode.toLowerCase()) {
-                    invokedEmotes.push(emoteCode);
-                } else { // check for modified emote codes (like _SA or _RD or BW or _SQ)
-                    this.emoteSuffixes.forEach((suffix) => {
-                        if (word.toLowerCase() === `${emoteCode}${suffix}`.toLowerCase()) {
-                            invokedEmotes.push(`${emoteCode}${suffix}`);
-                        }
-                    });
-                }
-            });
-        });
-        return invokedEmotes;
     }
 
     private debugMessages(...args: any) {
