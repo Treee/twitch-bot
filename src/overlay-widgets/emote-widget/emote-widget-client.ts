@@ -1,5 +1,6 @@
 import { EmoteWidget } from './emote-widget';
 import { SocketMessageEnum } from '../../third-party-connectors/twitch/socket-message-enum';
+import { ComboType } from '../../third-party-connectors/twitch/chatbot/parsers/emote-parser';
 
 export class EmoteWidgetClient {
 
@@ -24,7 +25,7 @@ export class EmoteWidgetClient {
     }
 
     onMessage(event: any) {
-        console.log(`[message] Data received from server: ${event.data}`);
+        // console.log(`[message] Data received from server: ${event.data}`);
         const eventData = JSON.parse(event.data);
         if (eventData.dataType === SocketMessageEnum.CheckEmoteCache) {
             if (eventData.data.length < 1) {
@@ -35,12 +36,16 @@ export class EmoteWidgetClient {
         }
         else if (eventData.dataType === SocketMessageEnum.FoundEmotes) {
             const invokedEmotes = eventData.data;
-
+            console.log('invoked emotes', invokedEmotes);
             if (!!invokedEmotes && invokedEmotes.length > 0) {
-                invokedEmotes.forEach((emoteCode: string[]) => {
-                    emoteCode.forEach((emote) => {
-                        this.emoteWidget.addEmoteToContainer(emote);
-                    });
+                invokedEmotes.forEach((emoteCode: { type: ComboType, data: string[] }) => {
+                    if (emoteCode.type === ComboType.None) {
+                        emoteCode.data.forEach((emote: string) => {
+                            this.emoteWidget.addEmoteToContainer(emote);
+                        });
+                    } else if (emoteCode.type === ComboType.Sequence || emoteCode.type === ComboType.LeftRight) { // these are combo emotes
+                        this.emoteWidget.addGroupedEmoteToContainer(emoteCode.data);
+                    }
                 });
             }
         }

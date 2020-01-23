@@ -28,6 +28,7 @@ exports.Response = global.Response;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const socket_message_enum_1 = require("../../third-party-connectors/twitch/socket-message-enum");
+const emote_parser_1 = require("../../third-party-connectors/twitch/chatbot/parsers/emote-parser");
 class EmoteWidgetClient {
     constructor(serverUrl, emoteWidget) {
         this.serverUrl = 'ws://localhost:8080';
@@ -45,7 +46,7 @@ class EmoteWidgetClient {
         this.socket.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, data: '' }));
     }
     onMessage(event) {
-        console.log(`[message] Data received from server: ${event.data}`);
+        // console.log(`[message] Data received from server: ${event.data}`);
         const eventData = JSON.parse(event.data);
         if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.CheckEmoteCache) {
             if (eventData.data.length < 1) {
@@ -56,11 +57,20 @@ class EmoteWidgetClient {
         }
         else if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.FoundEmotes) {
             const invokedEmotes = eventData.data;
+            console.log('invoked emotes', invokedEmotes);
             if (!!invokedEmotes && invokedEmotes.length > 0) {
                 invokedEmotes.forEach((emoteCode) => {
-                    emoteCode.forEach((emote) => {
-                        this.emoteWidget.addEmoteToContainer(emote);
-                    });
+                    console.log(`data type ${emoteCode.type} enum ${emote_parser_1.ComboType.None}`);
+                    if (emoteCode.type === emote_parser_1.ComboType.None) {
+                        console.log('none');
+                        emoteCode.data.forEach((emote) => {
+                            this.emoteWidget.addEmoteToContainer(emote);
+                        });
+                    }
+                    else if (emoteCode.type === emote_parser_1.ComboType.Sequence || emoteCode.type === emote_parser_1.ComboType.LeftRight) { // these are combo emotes
+                        console.log('combo');
+                        this.emoteWidget.addGroupedEmoteToContainer(emoteCode.data);
+                    }
                 });
             }
         }
@@ -82,7 +92,7 @@ class EmoteWidgetClient {
 }
 exports.EmoteWidgetClient = EmoteWidgetClient;
 
-},{"../../third-party-connectors/twitch/socket-message-enum":13}],3:[function(require,module,exports){
+},{"../../third-party-connectors/twitch/chatbot/parsers/emote-parser":13,"../../third-party-connectors/twitch/socket-message-enum":14}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class EmoteWidgetConfig {
@@ -145,51 +155,54 @@ class EmoteWidget {
             return emote.code;
         });
     }
-    getDrawableEmoteByCode(emoteCode) {
-        let drawable = this.createRainingEmote(emoteCode);
-        const randomAnimationType = this.randomNumberBetween(1, 3);
+    getDrawableEmoteByCode(emoteCode, position, velocity, lifespan, angularVelocity, scale, group) {
+        let drawable = this.createRainingEmote(emoteCode, position, velocity, lifespan, angularVelocity, scale);
+        const randomAnimationType = group ? group : this.randomNumberBetween(1, 3);
         if (randomAnimationType === 2) {
-            drawable = this.createWavyEmote(emoteCode);
+            drawable = this.createWavyEmote(emoteCode, position, velocity, lifespan, angularVelocity, scale);
         }
         if (randomAnimationType === 3) {
-            drawable = this.createFireworkEmote(emoteCode);
+            drawable = this.createFireworkEmote(emoteCode, position, velocity, lifespan, angularVelocity, scale);
         }
         return drawable;
     }
-    createFireworkEmote(emoteCode) {
+    createFireworkEmote(emoteCode, position, velocity, lifespan, angularVelocity, scale) {
         const emote = this.getEmoteByCode(emoteCode);
-        const randomPosition = new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.getViewHeight());
+        const randomPosition = position ? position : new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.getViewHeight());
         const xVelocityDirection = randomPosition.x < this.getViewWidth() / 2 ? 1 : -1;
-        const randomVelocity = new emote_interfaces_1.Vector2(this.randomNumberBetween(1, 2) * xVelocityDirection, this.randomNumberBetween(2, 4.5) * -1);
-        const randomLifespan = this.randomNumberBetween(3, 4.2);
-        const randomAngularVelocity = this.randomNumberBetween(1, 2);
-        emote.setScale(this.randomNumberBetween(2, 3));
+        const randomVelocity = velocity ? velocity : new emote_interfaces_1.Vector2(this.randomNumberBetween(1, 2) * xVelocityDirection, this.randomNumberBetween(2, 4.5) * -1);
+        const randomLifespan = lifespan ? lifespan : this.randomNumberBetween(3, 4.2);
+        const randomAngularVelocity = angularVelocity ? angularVelocity : this.randomNumberBetween(1, 2);
+        const scalar = scale ? scale : this.randomNumberBetween(2, 3);
+        emote.setScale(scalar);
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
         const fireworkEmote = new firework_emote_1.FireworkEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
         fireworkEmote.code = emoteCode;
         return fireworkEmote;
     }
-    createRainingEmote(emoteCode) {
+    createRainingEmote(emoteCode, position, velocity, lifespan, angularVelocity, scale) {
         const emote = this.getEmoteByCode(emoteCode);
-        const randomPosition = new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), 0);
-        const randomVelocity = new emote_interfaces_1.Vector2(0, this.randomNumberBetween(1, 5));
-        const randomLifespan = this.randomNumberBetween(1, 6);
-        const randomAngularVelocity = this.randomNumberBetween(1, 4);
-        emote.setScale(this.randomNumberBetween(1, 3));
+        const randomPosition = position ? position : new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), 0);
+        const randomVelocity = velocity ? velocity : new emote_interfaces_1.Vector2(0, this.randomNumberBetween(1, 5));
+        const randomLifespan = lifespan ? lifespan : this.randomNumberBetween(1, 6);
+        const randomAngularVelocity = angularVelocity ? angularVelocity : this.randomNumberBetween(1, 4);
+        const scalar = scale ? scale : this.randomNumberBetween(1, 3);
+        emote.setScale(scalar);
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
         return new raining_emote_1.RainingEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
     }
-    createWavyEmote(emoteCode) {
+    createWavyEmote(emoteCode, position, velocity, lifespan, angularVelocity, scale) {
         const emote = this.getEmoteByCode(emoteCode);
-        const randomVelocity = new emote_interfaces_1.Vector2(this.randomNumberBetween(1, 5), this.randomNumberBetween(1, 5));
-        const randomLifespan = this.randomNumberBetween(3, 9);
-        const randomAngularVelocity = this.randomNumberBetween(1, 4);
-        emote.setScale(this.randomNumberBetween(1, 3));
+        const randomVelocity = velocity ? velocity : new emote_interfaces_1.Vector2(this.randomNumberBetween(1, 5), this.randomNumberBetween(1, 5));
+        const randomLifespan = lifespan ? lifespan : this.randomNumberBetween(3, 9);
+        const randomAngularVelocity = angularVelocity ? angularVelocity : this.randomNumberBetween(1, 4);
+        const scalar = scale ? scale : this.randomNumberBetween(1, 3);
+        emote.setScale(scalar);
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
-        const randomPosition = new emote_interfaces_1.Vector2(0, this.randomNumberBetween(0, this.getViewHeight() - emoteSize.y));
+        const randomPosition = position ? position : new emote_interfaces_1.Vector2(0, this.randomNumberBetween(0, this.getViewHeight() - emoteSize.y));
         const max = 2;
         const toggle = this.randomNumberBetween(1, max); //left
         if (toggle % max === 1) { // right
@@ -243,6 +256,25 @@ class EmoteWidget {
             const drawableEmote = this.getDrawableEmoteByCode(emoteCode);
             this.addEmoteToCanvasAndDrawables(drawableEmote);
         }
+    }
+    addGroupedEmoteToContainer(emoteCodes) {
+        const drawables = [];
+        const position = new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.randomNumberBetween(0, this.getViewHeight()));
+        const velocity = new emote_interfaces_1.Vector2(this.randomNumberBetween(1, 5), this.randomNumberBetween(1, 5));
+        const lifespan = this.randomNumberBetween(2, 5);
+        const angularVelocity = 0;
+        const scale = this.randomNumberBetween(1, 3);
+        const group = this.randomNumberBetween(1, 3);
+        const pixelSize = 28;
+        let emoteCounter = 0;
+        emoteCodes.forEach((emoteCode) => {
+            position.x = position.x + (((pixelSize * scale) * emoteCounter) * 2);
+            const drawable = this.getDrawableEmoteByCode(emoteCode, position, velocity, lifespan, angularVelocity, scale, group);
+            drawables.push(drawable);
+        });
+        drawables.forEach((drawable) => {
+            this.addEmoteToCanvasAndDrawables(drawable);
+        });
     }
     addEmoteToCanvasAndDrawables(drawable) {
         var _a;
@@ -718,7 +750,7 @@ Promise.all([
     }
 });
 
-},{"../../third-party-connectors/steam/steam-api":12,"../../third-party-connectors/twitch/twitch-api-v5":14,"./emote-widget":4,"./emote-widget-client":2,"./emote-widget-config":3}],11:[function(require,module,exports){
+},{"../../third-party-connectors/steam/steam-api":12,"../../third-party-connectors/twitch/twitch-api-v5":15,"./emote-widget":4,"./emote-widget-client":2,"./emote-widget-config":3}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class PlayerSummary {
@@ -828,6 +860,99 @@ exports.SteamApi = SteamApi;
 },{"./player-summary":11,"node-fetch":1}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var ComboType;
+(function (ComboType) {
+    ComboType[ComboType["None"] = 0] = "None";
+    ComboType[ComboType["Sequence"] = 1] = "Sequence";
+    ComboType[ComboType["LeftRight"] = 2] = "LeftRight";
+})(ComboType = exports.ComboType || (exports.ComboType = {}));
+class ComboEmote {
+    constructor(comboType, combo) {
+        this.comboType = comboType;
+        this.combo = combo;
+    }
+}
+class EmoteParser {
+    constructor() {
+        this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
+        this.comboCodes = [
+            new ComboEmote(ComboType.Sequence, ['Squid1', 'Squid2', 'Squid3', 'Squid4']),
+            new ComboEmote(ComboType.LeftRight, ['PowerUpL', 'PowerUpR'])
+        ];
+    }
+    parseComplete(msg, parsableEmotes) {
+        let foundEmotes = [];
+        this.checkForComboEmotes(msg, parsableEmotes).forEach((emote) => {
+            foundEmotes.push(emote);
+        });
+        this.parseForEmotes(msg, parsableEmotes).forEach((emote) => {
+            foundEmotes.push({ type: ComboType.None, data: emote });
+        });
+        return foundEmotes;
+    }
+    parseForEmotes(msg, parsableEmotes) {
+        const validEmotes = parsableEmotes.join('|');
+        const validSuffixes = this.emoteSuffixes.join('|');
+        const regex = new RegExp(`(${validEmotes})(${validSuffixes})?`, 'gi');
+        let comboEmotes = [];
+        if (msg.match(regex)) {
+            const matches = msg.match(regex);
+            if (matches) {
+                comboEmotes.push(matches);
+            }
+        }
+        return comboEmotes;
+    }
+    checkForComboEmotes(msg, parsableEmotes) {
+        let comboEmotes = [];
+        const validMiddles = parsableEmotes.join('|');
+        this.comboCodes.forEach((comboEmote) => {
+            const sequentialCombo = this.checkForSequentialEmotes(msg, comboEmote);
+            if (sequentialCombo.length > 0) {
+                sequentialCombo.forEach((combo) => {
+                    comboEmotes.push({ type: ComboType.Sequence, data: combo });
+                });
+            }
+            const leftRightCombo = this.checkForLeftRightEmotes(msg, comboEmote, validMiddles);
+            if (leftRightCombo.length > 0) {
+                leftRightCombo.forEach((combo) => {
+                    comboEmotes.push({ type: ComboType.LeftRight, data: combo });
+                });
+            }
+        });
+        return comboEmotes;
+    }
+    checkForLeftRightEmotes(msg, comboEmote, validMiddles) {
+        var _a;
+        const validSuffixes = this.emoteSuffixes.join('|');
+        const regex = new RegExp(`${comboEmote.combo[0]} (${validMiddles})(${validSuffixes})? ${comboEmote.combo[1]}`, 'gi');
+        let comboEmotes = [];
+        if (msg.match(regex)) {
+            const matches = msg.match(regex);
+            (_a = matches) === null || _a === void 0 ? void 0 : _a.forEach((match) => {
+                comboEmotes.push(match.split(' '));
+            });
+        }
+        return comboEmotes;
+    }
+    checkForSequentialEmotes(msg, comboEmote) {
+        var _a;
+        const regex = new RegExp(`${comboEmote.combo.join(' ')}`, 'gi');
+        let comboEmotes = [];
+        if (msg.match(regex)) {
+            const matches = msg.match(regex);
+            (_a = matches) === null || _a === void 0 ? void 0 : _a.forEach((match) => {
+                comboEmotes.push(match.split(' '));
+            });
+        }
+        return comboEmotes;
+    }
+}
+exports.EmoteParser = EmoteParser;
+
+},{}],14:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var SocketMessageEnum;
 (function (SocketMessageEnum) {
     SocketMessageEnum[SocketMessageEnum["FoundEmotes"] = 0] = "FoundEmotes";
@@ -835,7 +960,7 @@ var SocketMessageEnum;
     SocketMessageEnum[SocketMessageEnum["EmoteCodes"] = 2] = "EmoteCodes";
 })(SocketMessageEnum = exports.SocketMessageEnum || (exports.SocketMessageEnum = {}));
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }

@@ -22,28 +22,29 @@ export class EmoteWidget {
         });
     }
 
-    private getDrawableEmoteByCode(emoteCode: string): RenderableObject {
-        let drawable = this.createRainingEmote(emoteCode);
-        const randomAnimationType = this.randomNumberBetween(1, 3);
+    private getDrawableEmoteByCode(emoteCode: string, position?: Vector2, velocity?: Vector2, lifespan?: number, angularVelocity?: number, scale?: number, group?: number): RenderableObject {
+        let drawable = this.createRainingEmote(emoteCode, position, velocity, lifespan, angularVelocity, scale);
+        const randomAnimationType = group ? group : this.randomNumberBetween(1, 3);
         if (randomAnimationType === 2) {
-            drawable = this.createWavyEmote(emoteCode);
+            drawable = this.createWavyEmote(emoteCode, position, velocity, lifespan, angularVelocity, scale);
         } if (randomAnimationType === 3) {
-            drawable = this.createFireworkEmote(emoteCode);
+            drawable = this.createFireworkEmote(emoteCode, position, velocity, lifespan, angularVelocity, scale);
         }
         return drawable;
     }
 
-    createFireworkEmote(emoteCode: string): FireworkEmote {
+    createFireworkEmote(emoteCode: string, position?: Vector2, velocity?: Vector2, lifespan?: number, angularVelocity?: number, scale?: number): FireworkEmote {
         const emote = this.getEmoteByCode(emoteCode);
-        const randomPosition = new Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.getViewHeight());
+        const randomPosition = position ? position : new Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.getViewHeight());
 
         const xVelocityDirection = randomPosition.x < this.getViewWidth() / 2 ? 1 : -1;
 
-        const randomVelocity = new Vector2(this.randomNumberBetween(1, 2) * xVelocityDirection, this.randomNumberBetween(2, 4.5) * -1);
-        const randomLifespan = this.randomNumberBetween(3, 4.2);
-        const randomAngularVelocity = this.randomNumberBetween(1, 2);
+        const randomVelocity = velocity ? velocity : new Vector2(this.randomNumberBetween(1, 2) * xVelocityDirection, this.randomNumberBetween(2, 4.5) * -1);
+        const randomLifespan = lifespan ? lifespan : this.randomNumberBetween(3, 4.2);
+        const randomAngularVelocity = angularVelocity ? angularVelocity : this.randomNumberBetween(1, 2);
 
-        emote.setScale(this.randomNumberBetween(2, 3));
+        const scalar = scale ? scale : this.randomNumberBetween(2, 3)
+        emote.setScale(scalar);
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
         const fireworkEmote = new FireworkEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
@@ -51,30 +52,32 @@ export class EmoteWidget {
         return fireworkEmote;
     }
 
-    createRainingEmote(emoteCode: string): RainingEmote {
+    createRainingEmote(emoteCode: string, position?: Vector2, velocity?: Vector2, lifespan?: number, angularVelocity?: number, scale?: number): RainingEmote {
         const emote = this.getEmoteByCode(emoteCode);
-        const randomPosition = new Vector2(this.randomNumberBetween(0, this.getViewWidth()), 0);
-        const randomVelocity = new Vector2(0, this.randomNumberBetween(1, 5));
-        const randomLifespan = this.randomNumberBetween(1, 6);
-        const randomAngularVelocity = this.randomNumberBetween(1, 4);
+        const randomPosition = position ? position : new Vector2(this.randomNumberBetween(0, this.getViewWidth()), 0);
+        const randomVelocity = velocity ? velocity : new Vector2(0, this.randomNumberBetween(1, 5));
+        const randomLifespan = lifespan ? lifespan : this.randomNumberBetween(1, 6);
+        const randomAngularVelocity = angularVelocity ? angularVelocity : this.randomNumberBetween(1, 4);
 
-        emote.setScale(this.randomNumberBetween(1, 3));
+        const scalar = scale ? scale : this.randomNumberBetween(1, 3)
+        emote.setScale(scalar);
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
 
         return new RainingEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emote.url, randomAngularVelocity);
     }
 
-    createWavyEmote(emoteCode: string): RainingEmote {
+    createWavyEmote(emoteCode: string, position?: Vector2, velocity?: Vector2, lifespan?: number, angularVelocity?: number, scale?: number): RainingEmote {
         const emote = this.getEmoteByCode(emoteCode);
-        const randomVelocity = new Vector2(this.randomNumberBetween(1, 5), this.randomNumberBetween(1, 5));
-        const randomLifespan = this.randomNumberBetween(3, 9);
-        const randomAngularVelocity = this.randomNumberBetween(1, 4);
+        const randomVelocity = velocity ? velocity : new Vector2(this.randomNumberBetween(1, 5), this.randomNumberBetween(1, 5));
+        const randomLifespan = lifespan ? lifespan : this.randomNumberBetween(3, 9);
+        const randomAngularVelocity = angularVelocity ? angularVelocity : this.randomNumberBetween(1, 4);
 
-        emote.setScale(this.randomNumberBetween(1, 3));
+        const scalar = scale ? scale : this.randomNumberBetween(1, 3)
+        emote.setScale(scalar);
         emote.setUrl();
         const emoteSize = emote.convertScaleToPixels();
-        const randomPosition = new Vector2(0, this.randomNumberBetween(0, this.getViewHeight() - emoteSize.y));
+        const randomPosition = position ? position : new Vector2(0, this.randomNumberBetween(0, this.getViewHeight() - emoteSize.y));
 
         const max = 2;
         const toggle = this.randomNumberBetween(1, max); //left
@@ -137,6 +140,27 @@ export class EmoteWidget {
             const drawableEmote = this.getDrawableEmoteByCode(emoteCode);
             this.addEmoteToCanvasAndDrawables(drawableEmote);
         }
+    }
+
+    public addGroupedEmoteToContainer(emoteCodes: string[]) {
+        const drawables: RenderableObject[] = [];
+        const position = new Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.randomNumberBetween(0, this.getViewHeight()));
+        const velocity = new Vector2(this.randomNumberBetween(1, 5), this.randomNumberBetween(1, 5));
+        const lifespan = this.randomNumberBetween(2, 5);
+        const angularVelocity = 0;
+        const scale = this.randomNumberBetween(1, 3);
+        const group = this.randomNumberBetween(1, 3);
+        const pixelSize = 28;
+        let emoteCounter = 0;
+        emoteCodes.forEach((emoteCode) => {
+            position.x = position.x + (((pixelSize * scale) * emoteCounter) * 2);
+            const drawable = this.getDrawableEmoteByCode(emoteCode, position, velocity, lifespan, angularVelocity, scale, group);
+            drawables.push(drawable);
+        });
+
+        drawables.forEach((drawable) => {
+            this.addEmoteToCanvasAndDrawables(drawable);
+        });
     }
 
     addEmoteToCanvasAndDrawables(drawable: RenderableObject) {
