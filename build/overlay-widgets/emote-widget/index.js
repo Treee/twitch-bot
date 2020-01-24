@@ -10,9 +10,10 @@ const steamApi = new steam_api_1.SteamApi();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
+const emoteSetIds = [0, 42, 19194, 300206309];
 Promise.all([
     twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
-    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42]),
+    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, emoteSetIds),
     twitchApiV5.getBttvEmotesByChannel(emoteWidgetConfig.channel),
     twitchApiV5.getGlobalBttvEmotes()
 ]).then((values) => {

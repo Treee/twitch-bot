@@ -13,9 +13,11 @@ emoteWidgetConfig.setConfigFrom(window.location.search.substring(1))
 
 const emoteWidget = new EmoteWidget(emoteWidgetConfig);
 
+const emoteSetIds = [0, 42, 19194, 300206309];
+
 Promise.all([
     twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
-    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42]),
+    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, emoteSetIds),
     twitchApiV5.getBttvEmotesByChannel(emoteWidgetConfig.channel),
     twitchApiV5.getGlobalBttvEmotes()
 ]).then((values) => {

@@ -122,6 +122,24 @@ export class TwitchApiV5 {
         emotes.push(new TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, '301108063'));
         emotes.push(new TwitchEmote('HahaGoose', hahahalidaysEmoteSet, '301108075'));
         emotes.push(new TwitchEmote('HahaGingercat', hahahalidaysEmoteSet, '301108078'));
+
+        const prideEmoteSet = 472873131;
+        emotes.push(new TwitchEmote('PrideWingL', prideEmoteSet, '300354442'));
+        emotes.push(new TwitchEmote('PrideWingR', prideEmoteSet, '300354435'));
+        emotes.push(new TwitchEmote('PrideShine', prideEmoteSet, '300354448'));
+        emotes.push(new TwitchEmote('PrideCheers', prideEmoteSet, '300354469'));
+        emotes.push(new TwitchEmote('PrideBalloons', prideEmoteSet, '300352359'));
+        emotes.push(new TwitchEmote('PrideLionHey', prideEmoteSet, '300352355'));
+        emotes.push(new TwitchEmote('PrideLionYay', prideEmoteSet, '300352343'));
+
+        const rpgEmoteSet = 472873132;
+        emotes.push(new TwitchEmote('RPGBukka', rpgEmoteSet, '300904281'));
+        emotes.push(new TwitchEmote('RPGFei', rpgEmoteSet, '300904288'));
+        emotes.push(new TwitchEmote('RPGGhosto', rpgEmoteSet, '300904290'));
+        emotes.push(new TwitchEmote('RPGStaff', rpgEmoteSet, '300904299'));
+        emotes.push(new TwitchEmote('RPGYonger', rpgEmoteSet, '300904302'));
+        emotes.push(new TwitchEmote('RPGEpicStaff', rpgEmoteSet, '300904286'));
+
         return emotes;
     }
 

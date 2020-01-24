@@ -17,7 +17,12 @@ class EmoteParser {
         this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
         this.comboCodes = [
             new ComboEmote(ComboType.Sequence, ['Squid1', 'Squid2', 'Squid3', 'Squid4']),
-            new ComboEmote(ComboType.LeftRight, ['PowerUpL', 'PowerUpR'])
+            new ComboEmote(ComboType.Sequence, ['TableHere', 'FlipThis']),
+            new ComboEmote(ComboType.LeftRight, ['PowerUpL', 'PowerUpR']),
+            new ComboEmote(ComboType.LeftRight, ['HahaShrugLeft', 'HahaShrugRight']),
+            new ComboEmote(ComboType.LeftRight, ['MercyWing1', 'MercyWing2']),
+            new ComboEmote(ComboType.LeftRight, ['PrideWingL', 'PrideWingR']),
+            new ComboEmote(ComboType.LeftRight, ['FBPass', 'FBBlock']),
         ];
     }
     parseComplete(msg, parsableEmotes) {
