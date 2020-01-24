@@ -61,7 +61,7 @@ class EmoteWidgetClient {
             if (!!invokedEmotes && invokedEmotes.length > 0) {
                 invokedEmotes.forEach((emoteCode) => {
                     if (emoteCode.type === emote_parser_1.ComboType.None) {
-                        // this.emoteWidget.addEmoteToContainer(emoteCode.data);
+                        this.emoteWidget.addEmoteToContainer(emoteCode.data);
                     }
                     else if (emoteCode.type === emote_parser_1.ComboType.Sequence || emoteCode.type === emote_parser_1.ComboType.LeftRight) { // these are combo emotes
                         this.emoteWidget.addGroupedEmoteToContainer(emoteCode.data);
@@ -261,15 +261,20 @@ class EmoteWidget {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
     addEmoteToContainer(emoteCodes) {
-        let numEmotes = this.randomNumberBetween(1, 3);
+        let numEmotes = this.randomNumberBetween(1, 2);
+        for (let index = 0; index < numEmotes; index++) {
+            emoteCodes.forEach((emote) => {
+                const drawableEmote = this.getDrawableEmoteByCode([emote]);
+                this.addEmoteToCanvasAndDrawables(drawableEmote);
+            });
+        }
+    }
+    addGroupedEmoteToContainer(emoteCodes) {
+        let numEmotes = this.randomNumberBetween(1, 2);
         for (let index = 0; index < numEmotes; index++) {
             const drawableEmote = this.getDrawableEmoteByCode(emoteCodes);
             this.addEmoteToCanvasAndDrawables(drawableEmote);
         }
-    }
-    addGroupedEmoteToContainer(emoteCodes) {
-        const drawable = this.createFireworkEmote(emoteCodes);
-        this.addEmoteToCanvasAndDrawables(drawable);
     }
     addEmoteToCanvasAndDrawables(drawable) {
         var _a;

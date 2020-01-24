@@ -34,7 +34,7 @@ class EmoteWidgetClient {
             if (!!invokedEmotes && invokedEmotes.length > 0) {
                 invokedEmotes.forEach((emoteCode) => {
                     if (emoteCode.type === emote_parser_1.ComboType.None) {
-                        // this.emoteWidget.addEmoteToContainer(emoteCode.data);
+                        this.emoteWidget.addEmoteToContainer(emoteCode.data);
                     }
                     else if (emoteCode.type === emote_parser_1.ComboType.Sequence || emoteCode.type === emote_parser_1.ComboType.LeftRight) { // these are combo emotes
                         this.emoteWidget.addGroupedEmoteToContainer(emoteCode.data);

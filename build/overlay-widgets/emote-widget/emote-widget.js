@@ -128,15 +128,20 @@ class EmoteWidget {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
     addEmoteToContainer(emoteCodes) {
-        let numEmotes = this.randomNumberBetween(1, 3);
+        let numEmotes = this.randomNumberBetween(1, 2);
+        for (let index = 0; index < numEmotes; index++) {
+            emoteCodes.forEach((emote) => {
+                const drawableEmote = this.getDrawableEmoteByCode([emote]);
+                this.addEmoteToCanvasAndDrawables(drawableEmote);
+            });
+        }
+    }
+    addGroupedEmoteToContainer(emoteCodes) {
+        let numEmotes = this.randomNumberBetween(1, 2);
         for (let index = 0; index < numEmotes; index++) {
             const drawableEmote = this.getDrawableEmoteByCode(emoteCodes);
             this.addEmoteToCanvasAndDrawables(drawableEmote);
         }
-    }
-    addGroupedEmoteToContainer(emoteCodes) {
-        const drawable = this.createFireworkEmote(emoteCodes);
-        this.addEmoteToCanvasAndDrawables(drawable);
     }
     addEmoteToCanvasAndDrawables(drawable) {
         var _a;
