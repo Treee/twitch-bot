@@ -758,9 +758,10 @@ const steamApi = new steam_api_1.SteamApi();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
+const emoteSetIds = [0, 42, 19194, 300206309];
 Promise.all([
     twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
-    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, [0, 42]),
+    twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, emoteSetIds),
     twitchApiV5.getBttvEmotesByChannel(emoteWidgetConfig.channel),
     twitchApiV5.getGlobalBttvEmotes()
 ]).then((values) => {
@@ -922,7 +923,12 @@ class EmoteParser {
         this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
         this.comboCodes = [
             new ComboEmote(ComboType.Sequence, ['Squid1', 'Squid2', 'Squid3', 'Squid4']),
-            new ComboEmote(ComboType.LeftRight, ['PowerUpL', 'PowerUpR'])
+            new ComboEmote(ComboType.Sequence, ['TableHere', 'FlipThis']),
+            new ComboEmote(ComboType.LeftRight, ['PowerUpL', 'PowerUpR']),
+            new ComboEmote(ComboType.LeftRight, ['HahaShrugLeft', 'HahaShrugRight']),
+            new ComboEmote(ComboType.LeftRight, ['MercyWing1', 'MercyWing2']),
+            new ComboEmote(ComboType.LeftRight, ['PrideWingL', 'PrideWingR']),
+            new ComboEmote(ComboType.LeftRight, ['FBPass', 'FBBlock']),
         ];
     }
     parseComplete(msg, parsableEmotes) {
@@ -1141,6 +1147,21 @@ class TwitchApiV5 {
         emotes.push(new emote_1.TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, '301108063'));
         emotes.push(new emote_1.TwitchEmote('HahaGoose', hahahalidaysEmoteSet, '301108075'));
         emotes.push(new emote_1.TwitchEmote('HahaGingercat', hahahalidaysEmoteSet, '301108078'));
+        const prideEmoteSet = 472873131;
+        emotes.push(new emote_1.TwitchEmote('PrideWingL', prideEmoteSet, '300354442'));
+        emotes.push(new emote_1.TwitchEmote('PrideWingR', prideEmoteSet, '300354435'));
+        emotes.push(new emote_1.TwitchEmote('PrideShine', prideEmoteSet, '300354448'));
+        emotes.push(new emote_1.TwitchEmote('PrideCheers', prideEmoteSet, '300354469'));
+        emotes.push(new emote_1.TwitchEmote('PrideBalloons', prideEmoteSet, '300352359'));
+        emotes.push(new emote_1.TwitchEmote('PrideLionHey', prideEmoteSet, '300352355'));
+        emotes.push(new emote_1.TwitchEmote('PrideLionYay', prideEmoteSet, '300352343'));
+        const rpgEmoteSet = 472873132;
+        emotes.push(new emote_1.TwitchEmote('RPGBukka', rpgEmoteSet, '300904281'));
+        emotes.push(new emote_1.TwitchEmote('RPGFei', rpgEmoteSet, '300904288'));
+        emotes.push(new emote_1.TwitchEmote('RPGGhosto', rpgEmoteSet, '300904290'));
+        emotes.push(new emote_1.TwitchEmote('RPGStaff', rpgEmoteSet, '300904299'));
+        emotes.push(new emote_1.TwitchEmote('RPGYonger', rpgEmoteSet, '300904302'));
+        emotes.push(new emote_1.TwitchEmote('RPGEpicStaff', rpgEmoteSet, '300904286'));
         return emotes;
     }
 }
