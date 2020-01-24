@@ -25,15 +25,33 @@ export class EmoteParser {
     ];
     constructor() { }
 
-    parseComplete(msg: string, parsableEmotes: string[]): any[] {
-        let foundEmotes: any[] = [];
+    parseComplete(msg: string, parsableEmotes: string[]): { type: ComboType, data: string[] }[] {
+        let foundEmotes: { type: ComboType, data: string[] }[] = [];
+
         this.checkForComboEmotes(msg, parsableEmotes).forEach((emote) => {
             foundEmotes.push(emote);
         });
+
         this.parseForEmotes(msg, parsableEmotes).forEach((emote) => {
-            foundEmotes.push({ type: ComboType.None, data: emote });
+            if (!this.checkForDuplicate(foundEmotes, emote)) {
+                foundEmotes.push({ type: ComboType.None, data: emote });
+            }
         });
+
         return foundEmotes;
+    }
+
+    checkForDuplicate(existingValues: { type: ComboType, data: string[] }[], newValue: string[]): boolean {
+        let foundDupe = false;
+
+        existingValues.forEach((existingValue) => {
+            let fullMatch = false
+            for (let index = 0; index < newValue.length; index++) {
+                fullMatch = existingValue.data[index] === newValue[index];
+            }
+            foundDupe = fullMatch || foundDupe;
+        });
+        return foundDupe;
     }
 
     parseForEmotes(msg: string, parsableEmotes: string[]): string[][] {
