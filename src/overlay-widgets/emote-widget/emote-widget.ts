@@ -152,16 +152,21 @@ export class EmoteWidget {
     }
 
     public addEmoteToContainer(emoteCodes: string[]) {
-        let numEmotes = this.randomNumberBetween(1, 3);
+        let numEmotes = this.randomNumberBetween(1, 2);
         for (let index = 0; index < numEmotes; index++) {
-            const drawableEmote = this.getDrawableEmoteByCode(emoteCodes);
-            this.addEmoteToCanvasAndDrawables(drawableEmote);
+            emoteCodes.forEach((emote) => {
+                const drawableEmote = this.getDrawableEmoteByCode([emote]);
+                this.addEmoteToCanvasAndDrawables(drawableEmote);
+            });
         }
     }
 
     public addGroupedEmoteToContainer(emoteCodes: string[]) {
-        const drawable = this.createFireworkEmote(emoteCodes);
-        this.addEmoteToCanvasAndDrawables(drawable);
+        let numEmotes = this.randomNumberBetween(1, 2);
+        for (let index = 0; index < numEmotes; index++) {
+            const drawableEmote = this.getDrawableEmoteByCode(emoteCodes);
+            this.addEmoteToCanvasAndDrawables(drawableEmote);
+        }
     }
 
     addEmoteToCanvasAndDrawables(drawable: RenderableObject) {
