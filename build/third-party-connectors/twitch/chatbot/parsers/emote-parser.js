@@ -31,9 +31,22 @@ class EmoteParser {
             foundEmotes.push(emote);
         });
         this.parseForEmotes(msg, parsableEmotes).forEach((emote) => {
-            foundEmotes.push({ type: ComboType.None, data: emote });
+            if (!this.checkForDuplicate(foundEmotes, emote)) {
+                foundEmotes.push({ type: ComboType.None, data: emote });
+            }
         });
         return foundEmotes;
+    }
+    checkForDuplicate(existingValues, newValue) {
+        let foundDupe = false;
+        existingValues.forEach((existingValue) => {
+            let fullMatch = false;
+            for (let index = 0; index < newValue.length; index++) {
+                fullMatch = existingValue.data[index] === newValue[index];
+            }
+            foundDupe = fullMatch || foundDupe;
+        });
+        return foundDupe;
     }
     parseForEmotes(msg, parsableEmotes) {
         const validEmotes = parsableEmotes.join('|');

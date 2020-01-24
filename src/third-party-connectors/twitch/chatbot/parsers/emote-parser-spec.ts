@@ -1,5 +1,7 @@
 import { EmoteParser, ComboType } from "./emote-parser";
 
+const parsableEmotes = ["itsatrEeCool", "itsatrEeToast", "itsatrEeMad", "itsatrEee2", "itsatrEeTeee", "HahaSleep", "HahaThink", "HahaTurtledove", "HahaBaby", "HahaDoge", "HahaHide", "HahaSweat", "HahaCat", "HahaLean", "HahaShrugRight", "HahaShrugMiddle", "HahaDreidel", "HahaShrugLeft", "HahaBall", "HahaNyandeer", "Haha2020", "HahaThisisfine", "HahaPoint", "HahaReindeer", "HahaElf", "HahaNutcracker", "HahaGoose", "HahaGingercat", "PrideWingL", "PrideWingR", "PrideShine", "PrideCheers", "PrideBalloons", "PrideLionHey", "PrideLionYay", "RPGBukka", "RPGFei", "RPGGhosto", "RPGStaff", "RPGYonger", "RPGEpicStaff", "PorscheWIN", "SingsNote", "SingsMic", "TwitchSings", "SoonerLater", "HolidayTree", "HolidaySanta", "HolidayPresent", "HolidayOrnament", "HolidayLog", "HolidayCookie", "GunRun", "PixelBob", "FBPenalty", "FBChallenge", "FBCatch", "FBBlock", "FBSpiral", "FBPass", "FBRun", "GenderFluidPride", "NonBinaryPride", "MaxLOL", "IntersexPride", "TwitchRPG", "PansexualPride", "AsexualPride", "TransgenderPride", "GayPride", "LesbianPride", "BisexualPride", "PinkMercy", "MercyWing2", "MercyWing1", "PartyHat", "EarthDay", "TombRaid", "PopCorn", "FBtouchdown", "PurpleStar", "GreenTeam", "RedTeam", "TPFufun", "TwitchVotes", "DarkMode", "HSWP", "HSCheers", "PowerUpL", "PowerUpR", "LUL", "EntropyWins", "TPcrunchyroll", "TwitchUnity", "Squid4", "Squid3", "Squid2", "Squid1", "CrreamAwk", "CarlSmile", "TwitchLit", "TehePelo", "TearGlove", "SabaPing", "PunOko", "KonCha", "Kappu", "InuyoFace", "BigPhish", "BegWan", "ThankEgg", "MorphinTime", "BlessRNG", "TheIlluminati", "TBAngel", "MVGame", "NinjaGrumpy", "PartyTime", "RlyTho", "UWot", "YouDontSay", "KAPOW", "ItsBoshyTime", "CoolStoryBob", "TriHard", "SuperVinlin", "FreakinStinkin", "Poooound", "CurseLit", "BatChest", "BrainSlug", "PrimeMe", "StrawBeary", "RaccAttack", "UncleNox", "WTRuck", "TooSpicy", "Jebaited", "DogFace", "BlargNaut", "TakeNRG", "GivePLZ", "imGlitch", "pastaThat", "copyThis", "UnSane", "DatSheffy", "TheTarFu", "PicoMause", "TinyFace", "DrinkPurple", "DxCat", "RuleFive", "VoteNay", "VoteYea", "PJSugar", "DoritosChip", "OpieOP", "FutureMan", "ChefFrank", "StinkyCheese", "NomNom", "SmoocherZ", "cmonBruh", "KappaWealth", "MikeHogu", "VoHiYo", "KomodoHype", "SeriousSloth", "OSFrog", "OhMyDog", "KappaClaus", "KappaRoss", "MingLee", "SeemsGood", "twitchRaid", "bleedPurple", "duDudu", "riPepperonis", "NotLikeThis", "DendiFace", "CoolCat", "KappaPride", "ShadyLulu", "ArgieB8", "CorgiDerp", "HumbleLife", "PraiseIt", "TTours", "mcaT", "NotATK", "HeyGuys", "Mau5", "PRChase", "WutFace", "BuddhaBar", "PermaSmug", "panicBasket", "BabyRage", "HassaanChop", "TheThing", "EleGiggle", "RitzMitz", "YouWHY", "PipeHype", "BrokeBack", "ANELE", "PanicVis", "GrammarKing", "PeoplesChamp", "SoBayed", "BigBrother", "Keepo", "Kippa", "RalpherZ", "TF2John", "ThunBeast", "WholeWheat", "DAESuppy", "FailFish", "HotPokket", "4Head", "ResidentSleeper", "FUNgineer", "PMSTwin", "PogChamp", "ShazBotstix", "BibleThump", "AsianGlow", "DBstyle", "BloodTrail", "HassanChop", "OneHand", "FrankerZ", "SMOrc", "ArsonNoSexy", "PunchTrees", "SSSsss", "Kreygasm", "KevinTurtle", "PJSalt", "SwiftRage", "DansGame", "GingerPower", "BCWarrior", "MrDestructoid", "JonCarnage", "Kappa", "RedCoat", "TheRinger", "StoneLightning", "OptimizePrime", "JKanStyle", "R-?\\)", "\\;-?(p|P)", "\\:-?(p|P)", "\\;-?\\)", "\\:-?[\\\\/]", "\\&lt\\;3", "\\:-?(o|O)", "B-?\\)", "[oO](_|\\.)[oO]", "\\:-?[z|Z|\\|]", "\\&gt\\;\\(", "\\:-?D", "\\:-?\\(", "\\:-?\\)", "\\;-?\\)", "B-?\\)", "\\:-?\\)", "\\&gt\\;\\(", "[oO](_|\\.)[oO]", "\\:-?D", "\\:-?(S|s)", "\\:-?[z|Z|\\|]", "\\:-?[\\\\/]", "\\:-?(o|O)", "\\;-?(p|P)", "\\:-?(p|P)", "\\:-?\\(", ":-?(?:7|L)", "\\&lt\\;\\]", "\\:\\&gt\\;", "#-?[\\\\/]", "R-?\\)", "\\&lt\\;3", "PokScizor", "PokEmpoleon", "PokDecidueye", "PokDarkrai", "PokBlastoise", "FortLlama", "FortHype", "FortBush", "FortOne", "PokShadowmew", "PokSceptile", "PokGarchomp", "PokChandelure", "PokBraixen", "PokAegislash", "PokWeavile", "PokSuicune", "PokPikachu", "PokMewtwo", "PokMaskedpika", "PokMachamp", "PokLucario", "PokCroagunk", "PokGengar", "PokGardevoir", "PokCharizard", "PokBlaziken", "TwitchCop", "PartyPopper", "MindManners", "BagOfMemes", "PrimeRlyTho", "PrimeUWot", "PrimeYouDontSay", "MiniK", "KappaHD", "ScaredyCat", "TableHere", "FlipThis", "PrideCheers", "itsatreeLurk", "itsatreeRekt", "itsatreeHi", "itsatreeCop", "itsatreeWot", "itsatreeVibe", "itsatreeFriends", "fgpGasm", "RareChar", "Woah", "SnoopPls", "BongoCat", "Gir", "PikaFacepalm", "OkMan", "TinaB", "stichDance", "MYEYES", "Giggity", "FeelsBufferingMan", "SnoopSamus", "VaanSmashing", "Train", "HeyListen", "KrabbyPatty", "KoalaTea", "PikachuShock", "Crabrave", "TeaTime", "HAMDANCE", "PedoBear", "RebeccaBlack", ":tf:", "CiGrip", "DatSauce", "ForeverAlone", "GabeN", "HailHelix", "HerbPerve", "iDog", "rStrike", "ShoopDaWhoop", "SwedSwag", "M&Mjc", "bttvNice", "TopHam", "TwaT", "WatChuSay", "SavageJerky", "Zappa", "tehPoleCat", "AngelThump", "HHydro", "TaxiBro", "BroBalt", "ButterSauce", "BaconEffect", "SuchFraud", "CandianRage", "She'llBeRight", "D:", "VisLaud", "KaRappa", "YetiZ", "miniJulia", "FishMoley", "Hhhehehe", "KKona", "PoleDoge", "sosGame", "CruW", "RarePepe", "iamsocal", "haHAA", "FeelsBirthdayMan", "RonSmug", "KappaCool", "FeelsBadMan", "BasedGod", "bUrself", "ConcernDoge", "FeelsGoodMan", "FireSpeed", "NaM", "SourPls", "LuL", "SaltyCorn", "FCreep", "monkaS", "VapeNation", "ariW", "notsquishY", "FeelsAmazingMan", "DuckerZ", "SqShy", "Wowee", "WubTF"];
+
 describe('Emote Parser', () => {
 
     let emoteParser: EmoteParser;
@@ -12,12 +14,8 @@ describe('Emote Parser', () => {
         it('returns a list of emotes and combo emotes used', () => {
             const expectedResult = [
                 { type: ComboType.Sequence, data: ['Squid1', 'Squid2', 'Squid3', 'Squid4'] },
-                { type: ComboType.LeftRight, data: ['PowerUpL', 'itsatrEeToast', 'PowerUpR'] },
-                { type: ComboType.LeftRight, data: ['PowerUpL', 'itsatrEeToast', 'PowerUpR'] },
-                { type: ComboType.None, data: ['itsatrEeCool', 'itsatrEeCool', 'itsatrEeToast', 'itsatrEeToast'] }
             ];
-            const parsableEmotes = ['itsatrEeCool', 'dfsa', 'itsatrEeToast'];
-            const msg = 'hi itsatrEeCool itsatrEeCool Squid1 Squid2 Squid3 Squid4 texst tefdfdfgsd fdsf dsf sd PowerUpL itsatrEeToast PowerUpR tefgd  fds PowerUpL itsatrEeToast PowerUpR';
+            const msg = 'Squid1 Squid2 Squid3 Squid4';
             const actualResult = emoteParser.parseComplete(msg, parsableEmotes);
             expect(actualResult).toEqual(expectedResult);
         });
@@ -25,20 +23,18 @@ describe('Emote Parser', () => {
 
     describe('parseForEmotes', () => {
         it('returns a list of all matched emotes in a message that contain special emote suffixes', () => {
-            const msg = 'some random text with emoteCode_SA';
-            const parsableEmotes = ['emoteCode', 'dfsa', 'dsatw'];
+            const msg = 'some random text with FeelsAmazingMan_SA';
             const expectedResult = [
-                ['emoteCode_SA']
+                ['FeelsAmazingMan_SA']
             ];
             const actualResult = emoteParser.parseForEmotes(msg, parsableEmotes);
             expect(actualResult).toEqual(expectedResult);
         });
 
         it('returns a list of all matched emotes in a message', () => {
-            const msg = 'some random text with emoteCode';
-            const parsableEmotes = ['emoteCode', 'dfsa', 'dsatw'];
+            const msg = 'some random text with notsquishY';
             const expectedResult = [
-                ['emoteCode']
+                ['notsquishY']
             ];
             const actualResult = emoteParser.parseForEmotes(msg, parsableEmotes);
             expect(actualResult).toEqual(expectedResult);
@@ -46,7 +42,6 @@ describe('Emote Parser', () => {
 
         it('returns an empty list if no words in the message match emote codes', () => {
             const msg = 'some random text with emoteCode';
-            const parsableEmotes = ['grgsdf', 'dfsa', 'dsatw'];
             const expectedResult: string[][] = [];
             const actualResult = emoteParser.parseForEmotes(msg, parsableEmotes);
             expect(actualResult).toEqual(expectedResult);
@@ -78,7 +73,6 @@ describe('Emote Parser', () => {
             const expectedResult = [
                 { type: ComboType.LeftRight, data: ['PowerUpL', 'itsatrEeToast', 'PowerUpR'] }
             ];
-            const parsableEmotes = ['test1', 'test2', 'itsatrEeToast'];
             const msg = 'my custom emote msg PowerUpL itsatrEeToast PowerUpR';
             const actualResult = emoteParser.checkForComboEmotes(msg, parsableEmotes);
             expect(actualResult).toEqual(expectedResult);
@@ -88,7 +82,6 @@ describe('Emote Parser', () => {
             const expectedResult = [
                 { type: ComboType.LeftRight, data: ['PowerUpL', 'itsatrEeToast_SA', 'PowerUpR'] }
             ];
-            const parsableEmotes = ['test1', 'test2', 'itsatrEeToast'];
             const msg = 'my custom emote msg PowerUpL itsatrEeToast_SA PowerUpR';
             const actualResult = emoteParser.checkForComboEmotes(msg, parsableEmotes);
             expect(actualResult).toEqual(expectedResult);
@@ -99,7 +92,6 @@ describe('Emote Parser', () => {
                 { type: ComboType.LeftRight, data: ['PowerUpL', 'itsatrEeToast', 'PowerUpR'] },
                 { type: ComboType.LeftRight, data: ['PowerUpL', 'itsatrEeToast', 'PowerUpR'] }
             ];
-            const parsableEmotes = ['test1', 'test2', 'itsatrEeToast'];
             const msg = 'my custom emote msg PowerUpL itsatrEeToast PowerUpR PowerUpL itsatrEeToast PowerUpR';
             const actualResult = emoteParser.checkForComboEmotes(msg, parsableEmotes);
             expect(actualResult).toEqual(expectedResult);

@@ -38,7 +38,6 @@ export class TwitchChatbot {
         const invokedCommands = this.parseForCommands(msg);
         const invokedEmotes = this.emoteParser.parseComplete(msg, this.emoteCodesToLookFor);
         if (this.debugMode) { this.debugMessages(invokedCommands, invokedEmotes); }
-
         if (invokedEmotes.length > 0 && webSocketCb) {
             webSocketCb(SocketMessageEnum.FoundEmotes, invokedEmotes);
         }

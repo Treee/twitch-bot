@@ -31,11 +31,13 @@ class TwitchChatbot {
         if (self) {
             return;
         } // Ignore messages from the bot
+        console.log('msg', msg);
         const invokedCommands = this.parseForCommands(msg);
         const invokedEmotes = this.emoteParser.parseComplete(msg, this.emoteCodesToLookFor);
         if (this.debugMode) {
             this.debugMessages(invokedCommands, invokedEmotes);
         }
+        console.log('invoked emotes', invokedEmotes);
         if (invokedEmotes.length > 0 && webSocketCb) {
             webSocketCb(socket_message_enum_1.SocketMessageEnum.FoundEmotes, invokedEmotes);
         }
