@@ -33,15 +33,10 @@ class EmoteWidgetClient {
             console.log('invoked emotes', invokedEmotes);
             if (!!invokedEmotes && invokedEmotes.length > 0) {
                 invokedEmotes.forEach((emoteCode) => {
-                    console.log(`data type ${emoteCode.type} enum ${emote_parser_1.ComboType.None}`);
                     if (emoteCode.type === emote_parser_1.ComboType.None) {
-                        console.log('none');
-                        emoteCode.data.forEach((emote) => {
-                            this.emoteWidget.addEmoteToContainer(emote);
-                        });
+                        // this.emoteWidget.addEmoteToContainer(emoteCode.data);
                     }
                     else if (emoteCode.type === emote_parser_1.ComboType.Sequence || emoteCode.type === emote_parser_1.ComboType.LeftRight) { // these are combo emotes
-                        console.log('combo');
                         this.emoteWidget.addGroupedEmoteToContainer(emoteCode.data);
                     }
                 });

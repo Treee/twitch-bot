@@ -12,6 +12,9 @@ class Vector2 {
 exports.Vector2 = Vector2;
 class RenderableObject {
     constructor() { }
+    createHtmlElements(cssClass, imageUrls, size) {
+        throw new Error('createHtmlElements is not implemented in abstract class RenderableObject');
+    }
     createHtmlElement(cssClass, imageSrc, size) {
         throw new Error('createHtmlElement is not implemented in abstract class RenderableObject');
     }
