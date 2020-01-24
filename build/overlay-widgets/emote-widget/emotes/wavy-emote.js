@@ -14,8 +14,22 @@ class WavyEmote extends emote_interfaces_1.RenderableObject {
         this.lifespan = lifespan;
         this.imageSrc = imageSrc;
         this.angularVelocityDegrees = angularVelocity;
-        this.htmlElement = this.createHtmlElement('emote', imageSrc, size);
+        this.htmlElement = this.createHtmlElements('emote', imageSrc, size);
         this.translate(position.x, position.y);
+    }
+    createHtmlElements(cssClass, imageUrls, size) {
+        if (imageUrls.length > 1) {
+            const element = $('<div></div>').addClass('grouped-emote');
+            element.height(`${size.y}px`);
+            element.width(`${size.x * imageUrls.length}px`);
+            imageUrls.forEach((imageUrl) => {
+                element.append(this.createHtmlElement('grouped-emote-icon', imageUrl, size));
+            });
+            return element;
+        }
+        else {
+            return this.createHtmlElement(cssClass, imageUrls[0], size);
+        }
     }
     createHtmlElement(cssClass, imageUrl, size) {
         const element = $('<div></div>').addClass(cssClass);

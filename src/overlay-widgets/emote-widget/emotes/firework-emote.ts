@@ -6,7 +6,7 @@ export class FireworkEmote extends RenderableObject implements Movable, Rotatabl
     opacity: number = 1;
     angularVelocityDegrees: number = 0;
     degreesRotation: number = 0;
-    imageSrc: string;
+    imageSrc: string[];
     htmlElement: JQuery<HTMLElement>;
     position: Vector2;
     velocity: Vector2;
@@ -15,7 +15,7 @@ export class FireworkEmote extends RenderableObject implements Movable, Rotatabl
     lifespan: number;
     isExploded: boolean = false;
 
-    constructor(position: Vector2 = new Vector2(), velocity: Vector2 = new Vector2(), lifespan: number = 0, size: Vector2, imageSrc: string, angularVelocity: number) {
+    constructor(position: Vector2 = new Vector2(), velocity: Vector2 = new Vector2(), lifespan: number = 0, size: Vector2, imageSrc: string[], angularVelocity: number) {
         super();
         this.position = position;
         this.velocity = velocity;
@@ -23,8 +23,23 @@ export class FireworkEmote extends RenderableObject implements Movable, Rotatabl
         this.lifespan = lifespan;
         this.imageSrc = imageSrc;
         this.angularVelocityDegrees = angularVelocity;
-        this.htmlElement = this.createHtmlElement('emote', imageSrc, size);
+        this.htmlElement = this.createHtmlElements('emote', imageSrc, size);
         this.translate(position.x, position.y);
+    }
+
+    createHtmlElements(cssClass: string, imageUrls: string[], size: Vector2): JQuery<HTMLElement> {
+        if (imageUrls.length > 1) {
+            const element = $('<div></div>').addClass('grouped-emote');
+            element.height(`${size.y}px`);
+            element.width(`${size.x * imageUrls.length}px`);
+            imageUrls.forEach((imageUrl) => {
+                element.append(this.createHtmlElement('grouped-emote-icon', imageUrl, size));
+            });
+            return element;
+        }
+        else {
+            return this.createHtmlElement(cssClass, imageUrls[0], size);
+        }
     }
 
     createHtmlElement(cssClass: string, imageUrl: string, size: Vector2): JQuery<HTMLElement> {

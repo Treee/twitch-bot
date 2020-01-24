@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
 class RainingEmote extends emote_interfaces_1.RenderableObject {
-    constructor(position = new emote_interfaces_1.Vector2(), velocity = new emote_interfaces_1.Vector2(), lifespan = 0, size, imageSrc, angularVelocity) {
+    constructor(position = new emote_interfaces_1.Vector2(), velocity = new emote_interfaces_1.Vector2(), lifespan = 0, size, imageSrcs, angularVelocity) {
         super();
         this.opacity = 1;
         this.angularVelocityDegrees = 0;
@@ -10,10 +10,24 @@ class RainingEmote extends emote_interfaces_1.RenderableObject {
         this.position = position;
         this.velocity = velocity;
         this.lifespan = lifespan;
-        this.imageSrc = imageSrc;
+        this.imageSrc = imageSrcs;
         this.angularVelocityDegrees = angularVelocity;
-        this.htmlElement = this.createHtmlElement('emote', imageSrc, size);
+        this.htmlElement = this.createHtmlElements('emote', imageSrcs, size);
         this.translate(position.x, position.y);
+    }
+    createHtmlElements(cssClass, imageUrls, size) {
+        if (imageUrls.length > 1) {
+            const element = $('<div></div>').addClass('grouped-emote');
+            element.height(`${size.y}px`);
+            element.width(`${size.x * imageUrls.length}px`);
+            imageUrls.forEach((imageUrl) => {
+                element.append(this.createHtmlElement('grouped-emote-icon', imageUrl, size));
+            });
+            return element;
+        }
+        else {
+            return this.createHtmlElement(cssClass, imageUrls[0], size);
+        }
     }
     createHtmlElement(cssClass, imageUrl, size) {
         const element = $('<div></div>').addClass(cssClass);

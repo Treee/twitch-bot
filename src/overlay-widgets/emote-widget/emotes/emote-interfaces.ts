@@ -48,9 +48,13 @@ export interface Acceleratable {
 
 export abstract class RenderableObject {
     htmlElement?: JQuery<HTMLElement>;
-    imageSrc?: string;
+    imageSrc?: string[];
 
     constructor() { }
+
+    createHtmlElements(cssClass: string, imageUrls: string[], size: Vector2): JQuery<HTMLElement> {
+        throw new Error('createHtmlElements is not implemented in abstract class RenderableObject');
+    }
 
     createHtmlElement(cssClass: string, imageSrc: string, size: Vector2): JQuery<HTMLElement> {
         throw new Error('createHtmlElement is not implemented in abstract class RenderableObject');
