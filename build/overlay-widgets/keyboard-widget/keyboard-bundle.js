@@ -2,7 +2,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const keyboard_widget_1 = require("./keyboard-widget");
-new keyboard_widget_1.KeyboardWidget();
+const keyboardWidget = new keyboard_widget_1.KeyboardWidget();
+// new KeyboardWidgetClient('ws://localhost:8081', keyboardWidget);
 
 },{"./keyboard-widget":3}],2:[function(require,module,exports){
 "use strict";
@@ -148,21 +149,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const keyboard_layout_1 = require("./keyboard-layout");
 class KeyboardWidget {
     constructor() {
-        this.activeKeys = {};
+        this.keys = [];
         this.toggle = true;
         const htmlElement = document.getElementById('keyboard-container');
         if (htmlElement) {
-            htmlElement.addEventListener('click', this.onUserClick.bind(this));
-            htmlElement.addEventListener('keydown', this.onUserKeyPress.bind(this));
-            htmlElement.addEventListener('keyup', this.onUserKeyPress.bind(this));
+            // htmlElement.addEventListener('click', this.onUserClick.bind(this));
+            // htmlElement.addEventListener('keydown', this.onUserKeyPress.bind(this));
+            // htmlElement.addEventListener('keyup', this.onUserKeyPress.bind(this));
             keyboard_layout_1.QwertyKeyboard.forEach((row) => {
                 this.createRow('keyboard', row);
             });
+            // setInterval(() => {
+            //     this.handleInput(this.getActivelyPressedKeys());
+            // }, 1000 / 60);
             setInterval(() => {
-                this.handleInput(this.getActivelyPressedKeys());
-            }, 1000 / 60);
-            setInterval(() => {
-                this.triggerRandomCharacterEvent();
+                // this.triggerRandomCharacterEvent();
             }, 1000 / 60);
         }
     }
@@ -205,38 +206,34 @@ class KeyboardWidget {
     randomNumberBetween(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
-    onUserClick(event) {
-    }
-    onUserKeyPress(event) {
-        const key = `${event.code.toLowerCase()}-${event.key.toLowerCase()}`;
-        const id = this.transformKeyIntoId(key);
-        this.activeKeys[id] = event.type; // keydown, keyup
-        event.preventDefault();
-    }
-    handleInput(keys) {
-        keys.forEach((key) => {
-            var _a;
-            const id = this.transformKeyIntoId(key);
-            (_a = document.getElementById(id)) === null || _a === void 0 ? void 0 : _a.classList.add('active-key');
-        });
-    }
-    getActivelyPressedKeys() {
-        const activeKeys = Object.keys(this.activeKeys).filter((key) => {
-            var _a;
-            const id = this.transformKeyIntoId(key);
-            if (this.activeKeys[id] === 'keydown') {
-                return true;
+    // onUserKeyPress(event: any) {
+    //     const key = `${event.code.toLowerCase()}-${event.key.toLowerCase()}`;
+    //     const id = this.transformKeyIntoId(key);
+    //     this.keys[id] = event.type; // keydown, keyup
+    //     event.preventDefault();
+    // }
+    handleInput(keysMap) {
+        keysMap.forEach((keyMap) => {
+            var _a, _b;
+            const id = this.transformKeyIntoId(keyMap.key);
+            if (keyMap.isPressed) {
+                (_a = document.getElementById(id)) === null || _a === void 0 ? void 0 : _a.classList.add('active-key');
             }
             else {
-                (_a = document.getElementById(id)) === null || _a === void 0 ? void 0 : _a.classList.remove('active-key');
+                (_b = document.getElementById(id)) === null || _b === void 0 ? void 0 : _b.classList.remove('active-key');
             }
         });
-        return activeKeys;
     }
     transformKeyIntoId(key) {
         let id = `${key.toLowerCase()}`.trim();
         if (id === 'space-') {
             id = 'space-space';
+        }
+        else if (/\d/.test(id)) {
+            id = `digit${id}-${id}`;
+        }
+        else if (/[a-z]/.test(id)) {
+            id = `key${id}-${id}`;
         }
         return id;
     }

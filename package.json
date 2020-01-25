@@ -9,12 +9,14 @@
     "build": "tsc",
     "build-emote-widget": "npm run build && browserify src/overlay-widgets/emote-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles -f src/overlay-widgets/emote-widget/*.html src/overlay-widgets/emote-widget/*.css src/overlay-widgets/emote-widget/*.md build/overlay-widgets/emote-widget",
     "build-physics-widget": "npm run build && browserify src/overlay-widgets/physics/physics-engine.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/physics/physics-bundle.js",
-    "build-keyboard-widget": "npm run build && browserify src/overlay-widgets/keyboard-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/keyboard-widget/keyboard-bundle.js && copyfiles -f src/overlay-widgets/keyboard-widget/*.html src/overlay-widgets/keyboard-widget/*.css src/overlay-widgets/keyboard-widget/*.md build/overlay-widgets/keyboard-widget",
+    "build-keyboard-widget": "npm run build && browserify src/overlay-widgets/keyboard-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/keyboard-widget/keyboard-bundle.js && copyfiles -f src/overlay-widgets/keyboard-widget/*.html src/overlay-widgets/keyboard-widget/*.css src/overlay-widgets/keyboard-widget/*.md build/overlay-widgets/keyboard-widget && copyfiles -f src/overlay-widgets/keyboard-widget/*.node build",
     "build-all": "npm test && npm run build-emote-widget && npm run build-physics-widget && npm run build-keyboard-widget"
   },
   "author": "",
   "license": "GPL-3.0",
   "dependencies": {
+    "@types/bindings": "^1.3.0",
+    "bindings": "^1.5.0",
     "node-fetch": "^2.6.0",
     "tmi.js": "^1.5.0",
     "ws": "^7.2.0"

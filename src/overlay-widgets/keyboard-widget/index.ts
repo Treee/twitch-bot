@@ -1,3 +1,6 @@
-import { KeyboardWidget } from "./keyboard-widget";
+import { KeyboardWidget } from './keyboard-widget';
+import { KeyboardWidgetClient } from './keyboard-widget-client';
 
-new KeyboardWidget();
+const keyboardWidget = new KeyboardWidget();
+
+// new KeyboardWidgetClient('ws://localhost:8081', keyboardWidget);

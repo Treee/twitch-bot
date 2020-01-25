@@ -1,3 +1,3 @@
 export enum SocketMessageEnum {
-    FoundEmotes, CheckEmoteCache, EmoteCodes
+    FoundEmotes, CheckEmoteCache, EmoteCodes, HandleInput, HookInput, PressedKeys
 }

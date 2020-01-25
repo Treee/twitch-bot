@@ -16,7 +16,7 @@ class EmoteWidgetClient {
     onOpen(event) {
         console.log('[open] Connection established');
         console.log('Checking server for cached emotes');
-        this.socket.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, data: '' }));
+        this.socket.send(JSON.stringify({ type: socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, data: '' }));
     }
     onMessage(event) {
         // console.log(`[message] Data received from server: ${event.data}`);
@@ -25,7 +25,7 @@ class EmoteWidgetClient {
             if (eventData.data.length < 1) {
                 const emoteCodes = this.emoteWidget.getEmoteCodes();
                 console.log('Sending list of emotes to look for', emoteCodes);
-                this.socket.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.EmoteCodes, data: emoteCodes }));
+                this.socket.send(JSON.stringify({ type: socket_message_enum_1.SocketMessageEnum.EmoteCodes, data: emoteCodes }));
             }
         }
         else if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.FoundEmotes) {
