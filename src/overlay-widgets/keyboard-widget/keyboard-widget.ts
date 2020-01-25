@@ -1,28 +1,28 @@
 import { QwertyKeyboard, Key, KeySymbol } from './keyboard-layout';
 
 export class KeyboardWidget {
-    activeKeys: any = {};
+    keys: any = [];
 
     toggle: boolean = true;
 
     constructor() {
         const htmlElement = document.getElementById('keyboard-container');
         if (htmlElement) {
-            htmlElement.addEventListener('click', this.onUserClick.bind(this));
-            htmlElement.addEventListener('keydown', this.onUserKeyPress.bind(this));
-            htmlElement.addEventListener('keyup', this.onUserKeyPress.bind(this));
+            // htmlElement.addEventListener('click', this.onUserClick.bind(this));
+            // htmlElement.addEventListener('keydown', this.onUserKeyPress.bind(this));
+            // htmlElement.addEventListener('keyup', this.onUserKeyPress.bind(this));
 
             QwertyKeyboard.forEach((row: Key[]) => {
                 this.createRow('keyboard', row);
             });
 
-            setInterval(() => {
-                this.handleInput(this.getActivelyPressedKeys());
-            }, 1000 / 60);
+            // setInterval(() => {
+            //     this.handleInput(this.getActivelyPressedKeys());
+            // }, 1000 / 60);
 
 
             setInterval(() => {
-                this.triggerRandomCharacterEvent();
+                // this.triggerRandomCharacterEvent();
             }, 1000 / 60);
         }
     }
@@ -68,40 +68,32 @@ export class KeyboardWidget {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
-    onUserClick(event: any) {
+    // onUserKeyPress(event: any) {
+    //     const key = `${event.code.toLowerCase()}-${event.key.toLowerCase()}`;
+    //     const id = this.transformKeyIntoId(key);
+    //     this.keys[id] = event.type; // keydown, keyup
+    //     event.preventDefault();
+    // }
 
-    }
-
-    onUserKeyPress(event: any) {
-        const key = `${event.code.toLowerCase()}-${event.key.toLowerCase()}`;
-        const id = this.transformKeyIntoId(key);
-        this.activeKeys[id] = event.type; // keydown, keyup
-        event.preventDefault();
-    }
-
-    handleInput(keys: string[]) {
-        keys.forEach((key) => {
-            const id = this.transformKeyIntoId(key);
-            document.getElementById(id)?.classList.add('active-key');
-        });
-    }
-
-    getActivelyPressedKeys(): string[] {
-        const activeKeys = Object.keys(this.activeKeys).filter((key) => {
-            const id = this.transformKeyIntoId(key);
-            if (this.activeKeys[id] === 'keydown') {
-                return true;
+    handleInput(keysMap: { key: string, isPressed: boolean }[]) {
+        keysMap.forEach((keyMap: { key: string, isPressed: boolean }) => {
+            const id = this.transformKeyIntoId(keyMap.key);
+            if (keyMap.isPressed) {
+                document.getElementById(id)?.classList.add('active-key');
             } else {
                 document.getElementById(id)?.classList.remove('active-key');
             }
         });
-        return activeKeys;
     }
 
     transformKeyIntoId(key: string) {
         let id = `${key.toLowerCase()}`.trim();
         if (id === 'space-') {
             id = 'space-space';
+        } else if (/\d/.test(id)) {
+            id = `digit${id}-${id}`;
+        } else if (/[a-z]/.test(id)) {
+            id = `key${id}-${id}`;
         }
         return id;
     }

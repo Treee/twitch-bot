@@ -1,4 +1,5 @@
 import WebSocket = require('ws');
+import NativeExtension = require('bindings');
 
 import { client, Client, ChatUserstate } from 'tmi.js';
 import SECRETS from '../../secrets';
@@ -67,11 +68,48 @@ emoteWidgetSocketServer.on('connection', (ws) => {
             else if (data.dataType === SocketMessageEnum.CheckEmoteCache) {
                 if (twitchChatbot.emotesExist()) {
                     console.log(`Cached ${twitchChatbot.getEmoteCodes().length} emotes`);
-                    client.send(JSON.stringify({ dataType: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.getEmoteCodes() }));
+                    client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.getEmoteCodes() }));
                 } else {
                     console.log(`No emotes in list`);
-                    client.send(JSON.stringify({ dataType: SocketMessageEnum.CheckEmoteCache, data: [] }));
+                    client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: [] }));
                 }
+            }
+        });
+
+        client.on('error', (error) => {
+            console.log(error);
+        });
+
+        client.send(JSON.stringify({ dataType: 'connected', data: 'client connected' }));
+    });
+});
+
+const nativeExtension = NativeExtension('NativeExtension');
+let keyboardWidgetSocketServer = new WebSocket.Server({ port: 8081 });
+
+keyboardWidgetSocketServer.on('connection', (ws) => {
+    keyboardWidgetSocketServer.clients.add(ws);
+
+    keyboardWidgetSocketServer.clients.forEach((client) => {
+
+        client.on('message', (message: string) => {
+            const data = JSON.parse(message);
+            console.log('received: %s', message);
+            if (data.type === SocketMessageEnum.HookInput) {
+                setTimeout(() => {
+                    nativeExtension.attachToKeyboard(() => {
+                        console.log('attached to keyboardf');
+                        const rawData = nativeExtension.getPressedKeys();
+                        try {
+                            const parsed = JSON.parse(rawData);
+                            // console.log('parse', parsed);
+                            client.send(JSON.stringify({ type: SocketMessageEnum.HandleInput, data: JSON.stringify(parsed) }));
+                        } catch (error) {
+                            // console.log('attempt to parse', rawData);
+                            // console.log('error', error);
+                        }
+                    });
+                }, 1000);
             }
         });
 

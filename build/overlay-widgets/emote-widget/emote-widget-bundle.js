@@ -17,7 +17,7 @@ class EmoteWidgetClient {
     onOpen(event) {
         console.log('[open] Connection established');
         console.log('Checking server for cached emotes');
-        this.socket.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, data: '' }));
+        this.socket.send(JSON.stringify({ type: socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, data: '' }));
     }
     onMessage(event) {
         // console.log(`[message] Data received from server: ${event.data}`);
@@ -26,7 +26,7 @@ class EmoteWidgetClient {
             if (eventData.data.length < 1) {
                 const emoteCodes = this.emoteWidget.getEmoteCodes();
                 console.log('Sending list of emotes to look for', emoteCodes);
-                this.socket.send(JSON.stringify({ dataType: socket_message_enum_1.SocketMessageEnum.EmoteCodes, data: emoteCodes }));
+                this.socket.send(JSON.stringify({ type: socket_message_enum_1.SocketMessageEnum.EmoteCodes, data: emoteCodes }));
             }
         }
         else if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.FoundEmotes) {
@@ -885,6 +885,9 @@ var SocketMessageEnum;
     SocketMessageEnum[SocketMessageEnum["FoundEmotes"] = 0] = "FoundEmotes";
     SocketMessageEnum[SocketMessageEnum["CheckEmoteCache"] = 1] = "CheckEmoteCache";
     SocketMessageEnum[SocketMessageEnum["EmoteCodes"] = 2] = "EmoteCodes";
+    SocketMessageEnum[SocketMessageEnum["HandleInput"] = 3] = "HandleInput";
+    SocketMessageEnum[SocketMessageEnum["HookInput"] = 4] = "HookInput";
+    SocketMessageEnum[SocketMessageEnum["PressedKeys"] = 5] = "PressedKeys";
 })(SocketMessageEnum = exports.SocketMessageEnum || (exports.SocketMessageEnum = {}));
 
 },{}],12:[function(require,module,exports){
@@ -1023,6 +1026,7 @@ class TwitchApiV5 {
         emotes.push(new emote_1.TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, '301108063'));
         emotes.push(new emote_1.TwitchEmote('HahaGoose', hahahalidaysEmoteSet, '301108075'));
         emotes.push(new emote_1.TwitchEmote('HahaGingercat', hahahalidaysEmoteSet, '301108078'));
+        emotes.push(new emote_1.TwitchEmote('HahaSnowhal', hahahalidaysEmoteSet, '301108053'));
         const prideEmoteSet = 472873131;
         emotes.push(new emote_1.TwitchEmote('PrideWingL', prideEmoteSet, '300354442'));
         emotes.push(new emote_1.TwitchEmote('PrideWingR', prideEmoteSet, '300354435'));

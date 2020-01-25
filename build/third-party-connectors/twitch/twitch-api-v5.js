@@ -133,6 +133,7 @@ class TwitchApiV5 {
         emotes.push(new emote_1.TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, '301108063'));
         emotes.push(new emote_1.TwitchEmote('HahaGoose', hahahalidaysEmoteSet, '301108075'));
         emotes.push(new emote_1.TwitchEmote('HahaGingercat', hahahalidaysEmoteSet, '301108078'));
+        emotes.push(new emote_1.TwitchEmote('HahaSnowhal', hahahalidaysEmoteSet, '301108053'));
         const prideEmoteSet = 472873131;
         emotes.push(new emote_1.TwitchEmote('PrideWingL', prideEmoteSet, '300354442'));
         emotes.push(new emote_1.TwitchEmote('PrideWingR', prideEmoteSet, '300354435'));
