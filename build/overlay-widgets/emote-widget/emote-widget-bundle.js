@@ -1,30 +1,4 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-(function (global){
-"use strict";
-
-// ref: https://github.com/tc39/proposal-global
-var getGlobal = function () {
-	// the only reliable means to get the global object is
-	// `Function('return this')()`
-	// However, this causes CSP violations in Chrome apps.
-	if (typeof self !== 'undefined') { return self; }
-	if (typeof window !== 'undefined') { return window; }
-	if (typeof global !== 'undefined') { return global; }
-	throw new Error('unable to locate global object');
-}
-
-var global = getGlobal();
-
-module.exports = exports = global.fetch;
-
-// Needed for TypeScript and Webpack.
-exports.default = global.fetch.bind(global);
-
-exports.Headers = global.Headers;
-exports.Request = global.Request;
-exports.Response = global.Response;
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const socket_message_enum_1 = require("../../third-party-connectors/twitch/socket-message-enum");
@@ -57,7 +31,6 @@ class EmoteWidgetClient {
         }
         else if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.FoundEmotes) {
             const invokedEmotes = eventData.data;
-            console.log('invoked emotes', invokedEmotes);
             if (!!invokedEmotes && invokedEmotes.length > 0) {
                 invokedEmotes.forEach((emoteCode) => {
                     if (emoteCode.type === emote_parser_1.ComboType.None) {
@@ -87,7 +60,7 @@ class EmoteWidgetClient {
 }
 exports.EmoteWidgetClient = EmoteWidgetClient;
 
-},{"../../third-party-connectors/twitch/chatbot/parsers/emote-parser":13,"../../third-party-connectors/twitch/socket-message-enum":14}],3:[function(require,module,exports){
+},{"../../third-party-connectors/twitch/chatbot/parsers/emote-parser":10,"../../third-party-connectors/twitch/socket-message-enum":11}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class EmoteWidgetConfig {
@@ -130,7 +103,7 @@ class EmoteWidgetConfig {
 }
 exports.EmoteWidgetConfig = EmoteWidgetConfig;
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emotes/emote-interfaces");
@@ -141,7 +114,6 @@ class EmoteWidget {
     constructor(emoteConfig) {
         this.masterEmotes = [];
         this.emotesToDraw = [];
-        this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
         this.explodedEmotes = [];
         this.emoteConfig = emoteConfig;
     }
@@ -235,7 +207,7 @@ class EmoteWidget {
             emoteCode = splitCode[0];
         }
         const foundEmote = this.masterEmotes.find((emote) => {
-            return emote.code === emoteCode;
+            return emote.code.toLowerCase() === emoteCode.toLowerCase();
         });
         if (splitCode.length === 2) {
             foundEmote.channelPointModifier = `_${splitCode[1]}`;
@@ -345,7 +317,7 @@ class EmoteWidget {
 }
 exports.EmoteWidget = EmoteWidget;
 
-},{"./emotes/emote-interfaces":5,"./emotes/firework-emote":7,"./emotes/raining-emote":8,"./emotes/wavy-emote":9}],5:[function(require,module,exports){
+},{"./emotes/emote-interfaces":4,"./emotes/firework-emote":6,"./emotes/raining-emote":7,"./emotes/wavy-emote":8}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Vector2 {
@@ -375,7 +347,7 @@ class RenderableObject {
 }
 exports.RenderableObject = RenderableObject;
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -468,7 +440,7 @@ class TwitchEmote extends Emote {
 }
 exports.TwitchEmote = TwitchEmote;
 
-},{"./emote-interfaces":5}],7:[function(require,module,exports){
+},{"./emote-interfaces":4}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -564,7 +536,7 @@ class FireworkEmote extends emote_interfaces_1.RenderableObject {
 }
 exports.FireworkEmote = FireworkEmote;
 
-},{"./emote-interfaces":5}],8:[function(require,module,exports){
+},{"./emote-interfaces":4}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -648,7 +620,7 @@ class RainingEmote extends emote_interfaces_1.RenderableObject {
 }
 exports.RainingEmote = RainingEmote;
 
-},{"./emote-interfaces":5}],9:[function(require,module,exports){
+},{"./emote-interfaces":4}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -745,16 +717,14 @@ class WavyEmote extends emote_interfaces_1.RenderableObject {
 }
 exports.WavyEmote = WavyEmote;
 
-},{"./emote-interfaces":5}],10:[function(require,module,exports){
+},{"./emote-interfaces":4}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const twitch_api_v5_1 = require("../../third-party-connectors/twitch/twitch-api-v5");
-const steam_api_1 = require("../../third-party-connectors/steam/steam-api");
 const emote_widget_config_1 = require("./emote-widget-config");
 const emote_widget_1 = require("./emote-widget");
 const emote_widget_client_1 = require("./emote-widget-client");
 const twitchApiV5 = new twitch_api_v5_1.TwitchApiV5();
-const steamApi = new steam_api_1.SteamApi();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
@@ -796,114 +766,7 @@ Promise.all([
     }
 });
 
-},{"../../third-party-connectors/steam/steam-api":12,"../../third-party-connectors/twitch/twitch-api-v5":15,"./emote-widget":4,"./emote-widget-client":2,"./emote-widget-config":3}],11:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-class PlayerSummary {
-    constructor(rawJsonData) {
-        this.convertJsonToObject(rawJsonData);
-    }
-    getJoinableGameLink() {
-        let result = `${this.personaName} does not have a joinable open lobby. Are you in offline mode?`;
-        if (this.lobbySteamId && this.gameId && this.steamId) {
-            result = `steam://joinlobby/${this.gameId}/${this.lobbySteamId}/${this.steamId}`;
-        }
-        return result;
-    }
-    convertJsonToObject(rawJson) {
-        this.steamId = rawJson.steamid;
-        this.communityVisibilityState = rawJson.communityvisibilitystate;
-        this.profileState = rawJson.profilestate;
-        this.personaName = rawJson.personaname;
-        this.lastLogoff = rawJson.lastlogoff;
-        this.profileUrl = rawJson.profileurl;
-        this.avatar = rawJson.avatar;
-        this.avatarMedium = rawJson.avatarmedium;
-        this.avatarFull = rawJson.avatarfull;
-        this.personaState = rawJson.personastate;
-        this.primaryClanId = rawJson.primaryclanid;
-        this.timeCreated = rawJson.timecreated;
-        this.personaStateFlags = rawJson.personastateflags;
-        this.gameExtraInfo = rawJson.gameextrainfo;
-        this.gameId = rawJson.gameid;
-        this.lobbySteamId = rawJson.lobbysteamid;
-        this.locCountryCode = rawJson.loccountrycode;
-        this.locStateCode = rawJson.locstatecode;
-        this.locCityId = rawJson.loccityid;
-    }
-}
-exports.PlayerSummary = PlayerSummary;
-// example response
-// "steamid": "76561197985160398",
-// "communityvisibilitystate": 3,
-// "profilestate": 1,
-// "personaname": "Treeeeeee",
-// "lastlogoff": 1579486408,
-// "profileurl": "https://steamcommunity.com/id/itsatreee/",
-// "avatar": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/f6/f632f7d542d2bf56a178a65eebc8e40ce40ad359.jpg",
-// "avatarmedium": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/f6/f632f7d542d2bf56a178a65eebc8e40ce40ad359_medium.jpg",
-// "avatarfull": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/f6/f632f7d542d2bf56a178a65eebc8e40ce40ad359_full.jpg",
-// "personastate": 1,
-// "primaryclanid": "103582791461182090",
-// "timecreated": 1159150464,
-// "personastateflags": 0,
-// "gameextrainfo": "Age of Empires II: Definitive Edition",
-// "gameid": "813780",
-// "lobbysteamid": "109775241019660960",
-// "loccountrycode": "US",
-// "locstatecode": "AK",
-// "loccityid": 61
-
-},{}],12:[function(require,module,exports){
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-// https://steamcommunity.com/dev
-const fetch = require('node-fetch');
-const player_summary_1 = require("./player-summary");
-class SteamApi {
-    constructor() { }
-    // if you are invisible in steam, this will return no lobby
-    getSteamJoinableLobbyLink(apiKey, userId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.getPlayerSummaries(apiKey, userId).then((playerSummarys) => {
-                if (playerSummarys.length > 0) {
-                    return playerSummarys[0].getJoinableGameLink();
-                }
-            }, (error) => {
-                console.error('Error', error);
-                return '';
-            });
-        });
-    }
-    getPlayerSummaries(apiKey, steamUserId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${apiKey}&steamids=${steamUserId}`).then((response) => __awaiter(this, void 0, void 0, function* () {
-                const data = yield response.json();
-                const playerSummariesRaw = data.response.players;
-                const playerSummaries = [];
-                playerSummariesRaw.forEach((playerSummary) => {
-                    playerSummaries.push(new player_summary_1.PlayerSummary(playerSummary));
-                });
-                return playerSummaries;
-            }), (error) => {
-                console.error('Error', error);
-                return [];
-            });
-        });
-    }
-}
-exports.SteamApi = SteamApi;
-
-},{"./player-summary":11,"node-fetch":1}],13:[function(require,module,exports){
+},{"../../third-party-connectors/twitch/twitch-api-v5":12,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ComboType;
@@ -920,7 +783,7 @@ class ComboEmote {
 }
 class EmoteParser {
     constructor() {
-        this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
+        this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD', '_RA'];
         this.comboCodes = [
             new ComboEmote(ComboType.Sequence, ['Squid1', 'Squid2', 'Squid3', 'Squid4']),
             new ComboEmote(ComboType.Sequence, ['TableHere', 'FlipThis']),
@@ -1014,7 +877,7 @@ class EmoteParser {
 }
 exports.EmoteParser = EmoteParser;
 
-},{}],14:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var SocketMessageEnum;
@@ -1024,7 +887,7 @@ var SocketMessageEnum;
     SocketMessageEnum[SocketMessageEnum["EmoteCodes"] = 2] = "EmoteCodes";
 })(SocketMessageEnum = exports.SocketMessageEnum || (exports.SocketMessageEnum = {}));
 
-},{}],15:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1180,4 +1043,4 @@ class TwitchApiV5 {
 }
 exports.TwitchApiV5 = TwitchApiV5;
 
-},{"../../overlay-widgets/emote-widget/emotes/emote":6}]},{},[10]);
+},{"../../overlay-widgets/emote-widget/emotes/emote":5}]},{},[9]);

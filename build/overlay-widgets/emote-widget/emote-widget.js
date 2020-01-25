@@ -8,7 +8,6 @@ class EmoteWidget {
     constructor(emoteConfig) {
         this.masterEmotes = [];
         this.emotesToDraw = [];
-        this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
         this.explodedEmotes = [];
         this.emoteConfig = emoteConfig;
     }
@@ -102,7 +101,7 @@ class EmoteWidget {
             emoteCode = splitCode[0];
         }
         const foundEmote = this.masterEmotes.find((emote) => {
-            return emote.code === emoteCode;
+            return emote.code.toLowerCase() === emoteCode.toLowerCase();
         });
         if (splitCode.length === 2) {
             foundEmote.channelPointModifier = `_${splitCode[1]}`;

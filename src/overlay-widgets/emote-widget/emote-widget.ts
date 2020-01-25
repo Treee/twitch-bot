@@ -10,7 +10,6 @@ export class EmoteWidget {
     emoteConfig: EmoteWidgetConfig;
     masterEmotes: Emote[] = [];
     emotesToDraw: RenderableObject[] = [];
-    emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
 
     constructor(emoteConfig: EmoteWidgetConfig) {
         this.emoteConfig = emoteConfig;
@@ -121,7 +120,7 @@ export class EmoteWidget {
         }
 
         const foundEmote = this.masterEmotes.find((emote) => {
-            return emote.code === emoteCode;
+            return emote.code.toLowerCase() === emoteCode.toLowerCase();
         });
 
         if (splitCode.length === 2) {
