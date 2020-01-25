@@ -1,12 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const twitch_api_v5_1 = require("../../third-party-connectors/twitch/twitch-api-v5");
-const steam_api_1 = require("../../third-party-connectors/steam/steam-api");
 const emote_widget_config_1 = require("./emote-widget-config");
 const emote_widget_1 = require("./emote-widget");
 const emote_widget_client_1 = require("./emote-widget-client");
 const twitchApiV5 = new twitch_api_v5_1.TwitchApiV5();
-const steamApi = new steam_api_1.SteamApi();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);

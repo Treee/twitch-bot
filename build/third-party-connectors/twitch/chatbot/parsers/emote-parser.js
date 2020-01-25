@@ -14,7 +14,7 @@ class ComboEmote {
 }
 class EmoteParser {
     constructor() {
-        this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD'];
+        this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD', '_RA'];
         this.comboCodes = [
             new ComboEmote(ComboType.Sequence, ['Squid1', 'Squid2', 'Squid3', 'Squid4']),
             new ComboEmote(ComboType.Sequence, ['TableHere', 'FlipThis']),

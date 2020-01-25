@@ -30,7 +30,6 @@ class EmoteWidgetClient {
         }
         else if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.FoundEmotes) {
             const invokedEmotes = eventData.data;
-            console.log('invoked emotes', invokedEmotes);
             if (!!invokedEmotes && invokedEmotes.length > 0) {
                 invokedEmotes.forEach((emoteCode) => {
                     if (emoteCode.type === emote_parser_1.ComboType.None) {
