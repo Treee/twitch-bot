@@ -21,14 +21,14 @@ class EmoteWidgetClient {
     onMessage(event) {
         // console.log(`[message] Data received from server: ${event.data}`);
         const eventData = JSON.parse(event.data);
-        if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.CheckEmoteCache) {
+        if (eventData.type === socket_message_enum_1.SocketMessageEnum.CheckEmoteCache) {
             if (eventData.data.length < 1) {
                 const emoteCodes = this.emoteWidget.getEmoteCodes();
                 console.log('Sending list of emotes to look for', emoteCodes);
                 this.socket.send(JSON.stringify({ type: socket_message_enum_1.SocketMessageEnum.EmoteCodes, data: emoteCodes }));
             }
         }
-        else if (eventData.dataType === socket_message_enum_1.SocketMessageEnum.FoundEmotes) {
+        else if (eventData.type === socket_message_enum_1.SocketMessageEnum.FoundEmotes) {
             const invokedEmotes = eventData.data;
             if (!!invokedEmotes && invokedEmotes.length > 0) {
                 invokedEmotes.forEach((emoteCode) => {

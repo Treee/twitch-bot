@@ -21,7 +21,9 @@
     display: inline-block;
     position: absolute;
     background: transparent;
-    background-size: cover;
+    /* background-size: cover; */
+    background-size: contain;
+    background-repeat: no-repeat;
     transform-origin: center center;
 }
 

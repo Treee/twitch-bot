@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const WebSocket = require("ws");
-const NativeExtension = require("bindings");
 const tmi_js_1 = require("tmi.js");
 const secrets_1 = __importDefault(require("../../secrets"));
 const twitch_chatbot_1 = require("./chatbot/twitch-chatbot");
@@ -35,7 +34,7 @@ function onMessageHandler(target, context, msg, self) {
 }
 function websocketSend(dataType, data) {
     emoteWidgetSocketServer.clients.forEach((client) => {
-        client.send(JSON.stringify({ dataType: dataType, data: data }));
+        client.send(JSON.stringify({ type: dataType, data: data }));
     });
 }
 function twitchClientSay(msg) {
@@ -52,10 +51,10 @@ emoteWidgetSocketServer.on('connection', (ws) => {
         client.on('message', (message) => {
             const data = JSON.parse(message);
             console.log('received: %s', message);
-            if (data.dataType === socket_message_enum_1.SocketMessageEnum.EmoteCodes) {
+            if (data.type === socket_message_enum_1.SocketMessageEnum.EmoteCodes) {
                 twitchChatbot.setEmoteCodes(data.data);
             }
-            else if (data.dataType === socket_message_enum_1.SocketMessageEnum.CheckEmoteCache) {
+            else if (data.type === socket_message_enum_1.SocketMessageEnum.CheckEmoteCache) {
                 if (twitchChatbot.emotesExist()) {
                     console.log(`Cached ${twitchChatbot.getEmoteCodes().length} emotes`);
                     client.send(JSON.stringify({ type: socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.getEmoteCodes() }));
@@ -69,38 +68,37 @@ emoteWidgetSocketServer.on('connection', (ws) => {
         client.on('error', (error) => {
             console.log(error);
         });
-        client.send(JSON.stringify({ dataType: 'connected', data: 'client connected' }));
+        client.send(JSON.stringify({ type: 'connected', data: 'client connected' }));
     });
 });
-const nativeExtension = NativeExtension('NativeExtension');
-let keyboardWidgetSocketServer = new WebSocket.Server({ port: 8081 });
-keyboardWidgetSocketServer.on('connection', (ws) => {
-    keyboardWidgetSocketServer.clients.add(ws);
-    keyboardWidgetSocketServer.clients.forEach((client) => {
-        client.on('message', (message) => {
-            const data = JSON.parse(message);
-            console.log('received: %s', message);
-            if (data.type === socket_message_enum_1.SocketMessageEnum.HookInput) {
-                setTimeout(() => {
-                    nativeExtension.attachToKeyboard(() => {
-                        console.log('attached to keyboardf');
-                        const rawData = nativeExtension.getPressedKeys();
-                        try {
-                            const parsed = JSON.parse(rawData);
-                            // console.log('parse', parsed);
-                            client.send(JSON.stringify({ type: socket_message_enum_1.SocketMessageEnum.HandleInput, data: JSON.stringify(parsed) }));
-                        }
-                        catch (error) {
-                            // console.log('attempt to parse', rawData);
-                            // console.log('error', error);
-                        }
-                    });
-                }, 1000);
-            }
-        });
-        client.on('error', (error) => {
-            console.log(error);
-        });
-        client.send(JSON.stringify({ dataType: 'connected', data: 'client connected' }));
-    });
-});
+// const nativeExtension = NativeExtension('NativeExtension');
+// let keyboardWidgetSocketServer = new WebSocket.Server({ port: 8081 });
+// keyboardWidgetSocketServer.on('connection', (ws) => {
+//     keyboardWidgetSocketServer.clients.add(ws);
+//     keyboardWidgetSocketServer.clients.forEach((client) => {
+//         client.on('message', (message: string) => {
+//             const data = JSON.parse(message);
+//             console.log('received: %s', message);
+//             if (data.type === SocketMessageEnum.HookInput) {
+//                 setTimeout(() => {
+//                     nativeExtension.attachToKeyboard(() => {
+//                         console.log('attached to keyboardf');
+//                         const rawData = nativeExtension.getPressedKeys();
+//                         try {
+//                             const parsed = JSON.parse(rawData);
+//                             // console.log('parse', parsed);
+//                             client.send(JSON.stringify({ type: SocketMessageEnum.HandleInput, data: JSON.stringify(parsed) }));
+//                         } catch (error) {
+//                             // console.log('attempt to parse', rawData);
+//                             // console.log('error', error);
+//                         }
+//                     });
+//                 }, 1000);
+//             }
+//         });
+//         client.on('error', (error) => {
+//             console.log(error);
+//         });
+//         client.send(JSON.stringify({ dataType: 'connected', data: 'client connected' }));
+//     });
+// });

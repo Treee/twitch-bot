@@ -6,7 +6,7 @@ import { EmoteWidgetClient } from './emote-widget-client';
 const twitchApiV5 = new TwitchApiV5();
 
 const emoteWidgetConfig = new EmoteWidgetConfig();
-emoteWidgetConfig.setConfigFrom(window.location.search.substring(1))
+emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 
 const emoteWidget = new EmoteWidget(emoteWidgetConfig);
 
