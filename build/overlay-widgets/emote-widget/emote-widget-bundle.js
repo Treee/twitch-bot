@@ -728,7 +728,7 @@ const twitchApiV5 = new twitch_api_v5_1.TwitchApiV5();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
-const emoteSetIds = [0, 42, 19194, 300206309];
+const emoteSetIds = [0, 42, 6112, 24314, 24315, 19194, 300206309];
 Promise.all([
     twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
     twitchApiV5.getTwitchEmotesBySets(emoteWidgetConfig.clientId, emoteSetIds),
@@ -783,7 +783,7 @@ class ComboEmote {
 }
 class EmoteParser {
     constructor() {
-        this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD', '_RA'];
+        this.emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD', '_RA', '_HB', '_KI', '_HE'];
         this.comboCodes = [
             new ComboEmote(ComboType.Sequence, ['Squid1', 'Squid2', 'Squid3', 'Squid4']),
             new ComboEmote(ComboType.Sequence, ['TableHere', 'FlipThis']),
@@ -791,6 +791,8 @@ class EmoteParser {
             new ComboEmote(ComboType.LeftRight, ['HahaShrugLeft', 'HahaShrugRight']),
             new ComboEmote(ComboType.LeftRight, ['MercyWing1', 'MercyWing2']),
             new ComboEmote(ComboType.LeftRight, ['PrideWingL', 'PrideWingR']),
+            new ComboEmote(ComboType.LeftRight, ['LuvBrownL', 'LuvBrownR']),
+            new ComboEmote(ComboType.LeftRight, ['LuvBlondeL', 'LuvBlondeR']),
             new ComboEmote(ComboType.LeftRight, ['FBPass', 'FBBlock']),
         ];
     }
@@ -1042,6 +1044,20 @@ class TwitchApiV5 {
         emotes.push(new emote_1.TwitchEmote('RPGStaff', rpgEmoteSet, '300904299'));
         emotes.push(new emote_1.TwitchEmote('RPGYonger', rpgEmoteSet, '300904302'));
         emotes.push(new emote_1.TwitchEmote('RPGEpicStaff', rpgEmoteSet, '300904286'));
+        emotes.push(new emote_1.TwitchEmote('RPGFireball', rpgEmoteSet, '300904289'));
+        const luvyEmoteSet = 472873132;
+        emotes.push(new emote_1.TwitchEmote('LuvOops', luvyEmoteSet, '301396357'));
+        emotes.push(new emote_1.TwitchEmote('LuvPeekL', luvyEmoteSet, '301396363'));
+        emotes.push(new emote_1.TwitchEmote('LuvPeekR', luvyEmoteSet, '301396373'));
+        emotes.push(new emote_1.TwitchEmote('LuvSnooze', luvyEmoteSet, '301396378'));
+        emotes.push(new emote_1.TwitchEmote('LuvCool', luvyEmoteSet, '301396382'));
+        emotes.push(new emote_1.TwitchEmote('LuvUok', luvyEmoteSet, '300904289'));
+        emotes.push(new emote_1.TwitchEmote('LuvBrownL', luvyEmoteSet, '301396400'));
+        emotes.push(new emote_1.TwitchEmote('LuvBrownR', luvyEmoteSet, '301396403'));
+        emotes.push(new emote_1.TwitchEmote('LuvBlush', luvyEmoteSet, '301396406'));
+        emotes.push(new emote_1.TwitchEmote('LuvHearts', luvyEmoteSet, '301396428'));
+        emotes.push(new emote_1.TwitchEmote('LuvBlondeL', luvyEmoteSet, '301396467'));
+        emotes.push(new emote_1.TwitchEmote('LuvBlondeR', luvyEmoteSet, '301396475'));
         return emotes;
     }
 }
