@@ -2,8 +2,6 @@
 **/*/secrets.ts
 **/*/secrets.js
 
-build/
-
 # Logs
 logs
 *.log
