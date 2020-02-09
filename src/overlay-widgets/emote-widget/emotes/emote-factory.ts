@@ -3,7 +3,7 @@ import { FireworkEmote } from "./firework-emote";
 import { RainingEmote } from "./raining-emote";
 import { WavyEmote } from "./wavy-emote";
 
-import { Vector2 } from "./emote-interfaces";
+import { Vector2, RenderableObject } from "./emote-interfaces";
 import { randomNumberBetween } from '../../../helpers/math-helper';
 
 export class EmoteFactory {
@@ -129,5 +129,38 @@ export class EmoteFactory {
         return new WavyEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emoteUrls, randomAngularVelocity);
     }
 
+    checkForExplodedEmotes(activeEmotes: RenderableObject[]) {
+        let explodedEmotes: RainingEmote[] = [];
+        activeEmotes.forEach((emote: any) => {
+            if (emote instanceof FireworkEmote && emote.opacity < 1 && !emote.isExploded) {
+                explodedEmotes = explodedEmotes.concat(this.explodeIntoEmotes(emote.code, emote.position));
+                emote.isExploded = true;
+            }
+        });
+        return explodedEmotes;
+    }
+
+    explodeIntoEmotes(emoteCode: string, position: Vector2) {
+        const twoPi = Math.PI * 2;
+        const radians = twoPi / 360;
+        const emote = this.getEmoteByCode(emoteCode);
+
+        const randomNumberOfEmoteParticles = randomNumberBetween(5, 12);
+        const emotesToReturn = [];
+        for (let numEmotes = 0; numEmotes < randomNumberOfEmoteParticles; numEmotes++) {
+            const randomLifespan = randomNumberBetween(1, 2);
+            const randomAngularVelocity = randomNumberBetween(-4, 4);
+            emote.setScale(randomNumberBetween(1, 2));
+            emote.setUrl();
+            const emoteSize = emote.convertScaleToPixels();
+            const randomDegrees = randomNumberBetween(0, 360);
+            const theta = randomDegrees * radians; // some random number between 0 and 2pi
+            const randomVelocity = new Vector2(Math.cos(theta), Math.sin(theta));
+
+            const fireworkEmote = new RainingEmote(position, randomVelocity, randomLifespan, emoteSize, [emote.url], randomAngularVelocity);
+            emotesToReturn.push(fireworkEmote);
+        }
+        return emotesToReturn;
+    }
 
 }
