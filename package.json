@@ -10,7 +10,8 @@
     "build-emote-widget": "browserify src/overlay-widgets/emote-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles -f src/overlay-widgets/emote-widget/*.html src/overlay-widgets/emote-widget/*.css src/overlay-widgets/emote-widget/*.md build/overlay-widgets/emote-widget",
     "build-physics-widget": "browserify src/overlay-widgets/physics/physics-engine.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/physics/physics-bundle.js",
     "build-keyboard-widget": "browserify src/overlay-widgets/keyboard-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/keyboard-widget/keyboard-bundle.js && copyfiles -f src/overlay-widgets/keyboard-widget/*.html src/overlay-widgets/keyboard-widget/*.css src/overlay-widgets/keyboard-widget/*.md build/overlay-widgets/keyboard-widget && copyfiles -f src/overlay-widgets/keyboard-widget/*.node build",
-    "build-all": "npm test && npm run build && npm run build-emote-widget && npm run build-physics-widget && npm run build-keyboard-widget"
+    "build-all": "npm test && npm run build && npm run build-emote-widget && npm run build-physics-widget && npm run build-keyboard-widget",
+    "deploy": "npm run build-all && gh-pages -d build"
   },
   "author": "",
   "license": "GPL-3.0",
@@ -30,6 +31,7 @@
     "@types/ws": "^6.0.3",
     "browserify": "^16.5.0",
     "copyfiles": "^2.1.1",
+    "gh-pages": "^2.2.0",
     "jasmine": "^3.5.0",
     "ts-node": "^8.4.1",
     "tsify": "^4.0.1",

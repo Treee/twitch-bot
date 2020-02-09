@@ -140,6 +140,22 @@ export class TwitchApiV5 {
         emotes.push(new TwitchEmote('RPGStaff', rpgEmoteSet, '300904299'));
         emotes.push(new TwitchEmote('RPGYonger', rpgEmoteSet, '300904302'));
         emotes.push(new TwitchEmote('RPGEpicStaff', rpgEmoteSet, '300904286'));
+        emotes.push(new TwitchEmote('RPGFireball', rpgEmoteSet, '300904289'));
+
+        const luvyEmoteSet = 472873132;
+        emotes.push(new TwitchEmote('LuvOops', luvyEmoteSet, '301396357'));
+        emotes.push(new TwitchEmote('LuvPeekL', luvyEmoteSet, '301396363'));
+        emotes.push(new TwitchEmote('LuvPeekR', luvyEmoteSet, '301396373'));
+        emotes.push(new TwitchEmote('LuvSnooze', luvyEmoteSet, '301396378'));
+        emotes.push(new TwitchEmote('LuvCool', luvyEmoteSet, '301396382'));
+        emotes.push(new TwitchEmote('LuvUok', luvyEmoteSet, '300904289'));
+        emotes.push(new TwitchEmote('LuvBrownL', luvyEmoteSet, '301396400'));
+        emotes.push(new TwitchEmote('LuvBrownR', luvyEmoteSet, '301396403'));
+        emotes.push(new TwitchEmote('LuvBlush', luvyEmoteSet, '301396406'));
+        emotes.push(new TwitchEmote('LuvHearts', luvyEmoteSet, '301396428'));
+        emotes.push(new TwitchEmote('LuvBlondeL', luvyEmoteSet, '301396467'));
+        emotes.push(new TwitchEmote('LuvBlondeR', luvyEmoteSet, '301396475'));
+
 
         return emotes;
     }

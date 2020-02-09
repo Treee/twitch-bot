@@ -16,6 +16,22 @@ describe('Emote Parser', () => {
             const actualResult = emoteParser.parseComplete(msg, parsableEmotes);
             expect(actualResult).toEqual(expectedResult);
         });
+        it('returns the correct emote when found in chat', () => {
+            const expectedResult = [
+                { type: emote_parser_1.ComboType.None, data: ['itsatrEeToast'] }
+            ];
+            const msg = 'itsatrEeToast';
+            const actualResult = emoteParser.parseComplete(msg, parsableEmotes);
+            expect(actualResult).toEqual(expectedResult);
+        });
+        it('returns the correct emote when found in chat with channel point modifier', () => {
+            const expectedResult = [
+                { type: emote_parser_1.ComboType.None, data: ['itsatrEeToast_HB'] }
+            ];
+            const msg = 'itsatrEeToast_HB';
+            const actualResult = emoteParser.parseComplete(msg, parsableEmotes);
+            expect(actualResult).toEqual(expectedResult);
+        });
     });
     describe('parseForEmotes', () => {
         it('returns a list of all matched emotes in a message that contain special emote suffixes', () => {

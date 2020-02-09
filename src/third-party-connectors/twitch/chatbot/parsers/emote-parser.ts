@@ -13,7 +13,7 @@ class ComboEmote {
 }
 
 export class EmoteParser {
-    private emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD', '_RA'];
+    private emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD', '_RA', '_HB', '_KI', '_HE'];
     comboCodes: ComboEmote[] = [
         new ComboEmote(ComboType.Sequence, ['Squid1', 'Squid2', 'Squid3', 'Squid4']),
         new ComboEmote(ComboType.Sequence, ['TableHere', 'FlipThis']),
@@ -21,6 +21,8 @@ export class EmoteParser {
         new ComboEmote(ComboType.LeftRight, ['HahaShrugLeft', 'HahaShrugRight']),
         new ComboEmote(ComboType.LeftRight, ['MercyWing1', 'MercyWing2']),
         new ComboEmote(ComboType.LeftRight, ['PrideWingL', 'PrideWingR']),
+        new ComboEmote(ComboType.LeftRight, ['LuvBrownL', 'LuvBrownR']),
+        new ComboEmote(ComboType.LeftRight, ['LuvBlondeL', 'LuvBlondeR']),
         new ComboEmote(ComboType.LeftRight, ['FBPass', 'FBBlock']),
     ];
     constructor() { }
