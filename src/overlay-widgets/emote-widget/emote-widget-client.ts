@@ -29,7 +29,7 @@ export class EmoteWidgetClient {
         const eventData = JSON.parse(event.data);
         if (eventData.type === SocketMessageEnum.CheckEmoteCache) {
             if (eventData.data.length < 1) {
-                const emoteCodes = this.emoteWidget.getEmoteCodes();
+                const emoteCodes = this.emoteWidget.emoteFactory.getEmoteCodes();
                 console.log('Sending list of emotes to look for', emoteCodes);
                 this.socket.send(JSON.stringify({ type: SocketMessageEnum.EmoteCodes, data: emoteCodes }));
             }
