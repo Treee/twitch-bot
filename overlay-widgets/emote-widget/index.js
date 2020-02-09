@@ -4,10 +4,12 @@ const twitch_api_v5_1 = require("../../third-party-connectors/twitch/twitch-api-
 const emote_widget_config_1 = require("./emote-widget-config");
 const emote_widget_1 = require("./emote-widget");
 const emote_widget_client_1 = require("./emote-widget-client");
+const emote_factory_1 = require("./emotes/emote-factory");
 const twitchApiV5 = new twitch_api_v5_1.TwitchApiV5();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
-const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
+const emoteFactory = new emote_factory_1.EmoteFactory();
+const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig, emoteFactory);
 const emoteSetIds = [0, 42, 6112, 24314, 24315, 19194, 300206309];
 Promise.all([
     twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
@@ -16,7 +18,7 @@ Promise.all([
     twitchApiV5.getGlobalBttvEmotes()
 ]).then((values) => {
     // emoteWidget.twitchSubBadges = values[0].subBadges;
-    emoteWidget.masterEmotes = emoteWidget.masterEmotes.concat(values[0]).concat(values[1]).concat(values[2]).concat(values[3]);
+    emoteFactory.masterEmoteList = emoteFactory.masterEmoteList.concat(values[0]).concat(values[1]).concat(values[2]).concat(values[3]);
 }).then(() => {
     if (!emoteWidgetConfig.botMode) {
         // this first interval makes it so emotes rain immediately instead of waiting for the second interval to start

@@ -1,6 +1,14 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+function randomNumberBetween(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+exports.randomNumberBetween = randomNumberBetween;
+
+},{}],2:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const socket_message_enum_1 = require("../../third-party-connectors/twitch/socket-message-enum");
 const emote_parser_1 = require("../../third-party-connectors/twitch/chatbot/parsers/emote-parser");
 class EmoteWidgetClient {
@@ -24,7 +32,7 @@ class EmoteWidgetClient {
         const eventData = JSON.parse(event.data);
         if (eventData.type === socket_message_enum_1.SocketMessageEnum.CheckEmoteCache) {
             if (eventData.data.length < 1) {
-                const emoteCodes = this.emoteWidget.getEmoteCodes();
+                const emoteCodes = this.emoteWidget.emoteFactory.getEmoteCodes();
                 console.log('Sending list of emotes to look for', emoteCodes);
                 this.socket.send(JSON.stringify({ type: socket_message_enum_1.SocketMessageEnum.EmoteCodes, data: emoteCodes }));
             }
@@ -60,7 +68,7 @@ class EmoteWidgetClient {
 }
 exports.EmoteWidgetClient = EmoteWidgetClient;
 
-},{"../../third-party-connectors/twitch/chatbot/parsers/emote-parser":10,"../../third-party-connectors/twitch/socket-message-enum":11}],2:[function(require,module,exports){
+},{"../../third-party-connectors/twitch/chatbot/parsers/emote-parser":12,"../../third-party-connectors/twitch/socket-message-enum":13}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class EmoteWidgetConfig {
@@ -103,137 +111,29 @@ class EmoteWidgetConfig {
 }
 exports.EmoteWidgetConfig = EmoteWidgetConfig;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const emote_interfaces_1 = require("./emotes/emote-interfaces");
-const raining_emote_1 = require("./emotes/raining-emote");
-const wavy_emote_1 = require("./emotes/wavy-emote");
-const firework_emote_1 = require("./emotes/firework-emote");
+const math_helper_1 = require("../../helpers/math-helper");
 class EmoteWidget {
-    constructor(emoteConfig) {
-        this.masterEmotes = [];
+    constructor(emoteConfig, emoteFactory) {
         this.emotesToDraw = [];
-        this.explodedEmotes = [];
         this.emoteConfig = emoteConfig;
-    }
-    getEmoteCodes() {
-        return this.masterEmotes.map((emote) => {
-            return emote.code;
-        });
+        this.emoteFactory = emoteFactory;
     }
     getDrawableEmoteByCode(emoteCodes) {
-        let drawable = this.createRainingEmote(emoteCodes);
-        const randomAnimationType = this.randomNumberBetween(1, 3);
+        let drawable = this.emoteFactory.createFireworkEmote(emoteCodes, this.getViewWidth(), this.getViewHeight());
+        const randomAnimationType = math_helper_1.randomNumberBetween(1, 3);
         if (randomAnimationType === 2) {
-            drawable = this.createWavyEmote(emoteCodes);
+            drawable = this.emoteFactory.createWavyEmote(emoteCodes, this.getViewWidth(), this.getViewHeight());
         }
         if (randomAnimationType === 3) {
-            drawable = this.createFireworkEmote(emoteCodes);
+            drawable = this.emoteFactory.createFireworkEmote(emoteCodes, this.getViewWidth(), this.getViewHeight());
         }
         return drawable;
     }
-    createFireworkEmote(emoteCodes) {
-        const scalar = this.randomNumberBetween(1, 3);
-        const emoteUrls = [];
-        let emoteSize = new emote_interfaces_1.Vector2(28, 28); //default values
-        emoteCodes.forEach((emoteCode) => {
-            const emote = this.getEmoteByCode(emoteCode);
-            emote.setScale(scalar);
-            emote.setUrl();
-            emoteUrls.push(emote.url);
-            emoteSize = emote.convertScaleToPixels();
-        });
-        const randomPosition = new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), this.getViewHeight());
-        const xVelocityDirection = randomPosition.x < this.getViewWidth() / 2 ? 1 : -1;
-        const randomVelocity = new emote_interfaces_1.Vector2(this.randomNumberBetween(1, 2) * xVelocityDirection, this.randomNumberBetween(2, 4.5) * -1);
-        const randomLifespan = this.randomNumberBetween(3, 4.2);
-        const randomAngularVelocity = this.randomNumberBetween(1, 2);
-        const fireworkEmote = new firework_emote_1.FireworkEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emoteUrls, randomAngularVelocity);
-        fireworkEmote.code = emoteCodes[0];
-        return fireworkEmote;
-    }
-    createRainingEmote(emoteCodes) {
-        const scalar = this.randomNumberBetween(1, 3);
-        const emoteUrls = [];
-        let emoteSize = new emote_interfaces_1.Vector2(28, 28); //default values
-        emoteCodes.forEach((emoteCode) => {
-            const emote = this.getEmoteByCode(emoteCode);
-            emote.setScale(scalar);
-            emote.setUrl();
-            emoteUrls.push(emote.url);
-            emoteSize = emote.convertScaleToPixels();
-        });
-        const randomPosition = new emote_interfaces_1.Vector2(this.randomNumberBetween(0, this.getViewWidth()), 0);
-        const randomVelocity = new emote_interfaces_1.Vector2(0, this.randomNumberBetween(1, 5));
-        const randomLifespan = this.randomNumberBetween(1, 6);
-        const randomAngularVelocity = this.randomNumberBetween(1, 4);
-        return new raining_emote_1.RainingEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emoteUrls, randomAngularVelocity);
-    }
-    createWavyEmote(emoteCodes) {
-        const scalar = this.randomNumberBetween(1, 3);
-        const emoteUrls = [];
-        let emoteSize = new emote_interfaces_1.Vector2(28, 28); //default values
-        emoteCodes.forEach((emoteCode) => {
-            const emote = this.getEmoteByCode(emoteCode);
-            emote.setScale(scalar);
-            emote.setUrl();
-            emoteUrls.push(emote.url);
-            emoteSize = emote.convertScaleToPixels();
-        });
-        const randomVelocity = new emote_interfaces_1.Vector2(this.randomNumberBetween(1, 5), this.randomNumberBetween(1, 5));
-        const randomLifespan = this.randomNumberBetween(3, 9);
-        const randomAngularVelocity = this.randomNumberBetween(1, 4);
-        const randomPosition = new emote_interfaces_1.Vector2(0, this.randomNumberBetween(0, this.getViewHeight() - emoteSize.y));
-        const max = 2;
-        const toggle = this.randomNumberBetween(1, max); //left
-        if (toggle % max === 1) { // right
-            randomPosition.x = this.getViewWidth();
-            randomVelocity.x *= -1;
-        }
-        // else if (toggle % max === 2) { // top
-        //     randomPosition.x = this.randomNumberBetween(0, this.getViewWidth());
-        //     randomPosition.y = 0;
-        // } else if (toggle % max === 3) {// bot
-        //     randomPosition.x = this.randomNumberBetween(0, this.getViewWidth());
-        //     randomPosition.y = this.getViewHeight();
-        //     randomVelocity.y *= -1;
-        // }
-        return new wavy_emote_1.WavyEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emoteUrls, randomAngularVelocity);
-    }
-    getEmoteByCode(emoteCode) {
-        const splitCode = emoteCode.split('_');
-        if (splitCode.length === 2) {
-            emoteCode = splitCode[0];
-        }
-        const foundEmote = this.masterEmotes.find((emote) => {
-            return emote.code.toLowerCase() === emoteCode.toLowerCase();
-        });
-        if (splitCode.length === 2) {
-            foundEmote.channelPointModifier = `_${splitCode[1]}`;
-        }
-        if (!foundEmote) {
-            throw new Error(`No emote found for code: ${emoteCode}.`);
-        }
-        foundEmote.setScale(this.randomNumberBetween(1, 3));
-        foundEmote.setUrl();
-        return foundEmote;
-    }
-    getRandomEmote() {
-        const randomIndex = this.randomNumberBetween(0, this.masterEmotes.length - 1);
-        if (this.masterEmotes.length < 1) {
-            throw new Error('No Emotes in the master list.');
-        }
-        const randomEmote = this.masterEmotes[randomIndex];
-        randomEmote.setScale(this.randomNumberBetween(1, 3));
-        randomEmote.setUrl();
-        return randomEmote;
-    }
-    randomNumberBetween(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    }
     addEmoteToContainer(emoteCodes) {
-        let numEmotes = this.randomNumberBetween(1, 2);
+        let numEmotes = math_helper_1.randomNumberBetween(1, 2);
         for (let index = 0; index < numEmotes; index++) {
             emoteCodes.forEach((emote) => {
                 const drawableEmote = this.getDrawableEmoteByCode([emote]);
@@ -242,7 +142,7 @@ class EmoteWidget {
         }
     }
     addGroupedEmoteToContainer(emoteCodes) {
-        let numEmotes = this.randomNumberBetween(1, 2);
+        let numEmotes = math_helper_1.randomNumberBetween(1, 2);
         for (let index = 0; index < numEmotes; index++) {
             const drawableEmote = this.getDrawableEmoteByCode(emoteCodes);
             this.addEmoteToCanvasAndDrawables(drawableEmote);
@@ -255,7 +155,7 @@ class EmoteWidget {
                 if (drawable.htmlElement) {
                     $(`.emote-container`).append(drawable.htmlElement);
                 }
-            }, this.randomNumberBetween(100, 500));
+            }, math_helper_1.randomNumberBetween(100, 500));
         }
         this.emotesToDraw.push(drawable);
     }
@@ -286,38 +186,160 @@ class EmoteWidget {
         });
     }
     checkForExplodedEmotes() {
-        const explodedEmotes = this.emotesToDraw.filter((emote) => {
-            if (emote instanceof firework_emote_1.FireworkEmote) {
-                return emote.opacity < 1 && !emote.isExploded;
-            }
-        });
-        explodedEmotes.forEach((explodedEmote) => {
-            this.explodeIntoEmotes(explodedEmote.code, explodedEmote.position);
-            explodedEmote.isExploded = true;
-        });
-    }
-    explodeIntoEmotes(emoteCode, position) {
-        const twoPi = Math.PI * 2;
-        const radians = twoPi / 360;
-        const emote = this.getEmoteByCode(emoteCode);
-        const randomNumberOfEmoteParticles = this.randomNumberBetween(5, 12);
-        for (let numEmotes = 0; numEmotes < randomNumberOfEmoteParticles; numEmotes++) {
-            const randomLifespan = this.randomNumberBetween(1, 2);
-            const randomAngularVelocity = this.randomNumberBetween(-4, 4);
-            emote.setScale(this.randomNumberBetween(1, 2));
-            emote.setUrl();
-            const emoteSize = emote.convertScaleToPixels();
-            const randomDegrees = this.randomNumberBetween(0, 360);
-            const theta = randomDegrees * radians; // some random number between 0 and 2pi
-            const randomVelocity = new emote_interfaces_1.Vector2(Math.cos(theta), Math.sin(theta));
-            const fireworkEmote = new raining_emote_1.RainingEmote(position, randomVelocity, randomLifespan, emoteSize, [emote.url], randomAngularVelocity);
-            this.addEmoteToCanvasAndDrawables(fireworkEmote);
+        const explodedEmotes = this.emoteFactory.checkForExplodedEmotes(this.emotesToDraw);
+        if (explodedEmotes.length > 0) {
+            explodedEmotes.forEach((emote) => {
+                this.addEmoteToCanvasAndDrawables(emote);
+            });
         }
     }
 }
 exports.EmoteWidget = EmoteWidget;
 
-},{"./emotes/emote-interfaces":4,"./emotes/firework-emote":6,"./emotes/raining-emote":7,"./emotes/wavy-emote":8}],4:[function(require,module,exports){
+},{"../../helpers/math-helper":1}],5:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const firework_emote_1 = require("./firework-emote");
+const raining_emote_1 = require("./raining-emote");
+const wavy_emote_1 = require("./wavy-emote");
+const emote_interfaces_1 = require("./emote-interfaces");
+const math_helper_1 = require("../../../helpers/math-helper");
+class EmoteFactory {
+    constructor() {
+        this.masterEmoteList = [];
+    }
+    getEmoteCodes() {
+        return this.masterEmoteList.map((emote) => {
+            return emote.code;
+        });
+    }
+    getEmoteByCode(emoteCode) {
+        const splitCode = emoteCode.split('_');
+        if (splitCode.length === 2) {
+            emoteCode = splitCode[0];
+        }
+        const foundEmote = this.masterEmoteList.find((emote) => {
+            return emote.code.toLowerCase() === emoteCode.toLowerCase();
+        });
+        if (splitCode.length === 2) {
+            foundEmote.channelPointModifier = `_${splitCode[1]}`;
+        }
+        if (!foundEmote) {
+            throw new Error(`No emote found for code: ${emoteCode}.`);
+        }
+        foundEmote.setScale(math_helper_1.randomNumberBetween(1, 3));
+        foundEmote.setUrl();
+        return foundEmote;
+    }
+    getRandomEmote() {
+        const randomIndex = math_helper_1.randomNumberBetween(0, this.masterEmoteList.length - 1);
+        if (this.masterEmoteList.length < 1) {
+            throw new Error('No Emotes in the master list.');
+        }
+        return this.getEmoteByCode(this.masterEmoteList[randomIndex].code);
+    }
+    createFireworkEmote(emoteCodes, canvasWidth, canvaseHeight) {
+        const scalar = math_helper_1.randomNumberBetween(1, 3);
+        const emoteUrls = [];
+        let emoteSize = new emote_interfaces_1.Vector2(28, 28); //default values
+        emoteCodes.forEach((emoteCode) => {
+            const emote = this.getEmoteByCode(emoteCode);
+            emote.setScale(scalar);
+            emote.setUrl();
+            emoteUrls.push(emote.url);
+            emoteSize = emote.convertScaleToPixels();
+        });
+        const randomPosition = new emote_interfaces_1.Vector2(math_helper_1.randomNumberBetween(0, canvasWidth), canvaseHeight);
+        const xVelocityDirection = randomPosition.x < canvasWidth / 2 ? 1 : -1;
+        const randomVelocity = new emote_interfaces_1.Vector2(math_helper_1.randomNumberBetween(1, 2) * xVelocityDirection, math_helper_1.randomNumberBetween(2, 4.5) * -1);
+        const randomLifespan = math_helper_1.randomNumberBetween(3, 4.2);
+        const randomAngularVelocity = math_helper_1.randomNumberBetween(1, 2);
+        const fireworkEmote = new firework_emote_1.FireworkEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emoteUrls, randomAngularVelocity);
+        fireworkEmote.code = emoteCodes[0];
+        return fireworkEmote;
+    }
+    createRainingEmote(emoteCodes, canvasWidth) {
+        const scalar = math_helper_1.randomNumberBetween(1, 3);
+        const emoteUrls = [];
+        let emoteSize = new emote_interfaces_1.Vector2(28, 28); //default values
+        emoteCodes.forEach((emoteCode) => {
+            const emote = this.getEmoteByCode(emoteCode);
+            emote.setScale(scalar);
+            emote.setUrl();
+            emoteUrls.push(emote.url);
+            emoteSize = emote.convertScaleToPixels();
+        });
+        const randomPosition = new emote_interfaces_1.Vector2(math_helper_1.randomNumberBetween(0, canvasWidth), 0);
+        const randomVelocity = new emote_interfaces_1.Vector2(0, math_helper_1.randomNumberBetween(1, 5));
+        const randomLifespan = math_helper_1.randomNumberBetween(1, 6);
+        const randomAngularVelocity = math_helper_1.randomNumberBetween(1, 4);
+        return new raining_emote_1.RainingEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emoteUrls, randomAngularVelocity);
+    }
+    createWavyEmote(emoteCodes, canvasWidth, canvasHeight) {
+        const scalar = math_helper_1.randomNumberBetween(1, 3);
+        const emoteUrls = [];
+        let emoteSize = new emote_interfaces_1.Vector2(28, 28); //default values
+        emoteCodes.forEach((emoteCode) => {
+            const emote = this.getEmoteByCode(emoteCode);
+            emote.setScale(scalar);
+            emote.setUrl();
+            emoteUrls.push(emote.url);
+            emoteSize = emote.convertScaleToPixels();
+        });
+        const randomVelocity = new emote_interfaces_1.Vector2(math_helper_1.randomNumberBetween(1, 5), math_helper_1.randomNumberBetween(1, 5));
+        const randomLifespan = math_helper_1.randomNumberBetween(3, 9);
+        const randomAngularVelocity = math_helper_1.randomNumberBetween(1, 4);
+        const randomPosition = new emote_interfaces_1.Vector2(0, math_helper_1.randomNumberBetween(0, canvasHeight - emoteSize.y));
+        const max = 2;
+        const toggle = math_helper_1.randomNumberBetween(1, max); //left
+        if (toggle % max === 1) { // right
+            randomPosition.x = canvasWidth;
+            randomVelocity.x *= -1;
+        }
+        // else if (toggle % max === 2) { // top
+        //     randomPosition.x = randomNumberBetween(0, this.getViewWidth());
+        //     randomPosition.y = 0;
+        // } else if (toggle % max === 3) {// bot
+        //     randomPosition.x = randomNumberBetween(0, this.getViewWidth());
+        //     randomPosition.y = this.getViewHeight();
+        //     randomVelocity.y *= -1;
+        // }
+        return new wavy_emote_1.WavyEmote(randomPosition, randomVelocity, randomLifespan, emoteSize, emoteUrls, randomAngularVelocity);
+    }
+    checkForExplodedEmotes(activeEmotes) {
+        let explodedEmotes = [];
+        activeEmotes.forEach((emote) => {
+            if (emote instanceof firework_emote_1.FireworkEmote && emote.opacity < 1 && !emote.isExploded) {
+                explodedEmotes = explodedEmotes.concat(this.explodeIntoEmotes(emote.code, emote.position));
+                emote.isExploded = true;
+            }
+        });
+        return explodedEmotes;
+    }
+    explodeIntoEmotes(emoteCode, position) {
+        const twoPi = Math.PI * 2;
+        const radians = twoPi / 360;
+        const emote = this.getEmoteByCode(emoteCode);
+        const randomNumberOfEmoteParticles = math_helper_1.randomNumberBetween(5, 12);
+        const emotesToReturn = [];
+        for (let numEmotes = 0; numEmotes < randomNumberOfEmoteParticles; numEmotes++) {
+            const randomLifespan = math_helper_1.randomNumberBetween(1, 2);
+            const randomAngularVelocity = math_helper_1.randomNumberBetween(-4, 4);
+            emote.setScale(math_helper_1.randomNumberBetween(1, 2));
+            emote.setUrl();
+            const emoteSize = emote.convertScaleToPixels();
+            const randomDegrees = math_helper_1.randomNumberBetween(0, 360);
+            const theta = randomDegrees * radians; // some random number between 0 and 2pi
+            const randomVelocity = new emote_interfaces_1.Vector2(Math.cos(theta), Math.sin(theta));
+            const fireworkEmote = new raining_emote_1.RainingEmote(position, randomVelocity, randomLifespan, emoteSize, [emote.url], randomAngularVelocity);
+            emotesToReturn.push(fireworkEmote);
+        }
+        return emotesToReturn;
+    }
+}
+exports.EmoteFactory = EmoteFactory;
+
+},{"../../../helpers/math-helper":1,"./emote-interfaces":6,"./firework-emote":8,"./raining-emote":9,"./wavy-emote":10}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Vector2 {
@@ -347,7 +369,7 @@ class RenderableObject {
 }
 exports.RenderableObject = RenderableObject;
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -440,7 +462,7 @@ class TwitchEmote extends Emote {
 }
 exports.TwitchEmote = TwitchEmote;
 
-},{"./emote-interfaces":4}],6:[function(require,module,exports){
+},{"./emote-interfaces":6}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -536,7 +558,7 @@ class FireworkEmote extends emote_interfaces_1.RenderableObject {
 }
 exports.FireworkEmote = FireworkEmote;
 
-},{"./emote-interfaces":4}],7:[function(require,module,exports){
+},{"./emote-interfaces":6}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -620,7 +642,7 @@ class RainingEmote extends emote_interfaces_1.RenderableObject {
 }
 exports.RainingEmote = RainingEmote;
 
-},{"./emote-interfaces":4}],8:[function(require,module,exports){
+},{"./emote-interfaces":6}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const emote_interfaces_1 = require("./emote-interfaces");
@@ -717,17 +739,19 @@ class WavyEmote extends emote_interfaces_1.RenderableObject {
 }
 exports.WavyEmote = WavyEmote;
 
-},{"./emote-interfaces":4}],9:[function(require,module,exports){
+},{"./emote-interfaces":6}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const twitch_api_v5_1 = require("../../third-party-connectors/twitch/twitch-api-v5");
 const emote_widget_config_1 = require("./emote-widget-config");
 const emote_widget_1 = require("./emote-widget");
 const emote_widget_client_1 = require("./emote-widget-client");
+const emote_factory_1 = require("./emotes/emote-factory");
 const twitchApiV5 = new twitch_api_v5_1.TwitchApiV5();
 const emoteWidgetConfig = new emote_widget_config_1.EmoteWidgetConfig();
 emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
-const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig);
+const emoteFactory = new emote_factory_1.EmoteFactory();
+const emoteWidget = new emote_widget_1.EmoteWidget(emoteWidgetConfig, emoteFactory);
 const emoteSetIds = [0, 42, 6112, 24314, 24315, 19194, 300206309];
 Promise.all([
     twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
@@ -736,7 +760,7 @@ Promise.all([
     twitchApiV5.getGlobalBttvEmotes()
 ]).then((values) => {
     // emoteWidget.twitchSubBadges = values[0].subBadges;
-    emoteWidget.masterEmotes = emoteWidget.masterEmotes.concat(values[0]).concat(values[1]).concat(values[2]).concat(values[3]);
+    emoteFactory.masterEmoteList = emoteFactory.masterEmoteList.concat(values[0]).concat(values[1]).concat(values[2]).concat(values[3]);
 }).then(() => {
     if (!emoteWidgetConfig.botMode) {
         // this first interval makes it so emotes rain immediately instead of waiting for the second interval to start
@@ -766,7 +790,7 @@ Promise.all([
     }
 });
 
-},{"../../third-party-connectors/twitch/twitch-api-v5":12,"./emote-widget":3,"./emote-widget-client":1,"./emote-widget-config":2}],10:[function(require,module,exports){
+},{"../../third-party-connectors/twitch/twitch-api-v5":14,"./emote-widget":4,"./emote-widget-client":2,"./emote-widget-config":3,"./emotes/emote-factory":5}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ComboType;
@@ -879,7 +903,7 @@ class EmoteParser {
 }
 exports.EmoteParser = EmoteParser;
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var SocketMessageEnum;
@@ -892,7 +916,7 @@ var SocketMessageEnum;
     SocketMessageEnum[SocketMessageEnum["PressedKeys"] = 5] = "PressedKeys";
 })(SocketMessageEnum = exports.SocketMessageEnum || (exports.SocketMessageEnum = {}));
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1063,4 +1087,4 @@ class TwitchApiV5 {
 }
 exports.TwitchApiV5 = TwitchApiV5;
 
-},{"../../overlay-widgets/emote-widget/emotes/emote":5}]},{},[9]);
+},{"../../overlay-widgets/emote-widget/emotes/emote":7}]},{},[11]);
