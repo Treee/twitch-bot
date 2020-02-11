@@ -111,7 +111,7 @@ export class AABB {
         var numerator: number = originB.subtract(originA).crossProduct(r);
         var denominator: number = r.crossProduct(s);
 
-        console.log(`checking intersection between startA:${originA.print()} endA:${endA.print()} startB:${originB.print()} endB:${endB.print()}`)
+        // console.log(`checking intersection between startA:${originA.print()} endA:${endA.print()} startB:${originB.print()} endB:${endB.print()}`)
         if (numerator === 0 && denominator === 0) {
             // the lines are co-linear
             // check if they overlap
@@ -127,8 +127,8 @@ export class AABB {
         var u: number = numerator / denominator;
         var t: number = originB.subtract(originA).crossProduct(s) / denominator;
         if ((t >= 0) && (t <= 1) && (u >= 0) && (u <= 1)) {
-            console.log(`==========> t: ${t} u: ${u}`);
-            console.log('=============> collision!!!');
+            // console.log(`==========> t: ${t} u: ${u}`);
+            // console.log('=============> collision!!!');
             //return originA + (r * t);
             return t;
         }

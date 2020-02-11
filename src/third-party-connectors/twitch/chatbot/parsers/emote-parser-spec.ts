@@ -39,6 +39,26 @@ describe('Emote Parser', () => {
             expect(actualResult).toEqual(expectedResult);
         });
 
+        it('returns the cprrect emote when many emotes are being spammed', () => {
+            let msg = 'itsatrEeToast_HB';
+            let actualResult = emoteParser.parseComplete(msg, parsableEmotes);
+            expect(actualResult).toEqual([
+                { type: ComboType.None, data: ['itsatrEeToast_HB'] }
+            ]);
+
+            msg = 'itsatrEeToast itsatrEeToast itsatrEeToast';
+            actualResult = emoteParser.parseComplete(msg, parsableEmotes);
+            expect(actualResult).toEqual([
+                { type: ComboType.None, data: ['itsatrEeToast', 'itsatrEeToast', 'itsatrEeToast'] }
+            ]);
+
+            msg = 'itsatrEeToast itsatrEeToast_HB itsatrEeToast';
+            actualResult = emoteParser.parseComplete(msg, parsableEmotes);
+            expect(actualResult).toEqual([
+                { type: ComboType.None, data: ['itsatrEeToast', 'itsatrEeToast_HB', 'itsatrEeToast'] }
+            ]);
+        });
+
 
     });
 
