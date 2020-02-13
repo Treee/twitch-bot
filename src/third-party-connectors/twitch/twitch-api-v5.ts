@@ -129,6 +129,7 @@ export class TwitchApiV5 {
         emotes.push(new TwitchEmote('PrideWingR', prideEmoteSet, '300354435'));
         emotes.push(new TwitchEmote('PrideShine', prideEmoteSet, '300354448'));
         emotes.push(new TwitchEmote('PrideCheers', prideEmoteSet, '300354469'));
+        emotes.push(new TwitchEmote('PrideParty', prideEmoteSet, '300354450'));
         emotes.push(new TwitchEmote('PrideBalloons', prideEmoteSet, '300352359'));
         emotes.push(new TwitchEmote('PrideLionHey', prideEmoteSet, '300352355'));
         emotes.push(new TwitchEmote('PrideLionYay', prideEmoteSet, '300352343'));
