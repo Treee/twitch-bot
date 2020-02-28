@@ -19,7 +19,11 @@ export class EmoteFactory {
     }
 
     public getEmoteByCode(emoteCode: string): Emote {
-        const splitCode = emoteCode.split('_');
+        let splitCode = emoteCode.split('_');
+        // special case for the below emoji
+        if (emoteCode === `[oO](_|\\.)[oO]`) {
+            splitCode = [];
+        }
         if (splitCode.length === 2) {
             emoteCode = splitCode[0];
         }
@@ -28,7 +32,7 @@ export class EmoteFactory {
             return emote.code.toLowerCase() === emoteCode.toLowerCase();
         });
 
-        if (splitCode.length === 2) {
+        if (foundEmote && splitCode.length === 2) {
             (foundEmote as TwitchEmote).channelPointModifier = `_${splitCode[1]}`;
         }
 

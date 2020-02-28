@@ -41,7 +41,6 @@ export class RainingEmote extends RenderableObject implements Movable, Rotatable
         element.width(`${size.x}px`);
         element.height(`${size.y}px`);
         element.css('background', `url("${imageUrl}")`);
-        element.css('background-size', 'cover');
         return element;
     }
 

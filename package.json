@@ -11,7 +11,8 @@
     "build-physics-widget": "browserify src/overlay-widgets/physics/physics-engine.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/physics/physics-bundle.js",
     "build-keyboard-widget": "browserify src/overlay-widgets/keyboard-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/keyboard-widget/keyboard-bundle.js && copyfiles -f src/overlay-widgets/keyboard-widget/*.html src/overlay-widgets/keyboard-widget/*.css src/overlay-widgets/keyboard-widget/*.md build/overlay-widgets/keyboard-widget && copyfiles -f src/overlay-widgets/keyboard-widget/*.node build",
     "build-all": "npm test && npm run build && npm run build-emote-widget && npm run build-physics-widget && npm run build-keyboard-widget",
-    "deploy": "npm run build-all && gh-pages -d build"
+    "deploy": "npm run build-all && gh-pages -d build",
+    "start": "npm run local-chatbot"
   },
   "author": "",
   "license": "GPL-3.0",

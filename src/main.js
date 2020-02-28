@@ -55,7 +55,7 @@
         }
         const secondsToWaitForRain = getNumberInputValues('secondsToWaitForRain');
         if (secondsToWaitForRain !== '23') {
-            paramsToAdd.push(`totalEmotes=${secondsToWaitForRain}`);
+            paramsToAdd.push(`secondsToWaitForRain=${secondsToWaitForRain}`);
         }
         const numTimesToRepeat = getNumberInputValues('numTimesToRepeat');
         if (numTimesToRepeat !== '1') {

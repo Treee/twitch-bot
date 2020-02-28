@@ -29,6 +29,9 @@ export class EmoteWidget {
         let numEmotes = randomNumberBetween(1, 2);
         for (let index = 0; index < numEmotes; index++) {
             emoteCodes.forEach((emote) => {
+                if (emote === '') {
+                    emote = this.emoteFactory.getRandomEmote().code;
+                }
                 const drawableEmote = this.getDrawableEmoteByCode([emote]);
                 this.addEmoteToCanvasAndDrawables(drawableEmote);
             });
@@ -80,8 +83,12 @@ export class EmoteWidget {
 
     pruneRemainingEmotes() {
         this.emotesToDraw = this.emotesToDraw.filter((emote: any) => {
+            if (emote?.lifespan < 0) {
+                emote.htmlElement.remove();
+            }
             return emote?.lifespan > 0;
         });
+
     }
 
     checkForExplodedEmotes() {

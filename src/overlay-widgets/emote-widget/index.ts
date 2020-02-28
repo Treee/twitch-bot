@@ -24,27 +24,14 @@ Promise.all([
     emoteFactory.masterEmoteList = emoteFactory.masterEmoteList.concat(values[0]).concat(values[1]).concat(values[2]).concat(values[3]);
 }).then(() => {
     if (!emoteWidgetConfig.botMode) {
+        emoteWidget.startSimulation();
         // this first interval makes it so emotes rain immediately instead of waiting for the second interval to start
-        let interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), '');
 
-        if (emoteWidgetConfig.numTimesToRepeat != -1) {
-            // timeout to ensure the raining emotes stop after a certain amount of time
-            setTimeout(() => {
-                clearInterval(interval);
-                emoteWidgetConfig.numTimesToRepeat--;
-            }, emoteWidgetConfig.secondsToRain * 1000);
+        // this interval will continually start and stop the raining of emotes.
+        setInterval(() => {
+            emoteWidget.addEmoteToContainer(['']);
 
-            // this interval will continually start and stop the raining of emotes.
-            setInterval(() => {
-                if (emoteWidgetConfig.numTimesToRepeat > 0) {
-                    interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), '');
-                    setTimeout(() => {
-                        clearInterval(interval);
-                        emoteWidgetConfig.numTimesToRepeat--;
-                    }, emoteWidgetConfig.secondsToRain * 1000);
-                }
-            }, emoteWidgetConfig.secondsToWaitForRain * 1000);
-        }
+        }, 2500);
     }
 }).then(() => {
     if (emoteWidgetConfig.botMode) {
