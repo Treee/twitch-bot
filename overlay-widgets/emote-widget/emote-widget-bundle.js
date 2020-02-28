@@ -136,6 +136,9 @@ class EmoteWidget {
         let numEmotes = math_helper_1.randomNumberBetween(1, 2);
         for (let index = 0; index < numEmotes; index++) {
             emoteCodes.forEach((emote) => {
+                if (emote === '') {
+                    emote = this.emoteFactory.getRandomEmote().code;
+                }
                 const drawableEmote = this.getDrawableEmoteByCode([emote]);
                 this.addEmoteToCanvasAndDrawables(drawableEmote);
             });
@@ -181,8 +184,11 @@ class EmoteWidget {
     }
     pruneRemainingEmotes() {
         this.emotesToDraw = this.emotesToDraw.filter((emote) => {
-            var _a;
-            return ((_a = emote) === null || _a === void 0 ? void 0 : _a.lifespan) > 0;
+            var _a, _b;
+            if (((_a = emote) === null || _a === void 0 ? void 0 : _a.lifespan) < 0) {
+                emote.htmlElement.remove();
+            }
+            return ((_b = emote) === null || _b === void 0 ? void 0 : _b.lifespan) > 0;
         });
     }
     checkForExplodedEmotes() {
@@ -214,14 +220,18 @@ class EmoteFactory {
         });
     }
     getEmoteByCode(emoteCode) {
-        const splitCode = emoteCode.split('_');
+        let splitCode = emoteCode.split('_');
+        // special case for the below emoji
+        if (emoteCode === `[oO](_|\\.)[oO]`) {
+            splitCode = [];
+        }
         if (splitCode.length === 2) {
             emoteCode = splitCode[0];
         }
         const foundEmote = this.masterEmoteList.find((emote) => {
             return emote.code.toLowerCase() === emoteCode.toLowerCase();
         });
-        if (splitCode.length === 2) {
+        if (foundEmote && splitCode.length === 2) {
             foundEmote.channelPointModifier = `_${splitCode[1]}`;
         }
         if (!foundEmote) {
@@ -503,7 +513,6 @@ class FireworkEmote extends emote_interfaces_1.RenderableObject {
         element.width(`${size.x}px`);
         element.height(`${size.y}px`);
         element.css('background', `url("${imageUrl}")`);
-        element.css('background-size', 'cover');
         return element;
     }
     translate(x, y) {
@@ -595,7 +604,6 @@ class RainingEmote extends emote_interfaces_1.RenderableObject {
         element.width(`${size.x}px`);
         element.height(`${size.y}px`);
         element.css('background', `url("${imageUrl}")`);
-        element.css('background-size', 'cover');
         return element;
     }
     translate(x, y) {
@@ -681,7 +689,6 @@ class WavyEmote extends emote_interfaces_1.RenderableObject {
         element.width(`${size.x}px`);
         element.height(`${size.y}px`);
         element.css('background', `url("${imageUrl}")`);
-        element.css('background-size', 'cover');
         return element;
     }
     translate(x, y) {
@@ -763,25 +770,12 @@ Promise.all([
     emoteFactory.masterEmoteList = emoteFactory.masterEmoteList.concat(values[0]).concat(values[1]).concat(values[2]).concat(values[3]);
 }).then(() => {
     if (!emoteWidgetConfig.botMode) {
+        emoteWidget.startSimulation();
         // this first interval makes it so emotes rain immediately instead of waiting for the second interval to start
-        let interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), '');
-        if (emoteWidgetConfig.numTimesToRepeat != -1) {
-            // timeout to ensure the raining emotes stop after a certain amount of time
-            setTimeout(() => {
-                clearInterval(interval);
-                emoteWidgetConfig.numTimesToRepeat--;
-            }, emoteWidgetConfig.secondsToRain * 1000);
-            // this interval will continually start and stop the raining of emotes.
-            setInterval(() => {
-                if (emoteWidgetConfig.numTimesToRepeat > 0) {
-                    interval = setInterval(emoteWidget.addEmoteToContainer.bind(emoteWidget), ((emoteWidgetConfig.secondsToRain * 1000) / emoteWidgetConfig.totalEmotes), '');
-                    setTimeout(() => {
-                        clearInterval(interval);
-                        emoteWidgetConfig.numTimesToRepeat--;
-                    }, emoteWidgetConfig.secondsToRain * 1000);
-                }
-            }, emoteWidgetConfig.secondsToWaitForRain * 1000);
-        }
+        // this interval will continually start and stop the raining of emotes.
+        setInterval(() => {
+            emoteWidget.addEmoteToContainer(['']);
+        }, 2500);
     }
 }).then(() => {
     if (emoteWidgetConfig.botMode) {
@@ -1058,6 +1052,7 @@ class TwitchApiV5 {
         emotes.push(new emote_1.TwitchEmote('PrideWingR', prideEmoteSet, '300354435'));
         emotes.push(new emote_1.TwitchEmote('PrideShine', prideEmoteSet, '300354448'));
         emotes.push(new emote_1.TwitchEmote('PrideCheers', prideEmoteSet, '300354469'));
+        emotes.push(new emote_1.TwitchEmote('PrideParty', prideEmoteSet, '300354450'));
         emotes.push(new emote_1.TwitchEmote('PrideBalloons', prideEmoteSet, '300352359'));
         emotes.push(new emote_1.TwitchEmote('PrideLionHey', prideEmoteSet, '300352355'));
         emotes.push(new emote_1.TwitchEmote('PrideLionYay', prideEmoteSet, '300352343'));

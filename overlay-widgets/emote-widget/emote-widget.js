@@ -22,6 +22,9 @@ class EmoteWidget {
         let numEmotes = math_helper_1.randomNumberBetween(1, 2);
         for (let index = 0; index < numEmotes; index++) {
             emoteCodes.forEach((emote) => {
+                if (emote === '') {
+                    emote = this.emoteFactory.getRandomEmote().code;
+                }
                 const drawableEmote = this.getDrawableEmoteByCode([emote]);
                 this.addEmoteToCanvasAndDrawables(drawableEmote);
             });
@@ -67,8 +70,11 @@ class EmoteWidget {
     }
     pruneRemainingEmotes() {
         this.emotesToDraw = this.emotesToDraw.filter((emote) => {
-            var _a;
-            return ((_a = emote) === null || _a === void 0 ? void 0 : _a.lifespan) > 0;
+            var _a, _b;
+            if (((_a = emote) === null || _a === void 0 ? void 0 : _a.lifespan) < 0) {
+                emote.htmlElement.remove();
+            }
+            return ((_b = emote) === null || _b === void 0 ? void 0 : _b.lifespan) > 0;
         });
     }
     checkForExplodedEmotes() {

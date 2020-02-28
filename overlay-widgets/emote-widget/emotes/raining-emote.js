@@ -34,7 +34,6 @@ class RainingEmote extends emote_interfaces_1.RenderableObject {
         element.width(`${size.x}px`);
         element.height(`${size.y}px`);
         element.css('background', `url("${imageUrl}")`);
-        element.css('background-size', 'cover');
         return element;
     }
     translate(x, y) {

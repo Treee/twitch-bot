@@ -15,14 +15,18 @@ class EmoteFactory {
         });
     }
     getEmoteByCode(emoteCode) {
-        const splitCode = emoteCode.split('_');
+        let splitCode = emoteCode.split('_');
+        // special case for the below emoji
+        if (emoteCode === `[oO](_|\\.)[oO]`) {
+            splitCode = [];
+        }
         if (splitCode.length === 2) {
             emoteCode = splitCode[0];
         }
         const foundEmote = this.masterEmoteList.find((emote) => {
             return emote.code.toLowerCase() === emoteCode.toLowerCase();
         });
-        if (splitCode.length === 2) {
+        if (foundEmote && splitCode.length === 2) {
             foundEmote.channelPointModifier = `_${splitCode[1]}`;
         }
         if (!foundEmote) {
