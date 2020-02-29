@@ -32,8 +32,12 @@ export class EmoteFactory {
             return emote.code.toLowerCase() === emoteCode.toLowerCase();
         });
 
-        if (foundEmote && splitCode.length === 2) {
-            (foundEmote as TwitchEmote).channelPointModifier = `_${splitCode[1]}`;
+        if (foundEmote) {
+            if (splitCode.length === 2) {
+                (foundEmote as TwitchEmote).channelPointModifier = `_${splitCode[1]}`;
+            } else {
+                (foundEmote as TwitchEmote).channelPointModifier = '';
+            }
         }
 
         if (!foundEmote) {
