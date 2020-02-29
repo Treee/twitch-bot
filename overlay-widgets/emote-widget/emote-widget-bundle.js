@@ -231,8 +231,13 @@ class EmoteFactory {
         const foundEmote = this.masterEmoteList.find((emote) => {
             return emote.code.toLowerCase() === emoteCode.toLowerCase();
         });
-        if (foundEmote && splitCode.length === 2) {
-            foundEmote.channelPointModifier = `_${splitCode[1]}`;
+        if (foundEmote) {
+            if (splitCode.length === 2) {
+                foundEmote.channelPointModifier = `_${splitCode[1]}`;
+            }
+            else {
+                foundEmote.channelPointModifier = '';
+            }
         }
         if (!foundEmote) {
             throw new Error(`No emote found for code: ${emoteCode}.`);
