@@ -12,7 +12,8 @@
     "build-emote-widget": "browserify src/overlay-widgets/emote-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/emote-widget/emote-widget-bundle.js",
     "build-physics-widget": "browserify src/overlay-widgets/physics/physics-engine.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/physics/physics-bundle.js",
     "build-keyboard-widget": "browserify src/overlay-widgets/keyboard-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/keyboard-widget/keyboard-bundle.js",
-    "deploy": "npm run build && gh-pages --dotfiles --remove **/*secrets.js --dist build",
+    "remove-secrets": "rimraf build/secrets.js",
+    "deploy": "npm run build && npm run remove-secrets && gh-pages --dotfiles --dist build",
     "start": "npm run local-chatbot"
   },
   "author": "",
@@ -35,6 +36,7 @@
     "copyfiles": "^2.1.1",
     "gh-pages": "^2.2.0",
     "jasmine": "^3.5.0",
+    "rimraf": "^3.0.2",
     "ts-node": "^8.4.1",
     "tsify": "^4.0.1",
     "typescript": "^3.7.2"
