@@ -1,3 +1,3 @@
 # twitch-bot
 
-[Treee.github.io](https://treee.github.io/twitch-bot/src/)
+[Treee.github.io](https://treee.github.io/twitch-bot/)

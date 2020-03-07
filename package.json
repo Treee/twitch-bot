@@ -6,13 +6,15 @@
   "scripts": {
     "local-chatbot": "node ./build/third-party-connectors/twitch/twitch-websocket-server.js",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
-    "build": "tsc",
-    "build-emote-widget": "browserify src/overlay-widgets/emote-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/emote-widget/emote-widget-bundle.js && copyfiles -f src/overlay-widgets/emote-widget/*.html src/overlay-widgets/emote-widget/*.css src/overlay-widgets/emote-widget/*.md build/overlay-widgets/emote-widget",
+    "build": "npm test && tsc && npm run build-emote-widget && npm run build-physics-widget && npm run build-keyboard-widget && npm run copy-html-css-node && npm run copy-root-files",
+    "copy-html-css-node": "copyfiles -u 1 src/**/*.html src/**/*.css src/**/*.node build",
+    "copy-root-files": "copyfiles -f README.md LICENSE.txt build",
+    "build-emote-widget": "browserify src/overlay-widgets/emote-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/emote-widget/emote-widget-bundle.js",
     "build-physics-widget": "browserify src/overlay-widgets/physics/physics-engine.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/physics/physics-bundle.js",
-    "build-keyboard-widget": "browserify src/overlay-widgets/keyboard-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/keyboard-widget/keyboard-bundle.js && copyfiles -f src/overlay-widgets/keyboard-widget/*.html src/overlay-widgets/keyboard-widget/*.css src/overlay-widgets/keyboard-widget/*.md build/overlay-widgets/keyboard-widget && copyfiles -f src/overlay-widgets/keyboard-widget/*.node build",
-    "build-all": "npm test && npm run build && npm run build-emote-widget && npm run build-physics-widget && npm run build-keyboard-widget",
-    "deploy": "npm run build-all && gh-pages -d build",
-    "start": "npm run local-chatbot"
+    "build-keyboard-widget": "browserify src/overlay-widgets/keyboard-widget/index.ts -p [ tsify --noImplicityAny ] > build/overlay-widgets/keyboard-widget/keyboard-bundle.js",
+    "deploy": "npm run build-all && gh-pages --dotfiles --remove secrets.js --dist build",
+    "start": "npm run local-chatbot",
+    "stuff": "gh-pages --help"
   },
   "author": "",
   "license": "GPL-3.0",
