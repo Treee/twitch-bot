@@ -12,7 +12,16 @@ emoteWidgetConfig.setConfigFrom(window.location.search.substring(1));
 const emoteFactory = new EmoteFactory();
 const emoteWidget = new EmoteWidget(emoteWidgetConfig, emoteFactory);
 
-const emoteSetIds = [0, 42, 6112, 24314, 24315, 19194, 300206309];
+const twitchDefault = 0;
+const textEmojiDefault = 42;
+const amazonPrimeDefault = 19194;
+const membTier1 = 6112;
+const membTier2 = 24314;
+const membTier3 = 24315;
+const nikeTier1 = 12661;
+const thunderTier1 = 135189;
+
+const emoteSetIds = [twitchDefault, textEmojiDefault, amazonPrimeDefault, membTier1, membTier2, membTier3, nikeTier1, thunderTier1];
 
 Promise.all([
     twitchApiV5.getTwitchEmotes(emoteWidgetConfig.clientId, emoteWidgetConfig.channel),
