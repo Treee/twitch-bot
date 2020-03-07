@@ -2,7 +2,7 @@ import WebSocket = require('ws');
 import NativeExtension = require('bindings');
 
 import { client, Client, ChatUserstate } from 'tmi.js';
-import SECRETS from '../../secrets';
+import { SECRETS } from '../../secrets';
 
 import { TwitchChatbot } from './chatbot/twitch-chatbot';
 import { SteamApi } from '../steam/steam-api';

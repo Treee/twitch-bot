@@ -2,7 +2,7 @@ import { ChatUserstate } from "tmi.js";
 
 import { SteamApi } from '../../steam/steam-api';
 import { SocketMessageEnum } from "../socket-message-enum";
-import SECRETS from '../../../secrets';
+import { SECRETS } from '../../../secrets';
 import { EmoteParser } from "./parsers/emote-parser";
 
 export class TwitchChatbot {
