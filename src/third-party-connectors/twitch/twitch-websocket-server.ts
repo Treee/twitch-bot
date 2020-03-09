@@ -7,7 +7,10 @@ import { SECRETS } from '../../secrets';
 import { TwitchChatbot } from './chatbot/twitch-chatbot';
 import { SteamApi } from '../steam/steam-api';
 import { SocketMessageEnum } from './socket-message-enum';
+import { TwitchPublisher } from './twitch-publisher';
 
+// const publisherServer: TwitchPublisher = new TwitchPublisher();
+// publisherServer.startServer();
 // Define configuration options
 const opts = {
     identity: {

@@ -1,7 +1,15 @@
 import { TwitchEmote, SubBadge, TwitchEmoteResponse, BttvEmote, BttvEmoteResponse } from "../../overlay-widgets/emote-widget/emotes/emote";
+import { TwitchSubscriber } from "./twitch-subscriber";
 
 export class TwitchApiV5 {
     constructor() { }
+
+    test(clientId: string) {
+        const t = new TwitchSubscriber();
+        t.subscribeToWebhook('https://api.twitch.tv/helix/users/follows?first=1&to_id=114260623', 'subscribe', clientId).then((data) => {
+            console.log('data', data);
+        });
+    }
 
     getTwitchRequestHeaders(clientId: string): Headers {
         const headers = new Headers();
