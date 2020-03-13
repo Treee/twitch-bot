@@ -13,7 +13,7 @@ class ComboEmote {
 }
 
 export class EmoteParser {
-    private emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD', '_RA', '_HB', '_KI', '_HE'];
+    private emoteSuffixes = ['_SA', '_BW', '_HF', '_VF', '_SQ', '_TK', '_SG', '_RD', '_RA', '_HB', '_KI', '_HE', '_LH', '_RB', '_WD', '_BE', '_CL'];
     comboCodes: ComboEmote[] = [
         new ComboEmote(ComboType.Sequence, ['Squid1', 'Squid2', 'Squid3', 'Squid4']),
         new ComboEmote(ComboType.Sequence, ['TableHere', 'FlipThis']),
