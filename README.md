@@ -11,3 +11,5 @@
 ## Run
 
 `docker run -d -v /etc/letsencrypt:/etc/letsencrypt -p 8080:8080 --name emote-overlay -it stream-emote-overlay:latest`
+
+`docker run -v /etc/letsencrypt:/etc/letsencrypt -p 8080:8080 --name emote-overlay -it stream-emote-overlay:latest`
