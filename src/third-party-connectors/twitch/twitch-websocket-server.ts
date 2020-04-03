@@ -56,6 +56,7 @@ function onConnectedHandler(addr: string, port: number): void {
     console.log(`* Connected to ${addr}:${port}`);
 }
 
+emoteWidgetSocketServer.startServer(8080);
 // const nativeExtension = NativeExtension('NativeExtension');
 // let keyboardWidgetSocketServer = new WebSocket.Server({ port: 8081 });
 
