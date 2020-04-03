@@ -10,6 +10,7 @@ import { TwitchChatbot } from './chatbot/twitch-chatbot';
 import { SteamApi } from '../steam/steam-api';
 import { SocketMessageEnum } from './socket-message-enum';
 import { TwitchPublisher } from './twitch-publisher';
+import { EmoteWigetServer } from '../../overlay-widgets/emote-widget/emote-widget-server';
 
 // const publisherServer: TwitchPublisher = new TwitchPublisher();
 // publisherServer.startServer();
@@ -28,6 +29,7 @@ const opts = {
 const twitchClient: Client = client(opts);
 const steamApi = new SteamApi();
 const twitchChatbot = new TwitchChatbot(steamApi);
+const emoteWidgetSocketServer = new EmoteWigetServer(twitchChatbot);
 
 // Register our event handlers (defined below)
 twitchClient.on('message', onMessageHandler);
@@ -42,9 +44,7 @@ function onMessageHandler(target: string, context: ChatUserstate, msg: string, s
 }
 
 function websocketSend(dataType: SocketMessageEnum, data: any): void {
-    emoteWidgetSocketServer.clients.forEach((client) => {
-        client.send(JSON.stringify({ type: dataType, data: data }));
-    });
+    emoteWidgetSocketServer.broadcastMessage(dataType, data);
 }
 
 function twitchClientSay(msg: string): void {
@@ -55,52 +55,6 @@ function twitchClientSay(msg: string): void {
 function onConnectedHandler(addr: string, port: number): void {
     console.log(`* Connected to ${addr}:${port}`);
 }
-
-const emoteServer = https.createServer({
-    cert: fs.readFileSync('/etc/letsencrypt/live/itsatreee.com/fullchain.pem'),
-    key: fs.readFileSync('/etc/letsencrypt/live/itsatreee.com/privkey.pem')
-});
-
-const emoteWidgetSocketServer: WebSocket.Server = new WebSocket.Server({ server: emoteServer });
-const closeHandle = emoteWidgetSocketServer;
-process.on('SIGHUP', function () {
-    closeHandle.close();
-    console.log('About to exit');
-    process.exit();
-});
-
-
-emoteWidgetSocketServer.on('connection', (ws) => {
-    emoteWidgetSocketServer.clients.add(ws);
-
-    emoteWidgetSocketServer.clients.forEach((client) => {
-
-        client.on('message', (message: string) => {
-            const data = JSON.parse(message);
-            console.log('received: %s', message);
-            if (data.type === SocketMessageEnum.EmoteCodes) {
-                twitchChatbot.setEmoteCodes(data.data);
-            }
-            else if (data.type === SocketMessageEnum.CheckEmoteCache) {
-                if (twitchChatbot.emotesExist()) {
-                    console.log(`Cached ${twitchChatbot.getEmoteCodes().length} emotes`);
-                    client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.getEmoteCodes() }));
-                } else {
-                    console.log(`No emotes in list`);
-                    client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: [] }));
-                }
-            }
-        });
-
-        client.on('error', (error) => {
-            console.log(error);
-        });
-
-        client.send(JSON.stringify({ type: 'connected', data: 'client connected' }));
-    });
-});
-
-emoteServer.listen(8080);
 
 // const nativeExtension = NativeExtension('NativeExtension');
 // let keyboardWidgetSocketServer = new WebSocket.Server({ port: 8081 });
