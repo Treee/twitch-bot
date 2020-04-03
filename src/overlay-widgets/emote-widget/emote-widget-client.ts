@@ -4,7 +4,7 @@ import { ComboType } from '../../third-party-connectors/twitch/chatbot/parsers/e
 
 export class EmoteWidgetClient {
 
-    serverUrl = 'ws://localhost:8080';
+    serverUrl = 'wss://itsatreee:8080';
     socket: WebSocket;
     emoteWidget: EmoteWidget;
 

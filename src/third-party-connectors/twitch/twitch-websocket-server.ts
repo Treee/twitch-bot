@@ -1,5 +1,7 @@
+import https = require('https');
 import WebSocket = require('ws');
-import NativeExtension = require('bindings');
+import fs = require('fs');
+// import NativeExtension = require('bindings');
 
 import { client, Client, ChatUserstate } from 'tmi.js';
 import { SECRETS } from '../../secrets';
@@ -54,7 +56,19 @@ function onConnectedHandler(addr: string, port: number): void {
     console.log(`* Connected to ${addr}:${port}`);
 }
 
-let emoteWidgetSocketServer = new WebSocket.Server({ port: 8080 });
+const emoteServer = https.createServer({
+    cert: fs.readFileSync('/etc/letsencrypt/live/itsatreee.com/fullchain.pem'),
+    key: fs.readFileSync('/etc/letsencrypt/live/itsatreee.com/privkey.pem')
+});
+
+const emoteWidgetSocketServer: WebSocket.Server = new WebSocket.Server({ server: emoteServer });
+const closeHandle = emoteWidgetSocketServer;
+process.on('SIGHUP', function () {
+    closeHandle.close();
+    console.log('About to exit');
+    process.exit();
+});
+
 
 emoteWidgetSocketServer.on('connection', (ws) => {
     emoteWidgetSocketServer.clients.add(ws);
@@ -85,6 +99,8 @@ emoteWidgetSocketServer.on('connection', (ws) => {
         client.send(JSON.stringify({ type: 'connected', data: 'client connected' }));
     });
 });
+
+emoteServer.listen(8080);
 
 // const nativeExtension = NativeExtension('NativeExtension');
 // let keyboardWidgetSocketServer = new WebSocket.Server({ port: 8081 });
