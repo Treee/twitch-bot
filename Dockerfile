@@ -9,7 +9,7 @@ RUN npm install
 COPY . /emote-overlay
 RUN npm run build
 
-EXPOSE 8080
+EXPOSE 8446
 EXPOSE 443
 EXPOSE 80
 

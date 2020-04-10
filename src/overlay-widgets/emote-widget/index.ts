@@ -44,7 +44,7 @@ Promise.all([
     }
 }).then(() => {
     if (emoteWidgetConfig.botMode) {
-        new EmoteWidgetClient('wss://www.itsatreee.com:8080', emoteWidget);
+        new EmoteWidgetClient('wss://www.itsatreee.com:8446', emoteWidget);
         twitchApiV5.test(emoteWidgetConfig.clientId);
         emoteWidget.startSimulation();
     }

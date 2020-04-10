@@ -1,6 +1,3 @@
-import https = require('https');
-import WebSocket = require('ws');
-import fs = require('fs');
 // import NativeExtension = require('bindings');
 
 import { client, Client, ChatUserstate } from 'tmi.js';
@@ -56,7 +53,7 @@ function onConnectedHandler(addr: string, port: number): void {
     console.log(`* Connected to ${addr}:${port}`);
 }
 
-emoteWidgetSocketServer.startServer(8080);
+emoteWidgetSocketServer.startServer(8446);
 // const nativeExtension = NativeExtension('NativeExtension');
 // let keyboardWidgetSocketServer = new WebSocket.Server({ port: 8081 });
 

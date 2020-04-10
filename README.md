@@ -10,8 +10,8 @@
 
 ## Run
 
-`docker run -d -v /etc/letsencrypt:/etc/letsencrypt -p 8080:8080 --name emote-overlay -it stream-emote-overlay:latest`
+`docker run -d -v /etc/letsencrypt:/etc/letsencrypt -p 8446:8446 --name emote-overlay -it stream-emote-overlay:latest`
 
-`docker run -v /etc/letsencrypt:/etc/letsencrypt -p 8080:8080 --name emote-overlay -it stream-emote-overlay:latest`
+`docker run -v /etc/letsencrypt:/etc/letsencrypt -p 8446:8446 --name emote-overlay -it stream-emote-overlay:latest`
 
 `service nginx restart`
