@@ -20,11 +20,14 @@ export class EmoteWidgetClient {
         console.log('[open] Connection established');
         console.log('Checking server for cached emotes');
         this.socket.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: '' }));
+        setInterval(() => {
+            this.socket.send('PING');
+        }, 45 * 1000); // ping the server on startup every 45 seconds to keep the connection alive
     }
 
     onMessage(event: any) {
         // console.log(`[message] Data received from server: ${event.data}`);
-        const eventData = JSON.parse(event.data);
+        const eventData = JSON.parse(event.data) || { type: '' };
         if (eventData.type === SocketMessageEnum.CheckEmoteCache) {
             if (eventData.data.length < 1) {
                 const emoteCodes = this.emoteWidget.emoteFactory.getEmoteCodes();
@@ -53,7 +56,7 @@ export class EmoteWidgetClient {
         } else {
             // e.g. server process killed or network down
             // event.code is usually 1006 in this case
-            console.log('[close] Connection died');
+            console.log('[close] Connection died', event);
         }
     }
 
