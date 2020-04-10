@@ -4,12 +4,10 @@ import { ComboType } from '../../third-party-connectors/twitch/chatbot/parsers/e
 
 export class EmoteWidgetClient {
 
-    serverUrl = 'ws://localhost:8080';
     socket: WebSocket;
     emoteWidget: EmoteWidget;
 
     constructor(serverUrl: string, emoteWidget: EmoteWidget) {
-        this.serverUrl = serverUrl;
         this.emoteWidget = emoteWidget;
         this.socket = new WebSocket(serverUrl);
         this.socket.onopen = this.onOpen.bind(this);
