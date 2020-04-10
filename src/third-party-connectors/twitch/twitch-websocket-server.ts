@@ -54,7 +54,7 @@ function onConnectedHandler(addr: string, port: number): void {
     console.log(`* Connected to ${addr}:${port}`);
 }
 
-let emoteWidgetSocketServer = new WebSocket.Server({ port: 8080 });
+let emoteWidgetSocketServer = new WebSocket.Server({ port: 8446 });
 
 emoteWidgetSocketServer.on('connection', (ws) => {
     emoteWidgetSocketServer.clients.add(ws);
