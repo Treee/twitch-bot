@@ -33,7 +33,7 @@ twitchClient.on('message', onMessageHandler);
 twitchClient.on('connected', onConnectedHandler);
 
 // Connect to Twitch:
-twitchClient.connect();
+//twitchClient.connect();
 
 // Called every time a message comes in
 function onMessageHandler(target: string, context: ChatUserstate, msg: string, self: boolean) {
