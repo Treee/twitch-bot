@@ -62,18 +62,22 @@ emoteWidgetSocketServer.on('connection', (ws) => {
     emoteWidgetSocketServer.clients.forEach((client) => {
 
         client.on('message', (message: string) => {
-            const data = JSON.parse(message);
-            console.log('received: %s', message);
-            if (data.type === SocketMessageEnum.EmoteCodes) {
-                twitchChatbot.setEmoteCodes(data.data);
-            }
-            else if (data.type === SocketMessageEnum.CheckEmoteCache) {
-                if (twitchChatbot.emotesExist()) {
-                    console.log(`Cached ${twitchChatbot.getEmoteCodes().length} emotes`);
-                    client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.getEmoteCodes() }));
-                } else {
-                    console.log(`No emotes in list`);
-                    client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: [] }));
+            if (message === 'PING') {
+                client.send('PONG');
+            } else {
+                const data = JSON.parse(message);
+                console.log('received: %s', message);
+                if (data.type === SocketMessageEnum.EmoteCodes) {
+                    twitchChatbot.setEmoteCodes(data.data);
+                }
+                else if (data.type === SocketMessageEnum.CheckEmoteCache) {
+                    if (twitchChatbot.emotesExist()) {
+                        console.log(`Cached ${twitchChatbot.getEmoteCodes().length} emotes`);
+                        client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.getEmoteCodes() }));
+                    } else {
+                        console.log(`No emotes in list`);
+                        client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: [] }));
+                    }
                 }
             }
         });
