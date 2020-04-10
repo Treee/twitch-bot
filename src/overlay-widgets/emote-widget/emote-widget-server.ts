@@ -58,7 +58,7 @@ export class EmoteWigetServer {
         });
 
         this.emoteWidgetSocket.on('listening', () => {
-            setTimeout(() => {
+            setInterval(() => {
                 console.log(`listening ${Math.random() > .5 ? '..' : '...'}`);
             }, 30 * 1000);
         });
