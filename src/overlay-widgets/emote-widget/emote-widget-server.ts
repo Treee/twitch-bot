@@ -52,6 +52,17 @@ export class EmoteWigetServer {
             console.log(error);
         });
 
+        this.emoteWidgetSocket.on('headers', (headers, request) => {
+            console.log('Websocket headers', headers);
+            console.log(request);
+        });
+
+        this.emoteWidgetSocket.on('listening', () => {
+            setTimeout(() => {
+                console.log(`listening ${Math.random() > .5 ? '..' : '...'}`);
+            }, 30 * 1000);
+        });
+
         this.adminServer.listen(port);
         console.log(`Listening on port ${port}`);
     }
