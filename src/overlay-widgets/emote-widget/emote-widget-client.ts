@@ -29,24 +29,26 @@ export class EmoteWidgetClient {
 
     onMessage(event: any) {
         // console.log(`[message] Data received from server: ${event.data}`);
-        const eventData = JSON.parse(event.data) || { type: '' };
-        if (eventData.type === SocketMessageEnum.CheckEmoteCache) {
-            if (eventData.data.length < 1) {
-                const emoteCodes = this.emoteWidget.emoteFactory.getEmoteCodes();
-                console.log('Sending list of emotes to look for', emoteCodes);
-                this.socket.send(JSON.stringify({ type: SocketMessageEnum.EmoteCodes, data: emoteCodes }));
+        if (event.data !== 'PONG') {
+            const eventData = JSON.parse(event.data);
+            if (eventData.type === SocketMessageEnum.CheckEmoteCache) {
+                if (eventData.data.length < 1) {
+                    const emoteCodes = this.emoteWidget.emoteFactory.getEmoteCodes();
+                    console.log('Sending list of emotes to look for', emoteCodes);
+                    this.socket.send(JSON.stringify({ type: SocketMessageEnum.EmoteCodes, data: emoteCodes }));
+                }
             }
-        }
-        else if (eventData.type === SocketMessageEnum.FoundEmotes) {
-            const invokedEmotes = eventData.data;
-            if (!!invokedEmotes && invokedEmotes.length > 0) {
-                invokedEmotes.forEach((emoteCode: { type: ComboType, data: string[] }) => {
-                    if (emoteCode.type === ComboType.None) {
-                        this.emoteWidget.addEmoteToContainer(emoteCode.data);
-                    } else if (emoteCode.type === ComboType.Sequence || emoteCode.type === ComboType.LeftRight) { // these are combo emotes
-                        this.emoteWidget.addGroupedEmoteToContainer(emoteCode.data);
-                    }
-                });
+            else if (eventData.type === SocketMessageEnum.FoundEmotes) {
+                const invokedEmotes = eventData.data;
+                if (!!invokedEmotes && invokedEmotes.length > 0) {
+                    invokedEmotes.forEach((emoteCode: { type: ComboType, data: string[] }) => {
+                        if (emoteCode.type === ComboType.None) {
+                            this.emoteWidget.addEmoteToContainer(emoteCode.data);
+                        } else if (emoteCode.type === ComboType.Sequence || emoteCode.type === ComboType.LeftRight) { // these are combo emotes
+                            this.emoteWidget.addGroupedEmoteToContainer(emoteCode.data);
+                        }
+                    });
+                }
             }
         }
     }
