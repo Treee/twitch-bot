@@ -47,6 +47,11 @@ export class EmoteWigetServer {
             });
         });
 
+        this.emoteWidgetSocket.on('error', (error) => {
+            console.log('Websocket error', error);
+            console.log(error);
+        });
+
         this.adminServer.listen(port);
         console.log(`Listening on port ${port}`);
     }
