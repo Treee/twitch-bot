@@ -7,6 +7,8 @@ export class EmoteWidgetClient {
     socket: WebSocket;
     emoteWidget: EmoteWidget;
 
+    pingInterval: any;
+
     constructor(serverUrl: string, emoteWidget: EmoteWidget) {
         this.emoteWidget = emoteWidget;
         this.socket = new WebSocket(serverUrl);
@@ -20,7 +22,7 @@ export class EmoteWidgetClient {
         console.log('[open] Connection established');
         console.log('Checking server for cached emotes');
         this.socket.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: '' }));
-        setInterval(() => {
+        this.pingInterval = setInterval(() => {
             this.socket.send('PING');
         }, 45 * 1000); // ping the server on startup every 45 seconds to keep the connection alive
     }
@@ -58,6 +60,7 @@ export class EmoteWidgetClient {
             // event.code is usually 1006 in this case
             console.log('[close] Connection died', event);
         }
+        clearInterval(this.pingInterval);
     }
 
     onError(event: any) {
