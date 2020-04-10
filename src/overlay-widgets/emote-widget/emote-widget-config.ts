@@ -2,7 +2,7 @@ export class EmoteWidgetConfig {
 
     clientId: string = ''
     single: string = '';
-    channel: string = 'itsatreee';
+    channel: string = 'membtv';
     defaultImageUrl: string = 'https://cdn.betterttv.net/emote/5d3c7708c77b14468fe92fc4/2x';
     showTwitch: boolean = true;
     showBttv: boolean = true;
