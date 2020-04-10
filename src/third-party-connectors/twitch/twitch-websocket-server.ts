@@ -18,7 +18,7 @@ const opts = {
         password: SECRETS.oAuthPassword
     },
     channels: [
-        'itsatreee'
+        'membtv'
     ]
 };
 
