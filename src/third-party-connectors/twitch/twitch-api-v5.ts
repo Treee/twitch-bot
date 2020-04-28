@@ -1,7 +1,12 @@
 import { TwitchEmote, SubBadge, TwitchEmoteResponse, BttvEmote, BttvEmoteResponse } from "../../overlay-widgets/emote-widget/emotes/emote";
 import { TwitchSubscriber } from "./twitch-subscriber";
+import fetch from 'node-fetch';
+import { extraEmotes } from "./chatbot/extra-emotes";
 
 export class TwitchApiV5 {
+
+    oAuthToken: string = '';
+
     constructor() { }
 
     test(clientId: string) {
@@ -11,15 +16,52 @@ export class TwitchApiV5 {
         });
     }
 
-    getTwitchRequestHeaders(clientId: string): Headers {
-        const headers = new Headers();
-        headers.append('Client-ID', clientId);
-        headers.append('Accept', 'application/vnd.twitchtv.v5+json');
+    getTwitchRequestHeaders(clientId: string, oauthToken: string) {
+        const headers = {
+            'Client-ID': clientId,
+            'Accept': 'application/vnd.twitchtv.v5+json',
+            'Authorization': `Bearer ${oauthToken}`
+        };
         return headers;
     }
 
+    async checkoAuthToken(clientId: string, clientSecret: string) {
+        return await this.validateoAuthToken(this.oAuthToken).then(async (response) => {
+            if (response.status && (response.status === 401 || response.status === 403)) {
+                return await this.getoAuthToken(clientId, clientSecret);
+            } else if (response.access_token) {
+                return response;
+            }
+        });
+    }
+
+    private async getoAuthToken(clientId: string, clientSecret: string, scope: string = '', grantType: string = 'client_credentials') {
+        let url = `https://id.twitch.tv/oauth2/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=${grantType}`;
+        if (scope !== '') {
+            url = `${url}&scope=${scope}`;
+        }
+        return await fetch(url, {
+            method: 'post'
+        }).then((response) => {
+            return response.json();
+            // { access_token: 'abcdefghijklmnopqrstuvwxyz',
+            //   expires_in: 5186058,
+            //   token_type: 'bearer' }
+        });
+    }
+
+    private async validateoAuthToken(token: string) {
+        return await fetch('https://id.twitch.tv/oauth2/validate', {
+            headers: {
+                'Authorization': `OAuth ${token}`
+            }
+        }).then((response) => {
+            return response.json();
+        });
+    }
+
     async getTwitchEmotesBySets(clientId: string, setIds: number[]): Promise<TwitchEmote[]> {
-        const headers = this.getTwitchRequestHeaders(clientId);
+        const headers = this.getTwitchRequestHeaders(clientId, this.oAuthToken);
         return await fetch(`https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=${setIds.join(',')}`, { headers }).then(async (response) => {
             let data = await response.json();
             // console.log('emotes by set emotes', data);
@@ -33,14 +75,14 @@ export class TwitchApiV5 {
                 }
             });
             return formattedEmotes;
-        }, (error) => {
+        }, () => {
             return [];
         });
     }
 
     async getTwitchEmotes(clientId: string, channelName: string) {
-        const headers = this.getTwitchRequestHeaders(clientId);
-        return await fetch(`https://api.twitch.tv/kraken/users?login=${channelName}`, { headers }).then(async (response) => {
+        const headers = this.getTwitchRequestHeaders(clientId, this.oAuthToken);
+        return await fetch(`https://api.twitch.tv/kraken/users?login=${channelName}`, { headers }).then(async (response: any) => {
             // console.log('user', data.users);
             let data = await response.json();
             let userId = -9999;
@@ -48,9 +90,9 @@ export class TwitchApiV5 {
                 userId = data.users[0]._id;
             }
             return userId;
-        }).then(async (resolvedUserId) => {
+        }).then(async (resolvedUserId: any) => {
             return await fetch(`https://api.twitchemotes.com/api/v4/channels/${resolvedUserId}`);
-        }).then(async (response) => {
+        }).then(async (response: any) => {
             let data = await response.json();
             const emotes = data.emotes || [];
             const subBadges = data.subscriber_badges || [];
@@ -65,7 +107,7 @@ export class TwitchApiV5 {
                 formattedSubBadges.push(new SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
             });
             return new TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges).emotes;
-        }, (error) => {
+        }, () => {
             return new TwitchEmoteResponse('', '', '', [], []).emotes;
         });
     }
@@ -106,66 +148,12 @@ export class TwitchApiV5 {
 
     loadEmotesFromConfig(): TwitchEmote[] {
         const emotes = [];
-        const hahahalidaysEmoteSet = 472873131;
-        emotes.push(new TwitchEmote('HahaSleep', hahahalidaysEmoteSet, '301108041'));
-        emotes.push(new TwitchEmote('HahaThink', hahahalidaysEmoteSet, '301108032'));
-        emotes.push(new TwitchEmote('HahaTurtledove', hahahalidaysEmoteSet, '301108011'));
-        emotes.push(new TwitchEmote('HahaBaby', hahahalidaysEmoteSet, '301108084'));
-        emotes.push(new TwitchEmote('HahaDoge', hahahalidaysEmoteSet, '301108082'));
-        emotes.push(new TwitchEmote('HahaHide', hahahalidaysEmoteSet, '301108072'));
-        emotes.push(new TwitchEmote('HahaSweat', hahahalidaysEmoteSet, '301108037'));
-        emotes.push(new TwitchEmote('HahaCat', hahahalidaysEmoteSet, '301108083'));
-        emotes.push(new TwitchEmote('HahaLean', hahahalidaysEmoteSet, '301108068'));
-        emotes.push(new TwitchEmote('HahaShrugRight', hahahalidaysEmoteSet, '301108045'));
-        emotes.push(new TwitchEmote('HahaShrugMiddle', hahahalidaysEmoteSet, '301108046'));
-        emotes.push(new TwitchEmote('HahaDreidel', hahahalidaysEmoteSet, '301112663'));
-        emotes.push(new TwitchEmote('HahaShrugLeft', hahahalidaysEmoteSet, '301108047'));
-        emotes.push(new TwitchEmote('HahaBall', hahahalidaysEmoteSet, '301112669'));
-        emotes.push(new TwitchEmote('HahaNyandeer', hahahalidaysEmoteSet, '301114312'));
-        emotes.push(new TwitchEmote('Haha2020', hahahalidaysEmoteSet, '301112670'));
-        emotes.push(new TwitchEmote('HahaThisisfine', hahahalidaysEmoteSet, '301108013'));
-        emotes.push(new TwitchEmote('HahaPoint', hahahalidaysEmoteSet, '301108057'));
-        emotes.push(new TwitchEmote('HahaReindeer', hahahalidaysEmoteSet, '301108048'));
-        emotes.push(new TwitchEmote('HahaElf', hahahalidaysEmoteSet, '301108081'));
-        emotes.push(new TwitchEmote('HahaNutcracker', hahahalidaysEmoteSet, '301108063'));
-        emotes.push(new TwitchEmote('HahaGoose', hahahalidaysEmoteSet, '301108075'));
-        emotes.push(new TwitchEmote('HahaGingercat', hahahalidaysEmoteSet, '301108078'));
-        emotes.push(new TwitchEmote('HahaSnowhal', hahahalidaysEmoteSet, '301108053'));
-
-        const prideEmoteSet = 472873131;
-        emotes.push(new TwitchEmote('PrideWingL', prideEmoteSet, '300354442'));
-        emotes.push(new TwitchEmote('PrideWingR', prideEmoteSet, '300354435'));
-        emotes.push(new TwitchEmote('PrideShine', prideEmoteSet, '300354448'));
-        emotes.push(new TwitchEmote('PrideCheers', prideEmoteSet, '300354469'));
-        emotes.push(new TwitchEmote('PrideParty', prideEmoteSet, '300354450'));
-        emotes.push(new TwitchEmote('PrideBalloons', prideEmoteSet, '300352359'));
-        emotes.push(new TwitchEmote('PrideLionHey', prideEmoteSet, '300352355'));
-        emotes.push(new TwitchEmote('PrideLionYay', prideEmoteSet, '300352343'));
-
-        const rpgEmoteSet = 472873132;
-        emotes.push(new TwitchEmote('RPGBukka', rpgEmoteSet, '300904281'));
-        emotes.push(new TwitchEmote('RPGFei', rpgEmoteSet, '300904288'));
-        emotes.push(new TwitchEmote('RPGGhosto', rpgEmoteSet, '300904290'));
-        emotes.push(new TwitchEmote('RPGStaff', rpgEmoteSet, '300904299'));
-        emotes.push(new TwitchEmote('RPGYonger', rpgEmoteSet, '300904302'));
-        emotes.push(new TwitchEmote('RPGEpicStaff', rpgEmoteSet, '300904286'));
-        emotes.push(new TwitchEmote('RPGFireball', rpgEmoteSet, '300904289'));
-
-        const luvyEmoteSet = 472873132;
-        emotes.push(new TwitchEmote('LuvOops', luvyEmoteSet, '301396357'));
-        emotes.push(new TwitchEmote('LuvPeekL', luvyEmoteSet, '301396363'));
-        emotes.push(new TwitchEmote('LuvPeekR', luvyEmoteSet, '301396373'));
-        emotes.push(new TwitchEmote('LuvSnooze', luvyEmoteSet, '301396378'));
-        emotes.push(new TwitchEmote('LuvCool', luvyEmoteSet, '301396382'));
-        emotes.push(new TwitchEmote('LuvUok', luvyEmoteSet, '300904289'));
-        emotes.push(new TwitchEmote('LuvBrownL', luvyEmoteSet, '301396400'));
-        emotes.push(new TwitchEmote('LuvBrownR', luvyEmoteSet, '301396403'));
-        emotes.push(new TwitchEmote('LuvBlush', luvyEmoteSet, '301396406'));
-        emotes.push(new TwitchEmote('LuvHearts', luvyEmoteSet, '301396428'));
-        emotes.push(new TwitchEmote('LuvBlondeL', luvyEmoteSet, '301396467'));
-        emotes.push(new TwitchEmote('LuvBlondeR', luvyEmoteSet, '301396475'));
-
-
+        for (const emoteSetKey in extraEmotes) {
+            const emoteSetId = extraEmotes[emoteSetKey].id;
+            for (const emoteKey in extraEmotes[emoteSetKey]) {
+                emotes.push(new TwitchEmote(emoteKey, emoteSetId, extraEmotes[emoteSetKey][emoteKey]));
+            }
+        }
         return emotes;
     }
 

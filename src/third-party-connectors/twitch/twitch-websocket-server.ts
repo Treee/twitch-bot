@@ -8,6 +8,8 @@ import { TwitchChatbot } from './chatbot/twitch-chatbot';
 import { SteamApi } from '../steam/steam-api';
 import { SocketMessageEnum } from './socket-message-enum';
 import { TwitchPublisher } from './twitch-publisher';
+import { Emote } from '../../overlay-widgets/emote-widget/emotes/emote';
+import { TwitchApiV5 } from './twitch-api-v5';
 
 // const publisherServer: TwitchPublisher = new TwitchPublisher();
 // publisherServer.startServer();
@@ -25,7 +27,12 @@ const opts = {
 // Create a client with our options
 const twitchClient: Client = client(opts);
 const steamApi = new SteamApi();
-const twitchChatbot = new TwitchChatbot(steamApi);
+const twitchApi = new TwitchApiV5();
+const twitchChatbot = new TwitchChatbot(twitchApi, steamApi);
+
+twitchApi.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret).then((token) => {
+    console.log('token', token);
+});
 
 // Register our event handlers (defined below)
 twitchClient.on('message', onMessageHandler);
@@ -76,7 +83,9 @@ emoteWidgetSocketServer.on('connection', (ws) => {
                         client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.getEmoteCodes() }));
                     } else {
                         console.log(`No emotes in list`);
-                        client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: [] }));
+                        twitchChatbot.pullAllEmotes(data.clientId, data.channelName, data.emoteSetIds).then((emotes: Emote[]) => {
+                            client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: emotes }));
+                        });
                     }
                 }
             }

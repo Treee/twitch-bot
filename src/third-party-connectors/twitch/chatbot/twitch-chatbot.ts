@@ -4,19 +4,39 @@ import { SteamApi } from '../../steam/steam-api';
 import { SocketMessageEnum } from "../socket-message-enum";
 import { SECRETS } from '../../../secrets';
 import { EmoteParser } from "./parsers/emote-parser";
+import { TwitchApiV5 } from "../twitch-api-v5";
+import { Emote } from "../../../overlay-widgets/emote-widget/emotes/emote";
 
 export class TwitchChatbot {
 
     private steamApi: SteamApi;
+    private twitchApi: TwitchApiV5;
     private debugMode: boolean = false;
     private chatCommands: string[] = ['!joinlobby'];
     private emoteCodesToLookFor: string[] = [];
 
     private emoteParser = new EmoteParser();
 
-    constructor(steamApi: SteamApi, debugMode: boolean = false) {
+    constructor(twitchApi: TwitchApiV5, steamApi: SteamApi, debugMode: boolean = false) {
+        this.twitchApi = twitchApi;
         this.steamApi = steamApi;
         this.debugMode = debugMode;
+    }
+
+    pullAllEmotes(clientId: string, channel: string, emoteSetIds: number[] = []): Promise<Emote[]> {
+        return Promise.all([
+            this.twitchApi.getTwitchEmotes(clientId, channel),
+            this.twitchApi.getTwitchEmotesBySets(clientId, emoteSetIds),
+            this.twitchApi.getBttvEmotesByChannel(channel),
+            this.twitchApi.getGlobalBttvEmotes()
+        ]).then((values) => {
+            // emoteWidget.twitchSubBadges = values[0].subBadges;
+            const emotes: Emote[] = [];
+            return emotes.concat(values[0]).concat(values[1]).concat(values[2]).concat(values[3]);
+        }, (error) => {
+            const emotes: Emote[] = [];
+            return emotes;
+        });
     }
 
     setEmoteCodes(emotes: string[]): void {
