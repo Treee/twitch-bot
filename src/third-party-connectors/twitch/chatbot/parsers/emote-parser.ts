@@ -39,7 +39,6 @@ export class EmoteParser {
                 foundEmotes.push({ type: ComboType.None, data: emote });
             }
         });
-
         return foundEmotes;
     }
 
