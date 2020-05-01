@@ -1,7 +1,5 @@
 # twitch-bot
 
-[Treee.github.io](https://treee.github.io/twitch-bot/)
-
 ## How To Use
 
 1. Open a console in a folder/directory of your choice.
