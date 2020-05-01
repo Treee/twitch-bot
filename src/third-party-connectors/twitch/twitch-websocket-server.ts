@@ -15,15 +15,13 @@ import { TwitchApiV5 } from './twitch-api-v5';
 // Define configuration options
 const opts = {
     identity: {
-        username: 'itsatreee',
-        password: SECRETS.oAuthPassword
+        username: SECRETS.irc.user,
+        password: SECRETS.irc.userOAuthPassword
     },
-    channels: [
-        'itsatreee'
-    ]
+    channels: SECRETS.irc.channelsToListenTo
 };
 const debugMode = false;
-const socketServerPort = 8446;
+const socketServerPort = SECRETS.serverPort;
 
 // Create a client with our options
 const twitchClient: Client = client(opts);
