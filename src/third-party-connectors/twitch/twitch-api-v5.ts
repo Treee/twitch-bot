@@ -142,7 +142,7 @@ export class TwitchApiV5 {
             // console.log(data);
             subs = subs.concat(data.data);
         }
-        console.log('datafdfdsf', subs.length);
+        // console.log('datafdfdsf', subs.length);
         // console.log('datafdfdsf', subs);
         return subs;
     }
