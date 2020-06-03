@@ -9,6 +9,7 @@ import { SteamApi } from '../steam/steam-api';
 import { SocketMessageEnum } from './socket-message-enum';
 import { TwitchPublisher } from './twitch-publisher';
 import { TwitchApiV5 } from './twitch-api-v5';
+import e = require('express');
 
 // const publisherServer: TwitchPublisher = new TwitchPublisher();
 // publisherServer.startServer();
@@ -83,6 +84,11 @@ emoteWidgetSocketServer.on('connection', (ws) => {
                             client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.emotesToLookFor }));
                         });
                     }
+                }
+                else if (payload.type === SocketMessageEnum.CheckSubCount) {
+                    twitchChatbot.getSubCount().then((subCount) => {
+                        client.send(JSON.stringify({ type: SocketMessageEnum.CheckSubCount, data: subCount }));
+                    });
                 }
             }
         });

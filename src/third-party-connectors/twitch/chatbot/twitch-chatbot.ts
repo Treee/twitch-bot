@@ -37,6 +37,12 @@ export class TwitchChatbot {
         return emotes;
     }
 
+    async getSubCount() {
+        return this.twitchApi.getChannelSubs().then((data => {
+            return data.length;
+        }));
+    }
+
     setEmoteCodes(emotes: Emote[]): void {
         this.emotesToLookFor = emotes;
     }

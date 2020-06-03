@@ -30,11 +30,14 @@ export class TwitchApiV5 {
     }
 
     async checkoAuthToken(clientId: string, clientSecret: string) {
+        console.log('checking oauth token', this.oAuthToken);
         const validateOAuthTokenResponse = await this.validateoAuthToken(this.oAuthToken);
         if (validateOAuthTokenResponse.status && (validateOAuthTokenResponse.status === 401 || validateOAuthTokenResponse.status === 403)) {
             const newOAuthToken = await this.getoAuthToken(clientId, clientSecret, 'channel:read:subscriptions');
+            console.log('new token', this.oAuthToken);
             return newOAuthToken;
         } else if (validateOAuthTokenResponse.client_id) {
+            console.log('existing oauth token', this.oAuthToken);
             return validateOAuthTokenResponse;
         };
     }
@@ -113,6 +116,35 @@ export class TwitchApiV5 {
         });
         return new TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges).emotes;
         // return new TwitchEmoteResponse('', '', '', '', '').emotes;
+    }
+
+    async getChannelSubs() {
+        await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret);
+        const headers = this.getTwitchRequestHeaders();
+        const userIdResponse = await fetch(`https://api.twitch.tv/helix/users?login=membtv`, { headers });
+        // console.log('twitch emote response', userIdResponse);
+        let responseBody = await userIdResponse.json();
+        // console.log('user', responseBody);
+        let userId = -9999;
+        if (responseBody.data.length > 0) {
+            userId = responseBody.data[0].id;
+            console.log('userID', userId);
+        }
+
+        let subscriptionResponse = await fetch(`https://api.twitch.tv/helix/subscriptions?broadcaster_id=${userId}&first=100`, { headers });
+        let data = await subscriptionResponse.json();
+
+        let subs = data.data;
+        while (data.data.length > 0) {
+            // console.log('paginator', `https://api.twitch.tv/helix/subscriptions?broadcaster_id=${userId}&cursor=${data.pagination.cursor}`);
+            subscriptionResponse = await fetch(`https://api.twitch.tv/helix/subscriptions?broadcaster_id=${userId}&first=100&after=${data.pagination.cursor}`, { headers });
+            data = await subscriptionResponse.json();
+            // console.log(data);
+            subs = subs.concat(data.data);
+        }
+        console.log('datafdfdsf', subs.length);
+        // console.log('datafdfdsf', subs);
+        return subs;
     }
 
     async getBttvEmotesByChannel(channelName: string) {
