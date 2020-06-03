@@ -8,24 +8,28 @@ import { TwitchChatbot } from './chatbot/twitch-chatbot';
 import { SteamApi } from '../steam/steam-api';
 import { SocketMessageEnum } from './socket-message-enum';
 import { TwitchPublisher } from './twitch-publisher';
+import { TwitchApiV5 } from './twitch-api-v5';
 
 // const publisherServer: TwitchPublisher = new TwitchPublisher();
 // publisherServer.startServer();
 // Define configuration options
 const opts = {
     identity: {
-        username: 'itsatreee',
-        password: SECRETS.oAuthPassword
+        username: SECRETS.irc.user,
+        password: SECRETS.irc.userOAuthPassword
     },
-    channels: [
-        'membtv'
-    ]
+
+    channels: SECRETS.irc.channelsToListenTo
+
 };
+const debugMode = false;
+const socketServerPort = SECRETS.serverPort;
 
 // Create a client with our options
 const twitchClient: Client = client(opts);
 const steamApi = new SteamApi();
-const twitchChatbot = new TwitchChatbot(steamApi);
+const twitchApi = new TwitchApiV5(debugMode);
+const twitchChatbot = new TwitchChatbot(twitchApi, steamApi, debugMode);
 
 // Register our event handlers (defined below)
 twitchClient.on('message', onMessageHandler);
@@ -54,7 +58,7 @@ function onConnectedHandler(addr: string, port: number): void {
     console.log(`* Connected to ${addr}:${port}`);
 }
 
-let emoteWidgetSocketServer = new WebSocket.Server({ port: 8447 });
+let emoteWidgetSocketServer = new WebSocket.Server({ port: socketServerPort });
 
 emoteWidgetSocketServer.on('connection', (ws) => {
     emoteWidgetSocketServer.clients.add(ws);
@@ -65,18 +69,19 @@ emoteWidgetSocketServer.on('connection', (ws) => {
             if (message === 'PING') {
                 client.send('PONG');
             } else {
-                const data = JSON.parse(message);
+                const payload = JSON.parse(message);
                 console.log('received: %s', message);
-                if (data.type === SocketMessageEnum.EmoteCodes) {
-                    twitchChatbot.setEmoteCodes(data.data);
+                if (payload.type === SocketMessageEnum.EmoteCodes) {
+                    twitchChatbot.setEmoteCodes(payload.data);
                 }
-                else if (data.type === SocketMessageEnum.CheckEmoteCache) {
+                else if (payload.type === SocketMessageEnum.CheckEmoteCache) {
                     if (twitchChatbot.emotesExist()) {
                         console.log(`Cached ${twitchChatbot.getEmoteCodes().length} emotes`);
-                        client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.getEmoteCodes() }));
+                        client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.emotesToLookFor }));
                     } else {
-                        console.log(`No emotes in list`);
-                        client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: [] }));
+                        twitchChatbot.pullAllEmotes(payload.data.channelName, payload.data.emoteSetIds).then((emotes) => {
+                            client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.emotesToLookFor }));
+                        });
                     }
                 }
             }

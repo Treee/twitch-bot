@@ -4,31 +4,52 @@ import { SteamApi } from '../../steam/steam-api';
 import { SocketMessageEnum } from "../socket-message-enum";
 import { SECRETS } from '../../../secrets';
 import { EmoteParser } from "./parsers/emote-parser";
+import { TwitchApiV5 } from "../twitch-api-v5";
+import { Emote } from "../../../helpers/emote";
 
 export class TwitchChatbot {
 
     private steamApi: SteamApi;
+    private twitchApi: TwitchApiV5;
     private debugMode: boolean = false;
     private chatCommands: string[] = ['!joinlobby'];
-    private emoteCodesToLookFor: string[] = [];
+    emotesToLookFor: Emote[] = [];
 
     private emoteParser = new EmoteParser();
 
-    constructor(steamApi: SteamApi, debugMode: boolean = false) {
+    constructor(twitchApi: TwitchApiV5, steamApi: SteamApi, debugMode: boolean = false) {
+        this.twitchApi = twitchApi;
         this.steamApi = steamApi;
         this.debugMode = debugMode;
     }
 
-    setEmoteCodes(emotes: string[]): void {
-        this.emoteCodesToLookFor = emotes;
+    async pullAllEmotes(channel: string, emoteSetIds: number[] = []): Promise<Emote[]> {
+        console.log(`params 1: ${channel} 2: ${emoteSetIds}`);
+        const twitchEmotes = await this.twitchApi.getTwitchEmotes(channel);
+        const twitchEmoteSets = await this.twitchApi.getTwitchEmotesBySets(emoteSetIds);
+        const bttvChannelEmotes = await this.twitchApi.getBttvEmotesByChannel(channel);
+        const bttvGlobalEmotes = await this.twitchApi.getGlobalBttvEmotes();
+
+        // emoteWidget.twitchSubBadges = values[0].subBadges;
+        let emotes: Emote[] = [];
+        emotes = emotes.concat(twitchEmotes).concat(twitchEmoteSets).concat(bttvChannelEmotes).concat(bttvGlobalEmotes);
+        this.setEmoteCodes(emotes);
+        return emotes;
+    }
+
+    setEmoteCodes(emotes: Emote[]): void {
+        this.emotesToLookFor = emotes;
     }
 
     getEmoteCodes(): string[] {
-        return this.emoteCodesToLookFor;
+        const emoteCodes = this.emotesToLookFor.slice(0).map((emote) => {
+            return emote.code;
+        });
+        return emoteCodes;
     }
 
     emotesExist(): boolean {
-        return this.emoteCodesToLookFor.length > 0;
+        return this.emotesToLookFor.length > 0;
     }
 
     handleMessage(target: string, context: ChatUserstate, msg: string, self: boolean, webSocketCb?: Function, twitchClientCb?: Function): void {
@@ -36,7 +57,7 @@ export class TwitchChatbot {
         if (self) { return; } // Ignore messages from the bot
 
         const invokedCommands = this.parseForCommands(msg);
-        const invokedEmotes = this.emoteParser.parseComplete(msg, this.emoteCodesToLookFor);
+        const invokedEmotes = this.emoteParser.parseComplete(msg, this.getEmoteCodes());
         if (this.debugMode) { this.debugMessages(invokedCommands, invokedEmotes); }
         if (invokedEmotes.length > 0 && webSocketCb) {
             webSocketCb(SocketMessageEnum.FoundEmotes, invokedEmotes);
