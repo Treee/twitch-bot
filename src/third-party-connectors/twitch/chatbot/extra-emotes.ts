@@ -50,7 +50,6 @@ export const extraEmotes = JSON.parse(`{
        "PrideWave":302303579,
        "PridePenguin":302303578,
        "PrideFlower":302303577,
-
        "PrideLion":302303576,
        "PrideHeartR":302303574,
        "PrideHeartL":302303573,
