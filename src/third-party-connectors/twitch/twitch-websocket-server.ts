@@ -7,11 +7,8 @@ import { SECRETS } from '../../secrets';
 import { TwitchChatbot } from './chatbot/twitch-chatbot';
 import { SteamApi } from '../steam/steam-api';
 import { SocketMessageEnum } from './socket-message-enum';
-import { TwitchPublisher } from './twitch-publisher';
 import { TwitchApiV5 } from './twitch-api-v5';
 
-// const publisherServer: TwitchPublisher = new TwitchPublisher();
-// publisherServer.startServer();
 // Define configuration options
 const opts = {
     identity: {
@@ -42,9 +39,9 @@ function onMessageHandler(target: string, context: ChatUserstate, msg: string, s
 }
 
 function websocketSend(dataType: SocketMessageEnum, data: any): void {
-    emoteWidgetSocketServer.clients.forEach((client) => {
-        client.send(JSON.stringify({ type: dataType, data: data }));
-    });
+    // emoteWidgetSocketServer.clients.forEach((client) => {
+    //     client.send(JSON.stringify({ type: dataType, data: data }));
+    // });
 }
 
 function twitchClientSay(msg: string): void {
