@@ -39,9 +39,9 @@ function onMessageHandler(target: string, context: ChatUserstate, msg: string, s
 }
 
 function websocketSend(dataType: SocketMessageEnum, data: any): void {
-    // emoteWidgetSocketServer.clients.forEach((client) => {
-    //     client.send(JSON.stringify({ type: dataType, data: data }));
-    // });
+    emoteWidgetSocketServer.clients.forEach((client) => {
+        client.send(JSON.stringify({ type: dataType, data: data }));
+    });
 }
 
 function twitchClientSay(msg: string): void {
