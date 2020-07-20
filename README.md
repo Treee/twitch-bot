@@ -73,3 +73,8 @@ Attach to the screen
 8. Start all screens and containers
 
 [SSL Reference](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html#letsencrypt)
+
+### Docker Stuff
+docker build --build-arg server_port=8445 . -t treeemotes
+
+docker build --build-arg server_port=8446 . -t treeemotes
