@@ -1,5 +1,4 @@
 import { SubBadge, TwitchEmoteResponse, BttvEmoteResponse, Emote } from "../../helpers/emote";
-import { TwitchSubscriber } from "./twitch-subscriber";
 import fetch from 'node-fetch';
 import { extraEmotes } from "./chatbot/extra-emotes";
 import { SECRETS } from "../../secrets";
@@ -11,13 +10,6 @@ export class TwitchApiV5 {
 
     constructor(debugMode: boolean = false) {
         this.debugMode = debugMode;
-    }
-
-    test(clientId: string) {
-        const t = new TwitchSubscriber();
-        t.subscribeToWebhook('https://api.twitch.tv/helix/users/follows?first=1&to_id=114260623', 'subscribe', clientId).then((data) => {
-            console.log('data', data);
-        });
     }
 
     getTwitchRequestHeaders() {
