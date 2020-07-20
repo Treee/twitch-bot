@@ -77,4 +77,4 @@ Attach to the screen
 ### Docker Stuff
 docker build --build-arg server_port=8445 . -t treeemotes
 
-docker build --build-arg server_port=8446 . -t treeemotes
+docker build --build-arg server_port=8446 . -t membtvemotes
