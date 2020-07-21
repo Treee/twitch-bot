@@ -75,6 +75,6 @@ Attach to the screen
 [SSL Reference](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html#letsencrypt)
 
 ### Docker Stuff
-docker build --build-arg server_port=8445 . -t treeemotes
+docker build --build-arg server_port=8445 . -t twitch-bot:membtv
 
-docker build --build-arg server_port=8446 . -t membtvemotes
+docker build --build-arg server_port=8446 . -t twitch-bot:itsatreee
