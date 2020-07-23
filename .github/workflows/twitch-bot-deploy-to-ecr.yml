@@ -32,13 +32,14 @@ jobs:
           --build-arg server_port=${{ secrets.TREE_BOT_SERVER_PORT }} --build-arg bot_client_id=${{ secrets.TREE_BOT_CLIENT_ID }} \
           --build-arg bot_client_secret=${{ secrets.TREE_BOT_CLIENT_SECRET }} --build-arg steam_api_key=${{ secrets.TREE_BOT_STEAM_API_KEY }} \
           --build-arg steam_user_id=${{ secrets.TREE_BOT_STEAM_USER_ID }} --build-arg irc_user=${{ secrets.TREE_BOT_IRC_USER }} \
-          --build-arg irc_user_oauth_password=${{ secrets.TREE_BOT_IRC_OAUTH_PASSWORD }} --build-arg irc_channels_to_monitor=${{ secrets.TREE_BOT_IRC_CHANNELS_TO_MONITOR }} \          
-          -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPO_NAME:treemotes
+          --build-arg irc_user_oauth_password=${{ secrets.TREE_BOT_IRC_OAUTH_PASSWORD }} --build-arg irc_channels_to_monitor=${{ secrets.TREE_BOT_IRC_CHANNELS_TO_MONITOR }} \
+          -t treeemotes \
+          -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPO_NAME:treeemotes
 
     - name: Push
       if: github.ref == 'refs/heads/master'
       run: |
-        docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPO_NAME:treemotes
+        docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPO_NAME:treeemotes
         
     - name: Build and tag the image
       run: |
@@ -46,7 +47,8 @@ jobs:
           --build-arg server_port=${{ secrets.MEMB_BOT_SERVER_PORT }} --build-arg bot_client_id=${{ secrets.TREE_BOT_CLIENT_ID }} \
           --build-arg bot_client_secret=${{ secrets.TREE_BOT_CLIENT_SECRET }} --build-arg steam_api_key=${{ secrets.TREE_BOT_STEAM_API_KEY }} \
           --build-arg steam_user_id=${{ secrets.TREE_BOT_STEAM_USER_ID }} --build-arg irc_user=${{ secrets.TREE_BOT_IRC_USER }} \
-          --build-arg irc_user_oauth_password=${{ secrets.TREE_BOT_IRC_OAUTH_PASSWORD }} --build-arg irc_channels_to_monitor=${{ secrets.MEMB_BOT_IRC_CHANNELS_TO_MONITOR }} \          
+          --build-arg irc_user_oauth_password=${{ secrets.TREE_BOT_IRC_OAUTH_PASSWORD }} --build-arg irc_channels_to_monitor=${{ secrets.MEMB_BOT_IRC_CHANNELS_TO_MONITOR }} \
+          -t membtvemotes \
           -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPO_NAME:membtvemotes
 
     - name: Push
