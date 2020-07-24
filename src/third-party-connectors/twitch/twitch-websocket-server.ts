@@ -89,19 +89,23 @@ emoteWidgetSocketServer.on("connection", (ws) => {
         });
 
         client.on("anongiftpaidupgrade", (channel: string, username: string, userstate: any) => {
+            console.log(`The bot says ${username} is continuing the Gift Sub they got from an anonymous user in channel! THIS IS A TEST`);
             twitchClientSay(`The bot says ${username} is continuing the Gift Sub they got from an anonymous user in channel! THIS IS A TEST`);
         });
 
         client.on("ban", (channel: string, username: string, reason: string, userstate: any) => {
             // reason is deprecated. always null as per docs
+            console.log(`The bot says ${username} has been banned on a channel! Suck it! THIS IS A TEST`);
             twitchClientSay(`The bot says ${username} has been banned on a channel! Suck it! THIS IS A TEST`);
         });
 
         client.on("cheer", (channel: string, userstate: any, message: string) => {
+            console.log(`The bot says ${userstate.username} is chearing ${userstate.bits} wooo THIS IS A TEST`);
             twitchClientSay(`The bot says ${userstate.username} is chearing ${userstate.bits} wooo THIS IS A TEST`);
         });
 
         client.on("clearchat", (channel: string) => {
+            console.log(`Oooooooooo BUSTED!!`)
             twitchClientSay(`Oooooooooo BUSTED!!`);
         });
 
@@ -119,18 +123,21 @@ emoteWidgetSocketServer.on("connection", (ws) => {
 
         client.on("giftpaidupgrade", (channel: string, username: string, sender: string, userstate: any) => {
             // Do your stuff.
+            console.log(`The bot says ${username} is continuing the Gift Sub they got from ${sender} in channel. THIS IS A TEST`);
             twitchClientSay(`The bot says ${username} is continuing the Gift Sub they got from ${sender} in channel. THIS IS A TEST`);
         });
 
         client.on("resub", (channel: string, username: string, streakMonths: number, message: string, userstate: any, methods: any) => {
             // Do your stuff.
             let cumulativeMonths = ~~userstate["msg-param-cumulative-months"];
+            console.log(`The bot says ${username} is resubbing! Their current streak is ${streakMonths} and subbed for a total of ${cumulativeMonths}. THIS IS A TEST`);
             twitchClientSay(`The bot says ${username} is resubbing! Their current streak is ${streakMonths} and subbed for a total of ${cumulativeMonths}. THIS IS A TEST`);
         });
 
         client.on("subgift", (channel: string, username: string, streakMonths: number, recipient: string, methods: any, userstate: any) => {
             // Do your stuff.
             let senderCount = ~~userstate["msg-param-sender-count"];
+            console.log(`The bot says ${username} is gifting subs! Their current streak is ${streakMonths} for a total of ${senderCount}. Lucky ${recipient}!. THIS IS A TEST`);
             twitchClientSay(`The bot says ${username} is gifting subs! Their current streak is ${streakMonths} for a total of ${senderCount}. Lucky ${recipient}!. THIS IS A TEST`);
         });
 
@@ -142,6 +149,7 @@ emoteWidgetSocketServer.on("connection", (ws) => {
         });
 
         client.on("subscription", (channel: string, username: string, method: any, message: string, userstate: any) => {
+            console.log(`The bot says ${username} just subbed! THIS IS A TEST`);
             twitchClientSay(`The bot says ${username} just subbed! THIS IS A TEST`);
         });
 
