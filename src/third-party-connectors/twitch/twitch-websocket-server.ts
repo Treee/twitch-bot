@@ -33,7 +33,11 @@ twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
 twitchClient.on("ban", banHandler);
 twitchClient.on("cheer", cheerHandler);
 twitchClient.on("clearchat", clearchatHandler);
-twitchClient.on("emoteonly", emoteonlyHandler);
+// twitchClient.on("emoteonly", emoteonlyHandler);
+twitchClient.on("emoteonly", (channel, enabled) => {
+    // Do your stuff.
+    console.log('work dammit');
+});
 twitchClient.on("emotesets", emotesetsHandler);
 twitchClient.on("giftpaidupgrade", giftpaidupgradeHandler);
 twitchClient.on("resub", resubHandler);
@@ -125,6 +129,7 @@ function websocketSend(dataType: SocketMessageEnum, data: any): void {
 }
 
 function twitchClientSay(msg: string): void {
+    console.log(`channels ${opts.channels} msg: ${msg}`);
     if (opts.channels) {
         twitchClient.say(opts.channels[0], `${msg}`);
     }
