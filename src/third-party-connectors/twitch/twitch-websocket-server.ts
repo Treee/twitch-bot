@@ -29,22 +29,25 @@ const twitchChatbot = new TwitchChatbot(twitchApi, steamApi, debugMode);
 // Register our event handlers (defined below)
 twitchClient.on("message", onMessageHandler);
 twitchClient.on("connected", onConnectedHandler);
-twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
-twitchClient.on("ban", banHandler);
-twitchClient.on("cheer", cheerHandler);
-twitchClient.on("clearchat", clearchatHandler);
-// twitchClient.on("emoteonly", emoteonlyHandler);
-twitchClient.on("emoteonly", (channel, enabled) => {
-    // Do your stuff.
-    console.log('work dammit');
-});
-twitchClient.on("emotesets", emotesetsHandler);
-twitchClient.on("giftpaidupgrade", giftpaidupgradeHandler);
-twitchClient.on("resub", resubHandler);
-twitchClient.on("subgift", subgiftHandler);
-twitchClient.on("submysterygift", submysterygiftHandler);
-twitchClient.on("subscription", subscriptionHandler);
-twitchClient.on("vips", vipsHandler);
+
+if (SECRETS.irc.channelsToListenTo.includes('itsatreee')) {
+    twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
+    twitchClient.on("ban", banHandler);
+    twitchClient.on("cheer", cheerHandler);
+    twitchClient.on("clearchat", clearchatHandler);
+    // twitchClient.on("emoteonly", emoteonlyHandler);
+    twitchClient.on("emoteonly", (channel, enabled) => {
+        // Do your stuff.
+        console.log('work dammit');
+    });
+    twitchClient.on("emotesets", emotesetsHandler);
+    twitchClient.on("giftpaidupgrade", giftpaidupgradeHandler);
+    twitchClient.on("resub", resubHandler);
+    twitchClient.on("subgift", subgiftHandler);
+    twitchClient.on("submysterygift", submysterygiftHandler);
+    twitchClient.on("subscription", subscriptionHandler);
+    twitchClient.on("vips", vipsHandler);
+}
 
 // Connect to Twitch:
 twitchClient.connect();
@@ -130,7 +133,7 @@ function websocketSend(dataType: SocketMessageEnum, data: any): void {
 
 function twitchClientSay(msg: string): void {
     console.log(`channels ${opts.channels} msg: ${msg}`);
-    if (opts.channels && opts.channels[0] !== 'membtv') {
+    if (opts.channels) {
         twitchClient.say(opts.channels[0], `${msg}`);
     }
 }
