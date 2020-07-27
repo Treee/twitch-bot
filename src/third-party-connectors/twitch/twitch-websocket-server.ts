@@ -130,7 +130,7 @@ function websocketSend(dataType: SocketMessageEnum, data: any): void {
 
 function twitchClientSay(msg: string): void {
     console.log(`channels ${opts.channels} msg: ${msg}`);
-    if (opts.channels) {
+    if (opts.channels && opts.channels[0] !== 'membtv') {
         twitchClient.say(opts.channels[0], `${msg}`);
     }
 }
