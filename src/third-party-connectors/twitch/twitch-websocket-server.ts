@@ -122,8 +122,9 @@ function twitchClientSay(msg: string): void {
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler(addr: string, port: number): void {
     console.log(`* Connected to ${addr}:${port}`);
-    console.log(`attempting to subscribe to additional events if you are treeeee:${opts.channels}.`)
+    console.log(`attempting to subscribe to additional events if you are treeeee:${opts.channels}.`);
     if (opts.channels && opts.channels[0] === '#itsatreee') {
+        console.log(`subscribed`);
         twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
         twitchClient.on("ban", banHandler);
         twitchClient.on("cheer", cheerHandler);
