@@ -30,7 +30,7 @@ const twitchChatbot = new TwitchChatbot(twitchApi, steamApi, debugMode);
 twitchClient.on("message", onMessageHandler);
 twitchClient.on("connected", onConnectedHandler);
 
-if (opts.channels && opts.channels[0] === 'itsatreee') {
+if (opts.channels !== undefined && opts.channels[0] === 'itsatreee') {
     twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
     twitchClient.on("ban", banHandler);
     twitchClient.on("cheer", cheerHandler);
