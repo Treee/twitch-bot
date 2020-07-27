@@ -30,6 +30,7 @@ const twitchChatbot = new TwitchChatbot(twitchApi, steamApi, debugMode);
 twitchClient.on("message", onMessageHandler);
 twitchClient.on("connected", onConnectedHandler);
 
+console.log(`attempting to subscribe to additional events ${opts.channels}.`)
 if (opts.channels !== undefined && opts.channels[0] === 'itsatreee') {
     twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
     twitchClient.on("ban", banHandler);
