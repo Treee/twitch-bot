@@ -123,7 +123,7 @@ function twitchClientSay(msg: string): void {
 function onConnectedHandler(addr: string, port: number): void {
     console.log(`* Connected to ${addr}:${port}`);
     console.log(`attempting to subscribe to additional events if you are treeeee:${opts.channels}.`)
-    if (opts.channels && opts.channels[0] === 'itsatreee') {
+    if (opts.channels && opts.channels[0] === '#itsatreee') {
         twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
         twitchClient.on("ban", banHandler);
         twitchClient.on("cheer", cheerHandler);
