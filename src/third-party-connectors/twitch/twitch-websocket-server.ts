@@ -30,26 +30,6 @@ const twitchChatbot = new TwitchChatbot(twitchApi, steamApi, debugMode);
 twitchClient.on("message", onMessageHandler);
 twitchClient.on("connected", onConnectedHandler);
 
-console.log(`attempting to subscribe to additional events ${opts.channels}.`)
-if (opts.channels !== undefined && opts.channels[0] === 'itsatreee') {
-    twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
-    twitchClient.on("ban", banHandler);
-    twitchClient.on("cheer", cheerHandler);
-    twitchClient.on("clearchat", clearchatHandler);
-    // twitchClient.on("emoteonly", emoteonlyHandler);
-    twitchClient.on("emoteonly", (channel, enabled) => {
-        // Do your stuff.
-        console.log('work dammit');
-    });
-    twitchClient.on("emotesets", emotesetsHandler);
-    twitchClient.on("giftpaidupgrade", giftpaidupgradeHandler);
-    twitchClient.on("resub", resubHandler);
-    twitchClient.on("subgift", subgiftHandler);
-    twitchClient.on("submysterygift", submysterygiftHandler);
-    twitchClient.on("subscription", subscriptionHandler);
-    twitchClient.on("vips", vipsHandler);
-}
-
 // Connect to Twitch:
 twitchClient.connect();
 
@@ -142,6 +122,21 @@ function twitchClientSay(msg: string): void {
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler(addr: string, port: number): void {
     console.log(`* Connected to ${addr}:${port}`);
+    console.log(`attempting to subscribe to additional events if you are treeeee:${opts.channels}.`)
+    if (opts.channels && opts.channels[0] === 'itsatreee') {
+        twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
+        twitchClient.on("ban", banHandler);
+        twitchClient.on("cheer", cheerHandler);
+        twitchClient.on("clearchat", clearchatHandler);
+        twitchClient.on("emoteonly", emoteonlyHandler);
+        twitchClient.on("emotesets", emotesetsHandler);
+        twitchClient.on("giftpaidupgrade", giftpaidupgradeHandler);
+        twitchClient.on("resub", resubHandler);
+        twitchClient.on("subgift", subgiftHandler);
+        twitchClient.on("submysterygift", submysterygiftHandler);
+        twitchClient.on("subscription", subscriptionHandler);
+        twitchClient.on("vips", vipsHandler);
+    }
 }
 
 const serverOptions: WebSocket.ServerOptions = {
