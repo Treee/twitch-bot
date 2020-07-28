@@ -41,24 +41,31 @@ function onMessageHandler(target: string, context: ChatUserstate, msg: string, s
 function anongiftpaidupgradeHandler(channel: string, username: string, userstate: any) {
     console.log(`The bot says ${username} is continuing the Gift Sub they got from an anonymous user in channel! THIS IS A TEST`);
     twitchClientSay(`itsatreeFriends itsatreeVibe itsatreeFriends itsatreeVibe ${username} is continuing the Gift Sub they got from an anonymous user in channel! itsatreeFriends itsatreeVibe itsatreeFriends itsatreeVibe Thank You!`);
+    websocketSend(SocketMessageEnum.MysteryGiftSubscriptionUpgrade, { username });
 }
 
 function banHandler(channel: string, username: string, reason: string) {
     // reason is deprecated. always null as per docs
     twitchClientSay(`itsatreeCop itsatreeCop itsatreeCop |BANNED| --->${username}<--- |BANNED| FROM WHERE? ${channel} channel. itsatreeCop itsatreeCop itsatreeCop Suck it!`);
+    websocketSend(SocketMessageEnum.Banned, { username });
 }
 
 function cheerHandler(channel: string, userstate: any, message: string) {
     twitchClientSay(`itsatrEeTeee itsatrEeTeee Thank You ${userstate.username} for cheering ${userstate.bits} bits!! itsatrEeTeee itsatrEeTeee`);
+    websocketSend(SocketMessageEnum.Bits, { username: userstate.username, bits: userstate.bits });
 }
 
 function clearchatHandler(channel: string) {
     twitchClientSay(`itsatreeCop itsatreeCop itsatreeCop itsatreeCop OOOoooooo BUSTED!! itsatreeCop itsatreeCop itsatreeCop itsatreeCop`);
+    websocketSend(SocketMessageEnum.ChatCleared, {});
 }
 
 function emoteonlyHandler(channel: string, enabled: boolean) {
     if (enabled) {
         twitchClientSay(`Spam Those Treeemotes! itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee`);
+        websocketSend(SocketMessageEnum.EmoteOnlyModeActive, {});
+    } else {
+        websocketSend(SocketMessageEnum.EmoteOnlyModeDisabled, {});
     }
 }
 
@@ -72,6 +79,7 @@ function emotesetsHandler(sets: string, obj: any) {
 function giftpaidupgradeHandler(channel: string, username: string, sender: string, userstate: any) {
     // Do your stuff.
     twitchClientSay(`Gir Gir Gir Gir ${username} is continuing the Gift Sub they got from ${sender} Gir Gir Gir Gir Thank You!!`);
+    websocketSend(SocketMessageEnum.GiftSubscriptionUpgrade, { username, sender });
 }
 
 function resubHandler(channel: string, username: string, streakMonths: number, message: string, userstate: any, methods: any) {
@@ -84,22 +92,26 @@ function resubHandler(channel: string, username: string, streakMonths: number, m
         cumulativeMsg = `${years} years and ${months} months!!`;
     }
     twitchClientSay(`itsatrEeTeee itsatrEeTeee itsatrEeTeee ${username} is resubbing! Their current streak is ${streakMonths} and subbed for a total of ${cumulativeMsg}. itsatrEeTeee itsatrEeTeee itsatrEeTeee`);
+    websocketSend(SocketMessageEnum.ReSubscription, { username, streakMonths, cumulativeMonths });
 }
 
 function subgiftHandler(channel: string, username: string, streakMonths: number, recipient: string, methods: any, userstate: any) {
     // Do your stuff.
     let senderCount = ~~userstate["msg-param-sender-count"];
     twitchClientSay(`itsatrEeTeee itsatrEeTeee itsatrEeTeee ${username} is gifting subs! Their current streak is ${streakMonths} for a total of ${streakMonths + senderCount}. Lucky ${recipient}!. itsatrEeTeee itsatrEeTeee itsatrEeTeee`);
+    websocketSend(SocketMessageEnum.GiftSubscription, { gifter: username, numGifts: senderCount, recipient });
 }
 
 function submysterygiftHandler(channel: string, username: string, numbOfSubs: number, methods: any, userstate: any) {
     // Do your stuff.
     let senderCount = ~~userstate["msg-param-sender-count"];
     twitchClient.say(username, `I know what you did ;) Thank you. itsatrEeTeee itsatrEeTeee itsatrEeTeee`);
+    websocketSend(SocketMessageEnum.MysteryGiftSubscription, { username, numbOfSubs });
 }
 
 function subscriptionHandler(channel: string, username: string, method: any, message: string, userstate: any) {
     twitchClientSay(`itsatrEeTeee itsatrEeTeee itsatrEeTeee ${username} just subbed! itsatrEeTeee itsatrEeTeee itsatrEeTeee`);
+    websocketSend(SocketMessageEnum.FirstTimeSubscription, username);
 }
 
 function vipsHandler(channel: string, vips: any[]) {
