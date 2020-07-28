@@ -40,66 +40,66 @@ function onMessageHandler(target: string, context: ChatUserstate, msg: string, s
 
 function anongiftpaidupgradeHandler(channel: string, username: string, userstate: any) {
     console.log(`The bot says ${username} is continuing the Gift Sub they got from an anonymous user in channel! THIS IS A TEST`);
-    twitchClientSay(`The bot says ${username} is continuing the Gift Sub they got from an anonymous user in channel! THIS IS A TEST`);
+    twitchClientSay(`itsatreeFriends itsatreeVibe itsatreeFriends itsatreeVibe ${username} is continuing the Gift Sub they got from an anonymous user in channel! itsatreeFriends itsatreeVibe itsatreeFriends itsatreeVibe Thank You!`);
 }
 
 function banHandler(channel: string, username: string, reason: string) {
     // reason is deprecated. always null as per docs
-    console.log(`The bot says ${username} has been banned on a channel! Suck it! THIS IS A TEST`);
-    twitchClientSay(`The bot says ${username} has been banned on a channel! Suck it! THIS IS A TEST`);
+    twitchClientSay(`itsatreeCop itsatreeCop itsatreeCop |BANNED| --->${username}<--- |BANNED| FROM WHERE? ${channel} channel. itsatreeCop itsatreeCop itsatreeCop Suck it!`);
 }
 
 function cheerHandler(channel: string, userstate: any, message: string) {
-    console.log(`The bot says ${userstate.username} is chearing ${userstate.bits} wooo THIS IS A TEST`);
-    twitchClientSay(`The bot says ${userstate.username} is chearing ${userstate.bits} wooo THIS IS A TEST`);
+    twitchClientSay(`itsatrEeTeee itsatrEeTeee Thank You ${userstate.username} for cheering ${userstate.bits} bits!! itsatrEeTeee itsatrEeTeee`);
 }
 
 function clearchatHandler(channel: string) {
-    console.log(`Oooooooooo BUSTED!!`)
-    twitchClientSay(`Oooooooooo BUSTED!!`);
+    twitchClientSay(`itsatreeCop itsatreeCop itsatreeCop itsatreeCop OOOoooooo BUSTED!! itsatreeCop itsatreeCop itsatreeCop itsatreeCop`);
 }
 
 function emoteonlyHandler(channel: string, enabled: boolean) {
     if (enabled) {
-        twitchClientSay(`Spam Those Treeemotes! itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee `);
+        twitchClientSay(`Spam Those Treeemotes! itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee itsatrEeTeee`);
     }
 }
 
-function emotesetsHandler(sets: any, obj: any) {
+let emoteSetIds: string[] = [];
+function emotesetsHandler(sets: string, obj: any) {
     // Here are the emotes I can use:
-    console.log("my emote sets", sets);
-    console.log("my emote obj", obj);
+    emoteSetIds = sets.split(",");
+    console.log("my emote sets", emoteSetIds);
 }
 
 function giftpaidupgradeHandler(channel: string, username: string, sender: string, userstate: any) {
     // Do your stuff.
-    console.log(`The bot says ${username} is continuing the Gift Sub they got from ${sender} in channel. THIS IS A TEST`);
-    twitchClientSay(`The bot says ${username} is continuing the Gift Sub they got from ${sender} in channel. THIS IS A TEST`);
+    twitchClientSay(`Gir Gir Gir Gir ${username} is continuing the Gift Sub they got from ${sender} Gir Gir Gir Gir Thank You!!`);
 }
 
 function resubHandler(channel: string, username: string, streakMonths: number, message: string, userstate: any, methods: any) {
     // Do your stuff.
     let cumulativeMonths = ~~userstate["msg-param-cumulative-months"];
-    console.log(`The bot says ${username} is resubbing! Their current streak is ${streakMonths} and subbed for a total of ${cumulativeMonths}. THIS IS A TEST`);
-    twitchClientSay(`The bot says ${username} is resubbing! Their current streak is ${streakMonths} and subbed for a total of ${cumulativeMonths}. THIS IS A TEST`);
+    const years = cumulativeMonths / 12;
+    const months = cumulativeMonths % 12;
+    let cumulativeMsg = `${months} months!`
+    if (years > 0) {
+        cumulativeMsg = `${years} years and ${months} months!!`;
+    }
+    twitchClientSay(`itsatrEeTeee itsatrEeTeee itsatrEeTeee ${username} is resubbing! Their current streak is ${streakMonths} and subbed for a total of ${cumulativeMsg}. itsatrEeTeee itsatrEeTeee itsatrEeTeee`);
 }
 
 function subgiftHandler(channel: string, username: string, streakMonths: number, recipient: string, methods: any, userstate: any) {
     // Do your stuff.
     let senderCount = ~~userstate["msg-param-sender-count"];
-    console.log(`The bot says ${username} is gifting subs! Their current streak is ${streakMonths} for a total of ${senderCount}. Lucky ${recipient}!. THIS IS A TEST`);
-    twitchClientSay(`The bot says ${username} is gifting subs! Their current streak is ${streakMonths} for a total of ${senderCount}. Lucky ${recipient}!. THIS IS A TEST`);
+    twitchClientSay(`itsatrEeTeee itsatrEeTeee itsatrEeTeee ${username} is gifting subs! Their current streak is ${streakMonths} for a total of ${streakMonths + senderCount}. Lucky ${recipient}!. itsatrEeTeee itsatrEeTeee itsatrEeTeee`);
 }
 
 function submysterygiftHandler(channel: string, username: string, numbOfSubs: number, methods: any, userstate: any) {
     // Do your stuff.
     let senderCount = ~~userstate["msg-param-sender-count"];
-    twitchClient.say(username, `I know what you did ;) Thank you. THIS IS A TEST`);
+    twitchClient.say(username, `I know what you did ;) Thank you. itsatrEeTeee itsatrEeTeee itsatrEeTeee`);
 }
 
 function subscriptionHandler(channel: string, username: string, method: any, message: string, userstate: any) {
-    console.log(`The bot says ${username} just subbed! THIS IS A TEST`);
-    twitchClientSay(`The bot says ${username} just subbed! THIS IS A TEST`);
+    twitchClientSay(`itsatrEeTeee itsatrEeTeee itsatrEeTeee ${username} just subbed! itsatrEeTeee itsatrEeTeee itsatrEeTeee`);
 }
 
 function vipsHandler(channel: string, vips: any[]) {
@@ -165,7 +165,14 @@ emoteWidgetSocketServer.on("connection", (ws) => {
                         console.log(`Cached ${twitchChatbot.getEmoteCodes().length} emotes`);
                         client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.emotesToLookFor }));
                     } else {
-                        twitchChatbot.pullAllEmotes(payload.data.channelName, payload.data.emoteSetIds).then((emotes) => {
+                        payload.data.emoteSetIds.forEach((setId: string) => {
+                            // console.log('checking:', setId);
+                            if (!emoteSetIds.includes(setId.toString())) {
+                                // console.log('adding emote set id:', setId);
+                                emoteSetIds.push(setId);
+                            }
+                        });
+                        twitchChatbot.pullAllEmotes(payload.data.channelName, emoteSetIds).then((emotes) => {
                             client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.emotesToLookFor }));
                         });
                     }

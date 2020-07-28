@@ -58,7 +58,7 @@ export class TwitchApiV5 {
         return json;
     }
 
-    async getTwitchEmotesBySets(setIds: number[]): Promise<Emote[]> {
+    async getTwitchEmotesBySets(setIds: string[]): Promise<Emote[]> {
         await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret);
         const headers = this.getTwitchRequestHeaders();
         const emoteSetResponse = await fetch(`https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=${setIds.join(',')}`, { headers });
@@ -67,7 +67,7 @@ export class TwitchApiV5 {
         // console.log('emotes by set emotes', jsonData);
         const emoticonSets = jsonData.emoticon_sets || {};
         const formattedEmotes: Emote[] = [];
-        setIds.forEach((setId: number) => {
+        setIds.forEach((setId: string) => {
             if (emoticonSets[setId]) {
                 emoticonSets[setId].forEach((emote: any) => {
                     formattedEmotes.push(new Emote(emote.scale, emote.url, emote.code, emote.id, 'twitch', emote.emoticon_set));

@@ -23,7 +23,7 @@ export class TwitchChatbot {
         this.debugMode = debugMode;
     }
 
-    async pullAllEmotes(channel: string, emoteSetIds: number[] = []): Promise<Emote[]> {
+    async pullAllEmotes(channel: string, emoteSetIds: string[] = []): Promise<Emote[]> {
         console.log(`params 1: ${channel} 2: ${emoteSetIds}`);
         const twitchEmotes = await this.twitchApi.getTwitchEmotes(channel);
         const twitchEmoteSets = await this.twitchApi.getTwitchEmotesBySets(emoteSetIds);
@@ -54,7 +54,7 @@ export class TwitchChatbot {
 
     handleMessage(target: string, context: ChatUserstate, msg: string, self: boolean, webSocketCb?: Function, twitchClientCb?: Function): void {
         if (this.debugMode) { this.debugMessages(target, context, msg, self); } // print if debug
-        if (self) { return; } // Ignore messages from the bot
+        // if (self) { return; } // Ignore messages from the bot
 
         const invokedCommands = this.parseForCommands(msg);
         const invokedEmotes = this.emoteParser.parseComplete(msg, this.getEmoteCodes());
