@@ -128,7 +128,7 @@ function raidHandler(channel: string, username: string, viewers: number) {
 function hostHandler(channel: string, username: string, viewers: number, autohost: boolean) {
     if (viewers > 5 && !autohost) {
         twitchClientSay(`TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid ${username} just hosted with ${viewers}! TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid`);
-        websocketSend(SocketMessageEnum.Raided, { username, viewers });
+        websocketSend(SocketMessageEnum.Hosted, { username, viewers });
     }
 }
 
