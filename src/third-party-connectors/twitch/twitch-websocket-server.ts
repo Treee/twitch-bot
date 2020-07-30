@@ -118,6 +118,20 @@ function vipsHandler(channel: string, vips: any[]) {
     console.log("here are the vips", vips);
 }
 
+function raidHandler(channel: string, username: string, viewers: number) {
+    if (viewers > 5) {
+        twitchClientSay(`TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid ${username} just raided with ${viewers}! TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid`);
+        websocketSend(SocketMessageEnum.Raided, { username, viewers });
+    }
+}
+
+function hostHandler(channel: string, username: string, viewers: number, autohost: boolean) {
+    if (viewers > 5 && !autohost) {
+        twitchClientSay(`TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid ${username} just hosted with ${viewers}! TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid TombRaid`);
+        websocketSend(SocketMessageEnum.Raided, { username, viewers });
+    }
+}
+
 function websocketSend(dataType: SocketMessageEnum, data: any): void {
     emoteWidgetSocketServer.clients.forEach((client) => {
         client.send(JSON.stringify({ type: dataType, data: data }));
@@ -149,6 +163,8 @@ function onConnectedHandler(addr: string, port: number): void {
         twitchClient.on("submysterygift", submysterygiftHandler);
         twitchClient.on("subscription", subscriptionHandler);
         twitchClient.on("vips", vipsHandler);
+        twitchClient.on("raided", raidHandler);
+        twitchClient.on("hosted", hostHandler);
     }
 }
 
