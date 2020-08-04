@@ -85,7 +85,7 @@ function giftpaidupgradeHandler(channel: string, username: string, sender: strin
 function resubHandler(channel: string, username: string, streakMonths: number, message: string, userstate: any, methods: any) {
     // Do your stuff.
     let cumulativeMonths = ~~userstate["msg-param-cumulative-months"];
-    const years = cumulativeMonths / 12;
+    const years = Math.floor(cumulativeMonths / 12);
     const months = cumulativeMonths % 12;
     let cumulativeMsg = `${months} months!`
     if (years > 0) {
