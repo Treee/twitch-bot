@@ -180,30 +180,29 @@ emoteWidgetSocketServer.on("connection", (ws) => {
     emoteWidgetSocketServer.clients.forEach((client) => {
 
         client.on("message", (message: string) => {
-            if (message === "PING") {
-                client.send("PONG");
-            } else {
-                const payload = JSON.parse(message);
-                console.log("received: %s", message);
-                if (payload.type === SocketMessageEnum.EmoteCodes) {
-                    twitchChatbot.setEmoteCodes(payload.data);
-                }
-                else if (payload.type === SocketMessageEnum.CheckEmoteCache) {
-                    if (twitchChatbot.emotesExist()) {
-                        console.log(`Cached ${twitchChatbot.getEmoteCodes().length} emotes`);
+            const payload = JSON.parse(message);
+            console.log("received: %s", message);
+            if (payload.type === SocketMessageEnum.PING) {
+                client.send(JSON.stringify({ type: SocketMessageEnum.PONG, data: {} }));
+            }
+            else if (payload.type === SocketMessageEnum.EmoteCodes) {
+                twitchChatbot.setEmoteCodes(payload.data);
+            }
+            else if (payload.type === SocketMessageEnum.CheckEmoteCache) {
+                if (twitchChatbot.emotesExist()) {
+                    console.log(`Cached ${twitchChatbot.getEmoteCodes().length} emotes`);
+                    client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.emotesToLookFor }));
+                } else {
+                    payload.data.emoteSetIds.forEach((setId: string) => {
+                        // console.log('checking:', setId);
+                        if (!emoteSetIds.includes(setId.toString())) {
+                            // console.log('adding emote set id:', setId);
+                            emoteSetIds.push(setId);
+                        }
+                    });
+                    twitchChatbot.pullAllEmotes(payload.data.channelName, emoteSetIds).then((emotes) => {
                         client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.emotesToLookFor }));
-                    } else {
-                        payload.data.emoteSetIds.forEach((setId: string) => {
-                            // console.log('checking:', setId);
-                            if (!emoteSetIds.includes(setId.toString())) {
-                                // console.log('adding emote set id:', setId);
-                                emoteSetIds.push(setId);
-                            }
-                        });
-                        twitchChatbot.pullAllEmotes(payload.data.channelName, emoteSetIds).then((emotes) => {
-                            client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.emotesToLookFor }));
-                        });
-                    }
+                    });
                 }
             }
         });
