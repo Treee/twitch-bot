@@ -181,9 +181,11 @@ emoteWidgetSocketServer.on("connection", (ws) => {
 
         client.on("message", (message: string) => {
             const payload = JSON.parse(message);
-            console.log("received: %s", message);
+            if (payload.type !== SocketMessageEnum.PING) {
+                console.log("received: %s", payload);
+            }
             if (payload.type === SocketMessageEnum.PING) {
-                client.send(JSON.stringify({ type: SocketMessageEnum.PONG, data: {} }));
+                websocketSend(SocketMessageEnum.PONG, {});
             }
             else if (payload.type === SocketMessageEnum.EmoteCodes) {
                 twitchChatbot.setEmoteCodes(payload.data);
@@ -204,6 +206,8 @@ emoteWidgetSocketServer.on("connection", (ws) => {
                         client.send(JSON.stringify({ type: SocketMessageEnum.CheckEmoteCache, data: twitchChatbot.emotesToLookFor }));
                     });
                 }
+            } else if (payload.type === SocketMessageEnum.TEST) {
+                websocketSend(SocketMessageEnum.TEST, payload.data);
             }
         });
 
