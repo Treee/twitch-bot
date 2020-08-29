@@ -33,6 +33,7 @@ jobs:
           --build-arg bot_client_secret=${{ secrets.TREE_BOT_CLIENT_SECRET }} --build-arg steam_api_key=${{ secrets.TREE_BOT_STEAM_API_KEY }} \
           --build-arg steam_user_id=${{ secrets.TREE_BOT_STEAM_USER_ID }} --build-arg irc_user=${{ secrets.TREE_BOT_IRC_USER }} \
           --build-arg irc_user_oauth_password=${{ secrets.TREE_BOT_IRC_OAUTH_PASSWORD }} --build-arg irc_channels_to_monitor=${{ secrets.TREE_BOT_IRC_CHANNELS_TO_MONITOR }} \
+          --build-arg bot_publisher_secret=${{ secrets.BOT_PUBLISHER_SECRET }}
           -t treeemotes \
           -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPO_NAME:treeemotes
 
