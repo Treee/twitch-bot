@@ -1,6 +1,7 @@
 export const SECRETS = {
     botClientId: process.env.BOT_CLIENT_ID || '',
-    botClientSecret: process.env.BOT_CLIENT_SECRET || '',
+    botClientSecret: process.env.BOT_CLIENT_SECRET || '',\
+    botPublisherSecret: process.env.BOT_PUBLISHER_SECRET || '',\
     serverPort: process.env.SERVER_PORT,
     steam: {
         apiKey: process.env.STEAM_API_KEY || '',
