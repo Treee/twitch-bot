@@ -26,8 +26,9 @@ const steamApi = new SteamApi();
 const twitchApi = new TwitchApiV5(debugMode);
 const twitchChatbot = new TwitchChatbot(twitchApi, steamApi, debugMode);
 
-twitchApi.subscribeToTopic(true, 10, "follows").then((data) => {
-    console.log("Followers Topic Subscribed To Successfully");
+twitchApi.subscribeToTopic(false, 10, "follows", "users/follows?first=1&to_id=114260623").then((data) => {
+    console.log("Followers Topic UnSubscribed To Successfully");
+    return "";
 });
 // Register our event handlers (defined below)
 twitchClient.on("message", onMessageHandler);

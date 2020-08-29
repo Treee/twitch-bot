@@ -143,8 +143,7 @@ export class TwitchApiV5 {
     }
 
     // i want this thing to monitor for new people following when i am live
-
-    async subscribeToTopic(subscribe: boolean, leaseTimeInMinutes: number, topicCallbackName: string) {
+    async subscribeToTopic(subscribe: boolean, leaseTimeInMinutes: number, topicCallbackName: string, topicUrl: string) {
         await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret);
         const headers = this.getTwitchRequestHeaders();
 
@@ -155,7 +154,7 @@ export class TwitchApiV5 {
             body: JSON.stringify({
                 'hub.callback': `${this.pubSubCallbackUrl}${topicCallbackName}`,
                 'hub.mode': subscribe ? "subscribe" : "unsubscribe",
-                'hub.topic': `${this.helixBaseUrl}users/follows?first=1&to_id=114260623`,
+                'hub.topic': `${this.helixBaseUrl}${topicUrl}`,
                 'hub.lease_seconds': 60 * leaseTimeInMinutes,
                 'hub.secret': SECRETS.botPublisherSecret
             })
