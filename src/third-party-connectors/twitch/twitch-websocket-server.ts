@@ -26,6 +26,9 @@ const steamApi = new SteamApi();
 const twitchApi = new TwitchApiV5(debugMode);
 const twitchChatbot = new TwitchChatbot(twitchApi, steamApi, debugMode);
 
+twitchApi.subscribeToTopic(true, 10, "follows").then((data) => {
+    console.log("Followers Topic Subscribed To Successfully");
+});
 // Register our event handlers (defined below)
 twitchClient.on("message", onMessageHandler);
 twitchClient.on("connected", onConnectedHandler);

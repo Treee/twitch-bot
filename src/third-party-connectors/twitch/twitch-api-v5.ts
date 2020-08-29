@@ -7,12 +7,15 @@ export class TwitchApiV5 {
 
     oAuthToken: string = '';
     debugMode: boolean;
+    helixBaseUrl: string = 'https://api.twitch.tv/helix/';
+
+    pubSubCallbackUrl: string = 'https://itsatreee.com/aoe2/api/twitchwebhook/';
 
     constructor(debugMode: boolean = false) {
         this.debugMode = debugMode;
     }
 
-    getTwitchRequestHeaders() {
+    getTwitchRequestHeaders(): any {
         const headers = {
             'Client-ID': SECRETS.botClientId,
             'Accept': 'application/vnd.twitchtv.v5+json',
@@ -69,7 +72,7 @@ export class TwitchApiV5 {
         const formattedEmotes: Emote[] = [];
         setIds.forEach((setId: string) => {
             if (emoticonSets[setId]) {
-                emoticonSets[setId].forEach((emote: any) => {
+                emoticonSets[setId].forEach((emote: Emote) => {
                     formattedEmotes.push(new Emote(emote.scale, emote.url, emote.code, emote.id, 'twitch', emote.emoticon_set));
                 });
             }
@@ -80,7 +83,7 @@ export class TwitchApiV5 {
     async getTwitchEmotes(channelName: string) {
         await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret);
         const headers = this.getTwitchRequestHeaders();
-        const userIdResponse = await fetch(`https://api.twitch.tv/helix/users?login=${channelName}`, { headers });
+        const userIdResponse = await fetch(`${this.helixBaseUrl}users?login=${channelName}`, { headers });
         // console.log('twitch emote response', userIdResponse);
         let responseBody = await userIdResponse.json();
         // console.log('user', responseBody);
@@ -95,7 +98,7 @@ export class TwitchApiV5 {
         const subBadges = data.subscriber_badges || [];
         let formattedEmotes: Emote[] = [];
         const formattedSubBadges: SubBadge[] = [];
-        emotes.forEach((emote: any) => {
+        emotes.forEach((emote: Emote) => {
             formattedEmotes.push(new Emote(emote.scale, emote.url, emote.code, emote.id, 'twitch', emote.emoticon_set));
         });
         formattedEmotes = formattedEmotes.concat(this.loadEmotesFromConfig());
@@ -113,7 +116,7 @@ export class TwitchApiV5 {
         let data = await bttvChannelResponse.json();
         const emotes = data.emotes || [];
         const formattedEmotes: Emote[] = [];
-        emotes.forEach((emote: any) => {
+        emotes.forEach((emote: Emote) => {
             const formattedEmote = new Emote(1, '', emote.code, emote.id, 'bttv');
             formattedEmote.channel = emote.channel;
             formattedEmote.imageType = emote.imageType;
@@ -129,7 +132,7 @@ export class TwitchApiV5 {
         let data = await globalBttvEmotes.json();
         const emotes = data || [];
         const formattedEmotes: Emote[] = [];
-        emotes.forEach((emote: any) => {
+        emotes.forEach((emote: Emote) => {
             const formattedEmote = new Emote(1, '', emote.code, emote.id, 'bttv');
             formattedEmote.channel = emote.channel;
             formattedEmote.imageType = emote.imageType;
@@ -137,6 +140,27 @@ export class TwitchApiV5 {
         });
         return new BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
         // return new BttvEmoteResponse('', []).emotes;
+    }
+
+    // i want this thing to monitor for new people following when i am live
+
+    async subscribeToTopic(subscribe: boolean, leaseTimeInMinutes: number, topicCallbackName: string) {
+        await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret);
+        const headers = this.getTwitchRequestHeaders();
+
+        headers["Content-Type"] = "application/json";
+        const options = {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify({
+                'hub.callback': `${this.pubSubCallbackUrl}${topicCallbackName}`,
+                'hub.mode': subscribe ? "subscribe" : "unsubscribe",
+                'hub.topic': `${this.helixBaseUrl}users/follows?first=1&to_id=114260623`,
+                'hub.lease_seconds': 60 * leaseTimeInMinutes,
+                'hub.secret': SECRETS.botPublisherSecret
+            })
+        };
+        return await fetch(`${this.helixBaseUrl}webhooks/hub`, options);
     }
 
     // get all bttv emotes available

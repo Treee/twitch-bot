@@ -24,6 +24,9 @@ ENV IRC_USER_OAUTH_PASSWORD ${irc_user_oauth_password}
 ARG irc_channels_to_monitor
 ENV IRC_CHANNELS_TO_MONITOR ${irc_channels_to_monitor}
 
+ARG bot_publisher_secret
+ENV BOT_PUBLISHER_SECRET ${bot_publisher_secret}
+
 RUN apk add --update npm
 
 WORKDIR /twitch-bot
