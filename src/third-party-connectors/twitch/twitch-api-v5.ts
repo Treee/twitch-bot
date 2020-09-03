@@ -142,6 +142,13 @@ export class TwitchApiV5 {
         // return new BttvEmoteResponse('', []).emotes;
     }
 
+    async getCurrentSubscriptions() {
+        await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret);
+        const headers = this.getTwitchRequestHeaders();
+
+        return await fetch(`${this.helixBaseUrl}webhooks/subscriptions`, { method: "GET", headers: headers });
+    }
+
     // i want this thing to monitor for new people following when i am live
     async subscribeToTopic(subscribe: boolean, leaseTimeInMinutes: number, topicCallbackName: string, topicUrl: string) {
         await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret);
