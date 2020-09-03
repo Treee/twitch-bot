@@ -23,18 +23,23 @@ export class TwitchChatbot {
         this.debugMode = debugMode;
     }
 
-    async pullAllEmotes(channel: string, emoteSetIds: string[] = []): Promise<Emote[]> {
-        console.log(`params 1: ${channel} 2: ${emoteSetIds}`);
-        const twitchEmotes = await this.twitchApi.getTwitchEmotes(channel);
-        const twitchEmoteSets = await this.twitchApi.getTwitchEmotesBySets(emoteSetIds);
-        const bttvChannelEmotes = await this.twitchApi.getBttvEmotesByChannel(channel);
-        const bttvGlobalEmotes = await this.twitchApi.getGlobalBttvEmotes();
+    async pullAllEmotes(channel: string, emoteSetIds: string[] = [], override: boolean = false): Promise<Emote[]> {
+        if (this.emotesExist() && !override) {
+            console.log(`The cache has ${this.getEmoteCodes().length} emotes.`);
+            return this.emotesToLookFor;
+        } else {
+            console.log(`params 1: ${channel} 2: ${emoteSetIds}`);
+            const twitchEmotes = await this.twitchApi.getTwitchEmotes(channel);
+            const twitchEmoteSets = await this.twitchApi.getTwitchEmotesBySets(emoteSetIds);
+            const bttvChannelEmotes = await this.twitchApi.getBttvEmotesByChannel(channel);
+            const bttvGlobalEmotes = await this.twitchApi.getGlobalBttvEmotes();
 
-        // emoteWidget.twitchSubBadges = values[0].subBadges;
-        let emotes: Emote[] = [];
-        emotes = emotes.concat(twitchEmotes).concat(twitchEmoteSets).concat(bttvChannelEmotes).concat(bttvGlobalEmotes);
-        this.setEmoteCodes(emotes);
-        return emotes;
+            // emoteWidget.twitchSubBadges = values[0].subBadges;
+            let emotes: Emote[] = [];
+            emotes = emotes.concat(twitchEmotes).concat(twitchEmoteSets).concat(bttvChannelEmotes).concat(bttvGlobalEmotes);
+            this.setEmoteCodes(emotes);
+            return emotes;
+        }
     }
 
     setEmoteCodes(emotes: Emote[]): void {
@@ -60,8 +65,8 @@ export class TwitchChatbot {
         const invokedEmotes = this.emoteParser.parseComplete(msg, this.getEmoteCodes());
         if (this.debugMode) { this.debugMessages(invokedCommands, invokedEmotes); }
         if (invokedEmotes.length > 0 && webSocketCb) {
-            console.log('found', invokedEmotes)
-            webSocketCb(SocketMessageEnum.FoundEmotes, invokedEmotes);
+            // console.log('found', invokedEmotes);
+            webSocketCb(SocketMessageEnum.FoundEmotes, invokedEmotes, "treee");
         }
 
         if (invokedCommands.length > 0 && twitchClientCb) {
