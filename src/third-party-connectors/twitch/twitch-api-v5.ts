@@ -6,7 +6,7 @@ import { SECRETS } from "../../secrets";
 export class TwitchApiV5 {
   oAuthToken: string = "";
   debugMode: boolean;
-  helixBaseUrl: string = "https://api.twitch.tv/helix/";
+  helixBaseUrl: string = "https://api.twitch.tv/helix";
 
   pubSubCallbackUrl: string = "https://itsatreee.com/aoe2/api/twitchwebhook/";
 
@@ -23,10 +23,10 @@ export class TwitchApiV5 {
     return headers;
   }
 
-  async checkoAuthToken(clientId: string, clientSecret: string) {
+  async checkoAuthToken(clientId: string, clientSecret: string, scope: string = "", grantType: string = "") {
     const validateOAuthTokenResponse = await this.validateoAuthToken(this.oAuthToken);
     if (validateOAuthTokenResponse.status && (validateOAuthTokenResponse.status === 401 || validateOAuthTokenResponse.status === 403)) {
-      const newOAuthToken = await this.getoAuthToken(clientId, clientSecret);
+      const newOAuthToken = await this.getoAuthToken(clientId, clientSecret, scope, grantType);
       return newOAuthToken;
     } else if (validateOAuthTokenResponse.client_id) {
       return validateOAuthTokenResponse;
@@ -34,7 +34,7 @@ export class TwitchApiV5 {
   }
 
   private async getoAuthToken(clientId: string, clientSecret: string, scope: string = "", grantType: string = "client_credentials") {
-    // console.log('getting oauth token start');
+    // console.log(`getting oauth token start scope:${scope} grantType: ${grantType}`);
     let url = `https://id.twitch.tv/oauth2/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=${grantType}`;
     if (scope !== "") {
       url = `${url}&scope=${scope}`;
@@ -43,20 +43,20 @@ export class TwitchApiV5 {
       method: "post",
     });
     const json = await response.json();
-    // console.log('getting oauth token end', json);
+    // console.log("getting oauth token end", json);
     this.oAuthToken = json.access_token;
     return json;
   }
 
   private async validateoAuthToken(token: string) {
-    // console.log('validate oauth token (' + token + ') start');
+    // console.log("validate oauth token (" + token + ") start");
     const response = await fetch("https://id.twitch.tv/oauth2/validate", {
       headers: {
         Authorization: `OAuth ${token}`,
       },
     });
     const json = await response.json();
-    // console.log('validate oauth token end', json);
+    // console.log("validate oauth token end", json);
     return json;
   }
 
@@ -79,33 +79,32 @@ export class TwitchApiV5 {
     return formattedEmotes;
   }
 
-  async getTwitchEmotes(channelName: string) {
-    await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret);
+  async getTwitchEmotes(broadcasterId: string) {
+    this.oAuthToken = SECRETS.irc.userOAuthPassword;
+    await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret, "", "authorization_code");
     const headers = this.getTwitchRequestHeaders();
-    const userIdResponse = await fetch(`${this.helixBaseUrl}/chat/emotes?broadcaster_id=${channelName}`, { headers });
-    // console.log('twitch emote response', userIdResponse);
-    let responseBody = await userIdResponse.json();
-    // console.log('user', responseBody);
-    let userId = -9999;
+    const emoteResponse = await fetch(`${this.helixBaseUrl}/chat/emotes?broadcaster_id=${broadcasterId}`, { headers });
+    // console.log("twitch emote response", emoteResponse);
+    let responseBody = await emoteResponse.json();
+    // console.log("emotes", responseBody.data);
+    let emotes = [];
     if (responseBody.data.length > 0) {
-      userId = responseBody.data[0].id;
+      emotes = responseBody.data;
     }
 
-    const emoteResponse = await fetch(`https://api.twitchemotes.com/api/v4/channels/${userId}`);
-    let data = await emoteResponse.json();
-    const emotes = data.emotes || [];
-    const subBadges = data.subscriber_badges || [];
+    // const subBadges = data.subscriber_badges || [];
     let formattedEmotes: Emote[] = [];
     const formattedSubBadges: SubBadge[] = [];
-    emotes.forEach((emote: Emote) => {
-      formattedEmotes.push(new Emote(emote.scale, emote.url, emote.code, emote.id, "twitch", emote.emoticon_set));
+    // console.log("emotes yayay: ", emotes);
+    emotes.forEach((emote: any) => {
+      formattedEmotes.push(new Emote(1, emote.images.url_1x, emote.name, emote.id, "twitch", emote.emote_set_id));
     });
     formattedEmotes = formattedEmotes.concat(this.loadEmotesFromConfig());
-    Object.keys(subBadges).forEach((objectKey: any) => {
-      const subLoyaltyImages = [subBadges[objectKey].image_url_1x, subBadges[objectKey].image_url_2x, subBadges[objectKey].image_url_4x];
-      formattedSubBadges.push(new SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
-    });
-    return new TwitchEmoteResponse(data.channel_id, data.channel_name, data.display_name, formattedEmotes, formattedSubBadges).emotes;
+    // Object.keys(subBadges).forEach((objectKey: any) => {
+    //   const subLoyaltyImages = [subBadges[objectKey].image_url_1x, subBadges[objectKey].image_url_2x, subBadges[objectKey].image_url_4x];
+    //   formattedSubBadges.push(new SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
+    // });
+    return new TwitchEmoteResponse(broadcasterId, "channel name", "display name", formattedEmotes, formattedSubBadges).emotes;
     // return new TwitchEmoteResponse('', '', '', '', '').emotes;
   }
 
