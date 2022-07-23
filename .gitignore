@@ -1,5 +1,5 @@
 # Do not commit our local build
-build/
+# build/
 
 # Logs
 logs
