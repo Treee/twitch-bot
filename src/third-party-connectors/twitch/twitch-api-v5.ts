@@ -84,10 +84,9 @@ export class TwitchApiV5 {
     await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret, "", "authorization_code");
     const headers = this.getTwitchRequestHeaders();
     const emoteResponse = await fetch(`${this.helixBaseUrl}/chat/emotes?broadcaster_id=${broadcasterId}`, { headers });
-    console.log("twitch emote response", emoteResponse);
-    console.log("showme", SECRETS);
+    // console.log("twitch emote response", emoteResponse);
     let responseBody = await emoteResponse.json();
-    console.log("emotes", responseBody?.data);
+    // console.log("emotes", responseBody?.data);
     let emotes = [];
     if (responseBody?.data?.length > 0) {
       emotes = responseBody.data;
