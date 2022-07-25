@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "local-chatbot": "node ./build/third-party-connectors/twitch/twitch-websocket-server.js",
+    "local-chatbot": "node ./root/third-party-connectors/twitch/twitch-websocket-server.js",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "build": "npm test && tsc",
     "start": "npm run local-chatbot"
