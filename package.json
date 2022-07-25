@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "local-chatbot": "node ./root/third-party-connectors/twitch/twitch-websocket-server.js",
+    "local-chatbot-dev": "node ./root/third-party-connectors/twitch/twitch-websocket-server.js",
+    "local-chatbot-prod": "node ./root/third-party-connectors/twitch/twitch-websocket-server.js",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "build": "npm test && tsc",
-    "start": "npm run local-chatbot"
+    "start": "npm run local-chatbot-prod"
   },
   "author": "",
   "license": "GPL-3.0",
@@ -31,7 +32,6 @@
     "@types/node-fetch": "^2.5.7",
     "@types/tmi.js": "^1.4.0",
     "@types/ws": "^6.0.4",
-    "dotenv": "^16.0.1",
     "gh-pages": "^2.2.0",
     "jasmine": "^3.5.0",
     "ts-node": "^8.9.1",
