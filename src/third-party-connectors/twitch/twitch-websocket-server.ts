@@ -19,7 +19,7 @@ const opts: Options = {
   },
   channels: SECRETS.irc.channelsToListenTo,
 };
-const debugMode = false;
+const debugMode = true;
 const socketServerPort = parseInt(SECRETS.serverPort || "80");
 
 // Create a client with our options
