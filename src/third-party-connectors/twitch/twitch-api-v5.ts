@@ -116,10 +116,6 @@ export class TwitchApiV5 {
 
   async getBttvEmotesByChannel(channelName: string) {
     const bttvChannelResponse = await fetch(`https://api.betterttv.net/3/cached/users/twitch/${channelName}`);
-<<<<<<< HEAD
-=======
-    // console.log('unmanaged emotes', data);
->>>>>>> 9937052 (fixing local bttv emotes. added more logging to twitch response body)
     let data = await bttvChannelResponse.json();
     if (this.debugMode) {
       // console.log("BTTV Emotes", data);
