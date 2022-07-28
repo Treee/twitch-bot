@@ -261,9 +261,14 @@ function onClientConnect(socket: WebSocket) {
       websocketSend(SocketMessageEnum.PONG, "PONG", msg.toClientId);
     } else if (applicableWebsockets.length > 0) {
       if (isValidWebsocketMessageType(msg.type)) {
-        console.log("received: %s", msg);
+        if (debugMode) {
+          console.log("Received: %s", msg);
+        }
         if (msg.type === SocketMessageEnum.CheckEmoteCache) {
           const emoteSetIds: string[] = [];
+          if (debugMode) {
+            console.log("Checking Emote Cache: %s", msg);
+          }
           msg.data.emoteSetIds.forEach((setId: string) => {
             if (!emoteSetIds.includes(setId.toString())) {
               emoteSetIds.push(setId);
@@ -271,12 +276,16 @@ function onClientConnect(socket: WebSocket) {
           });
           // twitchChatbot.pullAllEmotes(msg.data.channelName, emoteSetIds).then((emotes) => {
           twitchChatbot.pullAllEmotes("114260623", emoteSetIds).then((emotes) => {
-            // console.log("fresh pull emotes:");
+            if (debugMode) {
+              console.log("Pull All Emotes"); //, emotes);
+            }
             websocketSend(SocketMessageEnum.CheckEmoteCache, emotes, msg.toClientId);
           });
         } else if (msg.type === SocketMessageEnum.EmoteCodes) {
           twitchChatbot.setEmoteCodes(msg.data);
-          // console.log("cache emotes:");
+          if (debugMode) {
+            console.log("Setting Emotes"); //, msg.data);
+          }
         } else if (msg.type === SocketMessageEnum.TEST) {
           websocketSend(SocketMessageEnum.TEST, msg.data, msg.toClientId);
         }

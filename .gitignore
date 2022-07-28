@@ -1,4 +1,6 @@
 # Do not commit our local build
+local.env
+
 
 # Logs
 logs

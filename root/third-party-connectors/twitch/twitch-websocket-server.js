@@ -16,7 +16,7 @@ const opts = {
     },
     channels: secrets_1.SECRETS.irc.channelsToListenTo,
 };
-const debugMode = false;
+const debugMode = true;
 const socketServerPort = parseInt(secrets_1.SECRETS.serverPort || "80");
 // Create a client with our options
 const twitchClient = tmi_js_1.client(opts);

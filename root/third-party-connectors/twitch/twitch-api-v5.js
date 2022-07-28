@@ -92,6 +92,7 @@ class TwitchApiV5 {
         });
     }
     getTwitchEmotes(broadcasterId) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             this.oAuthToken = secrets_1.SECRETS.irc.userOAuthPassword;
             yield this.checkoAuthToken(secrets_1.SECRETS.botClientId, secrets_1.SECRETS.botClientSecret, "", "authorization_code");
@@ -99,9 +100,9 @@ class TwitchApiV5 {
             const emoteResponse = yield node_fetch_1.default(`${this.helixBaseUrl}/chat/emotes?broadcaster_id=${broadcasterId}`, { headers });
             // console.log("twitch emote response", emoteResponse);
             let responseBody = yield emoteResponse.json();
-            // console.log("emotes", responseBody.data);
+            // console.log("emotes", responseBody?.data);
             let emotes = [];
-            if (responseBody.data.length > 0) {
+            if (((_a = responseBody === null || responseBody === void 0 ? void 0 : responseBody.data) === null || _a === void 0 ? void 0 : _a.length) > 0) {
                 emotes = responseBody.data;
             }
             // const subBadges = data.subscriber_badges || [];
@@ -117,7 +118,6 @@ class TwitchApiV5 {
             //   formattedSubBadges.push(new SubBadge(objectKey, subBadges[objectKey].title, subLoyaltyImages));
             // });
             return new emote_1.TwitchEmoteResponse(broadcasterId, "channel name", "display name", formattedEmotes, formattedSubBadges).emotes;
-            // return new TwitchEmoteResponse('', '', '', '', '').emotes;
         });
     }
     getBttvEmotesByChannel(channelName) {

@@ -43,7 +43,9 @@ export class TwitchApiV5 {
       method: "post",
     });
     const json = await response.json();
-    // console.log("getting oauth token end", json);
+    if (this.debugMode) {
+      console.log("getoAuthToken Response", json);
+    }
     this.oAuthToken = json.access_token;
     return json;
   }
@@ -56,7 +58,9 @@ export class TwitchApiV5 {
       },
     });
     const json = await response.json();
-    // console.log("validate oauth token end", json);
+    if (this.debugMode) {
+      console.log("validateoAuthToken Response", json);
+    }
     return json;
   }
 
@@ -80,13 +84,10 @@ export class TwitchApiV5 {
   }
 
   async getTwitchEmotes(broadcasterId: string) {
-    this.oAuthToken = SECRETS.irc.userOAuthPassword;
-    await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret, "", "authorization_code");
+    await this.checkoAuthToken(SECRETS.botClientId, SECRETS.botClientSecret, "", "client_credentials");
     const headers = this.getTwitchRequestHeaders();
     const emoteResponse = await fetch(`${this.helixBaseUrl}/chat/emotes?broadcaster_id=${broadcasterId}`, { headers });
-    // console.log("twitch emote response", emoteResponse);
     let responseBody = await emoteResponse.json();
-    // console.log("emotes", responseBody?.data);
     let emotes = [];
     if (responseBody?.data?.length > 0) {
       emotes = responseBody.data;
@@ -95,7 +96,12 @@ export class TwitchApiV5 {
     // const subBadges = data.subscriber_badges || [];
     let formattedEmotes: Emote[] = [];
     const formattedSubBadges: SubBadge[] = [];
-    // console.log("emotes yayay: ", emotes);
+    if (this.debugMode) {
+      // console.log("Secrets: ", SECRETS);
+      console.log("twitch emote response", emoteResponse);
+      // console.log("resposne body", responseBody?.data);
+      // console.log("emotes yayay: ", emotes);
+    }
     emotes.forEach((emote: any) => {
       formattedEmotes.push(new Emote(1, emote.images.url_1x, emote.name, emote.id, "twitch", emote.emote_set_id));
     });
@@ -109,25 +115,35 @@ export class TwitchApiV5 {
   }
 
   async getBttvEmotesByChannel(channelName: string) {
-    const bttvChannelResponse = await fetch(`https://api.betterttv.net/2/channels/${channelName}`);
-    // console.log('unmanaged emotes', data);
+    const bttvChannelResponse = await fetch(`https://api.betterttv.net/3/cached/users/twitch/${channelName}`);
     let data = await bttvChannelResponse.json();
-    const emotes = data.emotes || [];
+    if (this.debugMode) {
+      // console.log("BTTV Emotes", data);
+    }
+    const emotes = data || [];
     const formattedEmotes: Emote[] = [];
-    emotes.forEach((emote: Emote) => {
+    emotes?.channelEmotes.forEach((emote: Emote) => {
       const formattedEmote = new Emote(1, "", emote.code, emote.id, "bttv");
       formattedEmote.channel = emote.channel;
       formattedEmote.imageType = emote.imageType;
       formattedEmotes.push(formattedEmote);
     });
-    return new BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
+    emotes?.sharedEmotes.forEach((emote: Emote) => {
+      const formattedEmote = new Emote(1, "", emote.code, emote.id, "bttv");
+      formattedEmote.channel = emote.channel;
+      formattedEmote.imageType = emote.imageType;
+      formattedEmotes.push(formattedEmote);
+    });
+    return new BttvEmoteResponse("https://cdn.betterttv.net/emote/${emoteId}/${emoteScale}x", formattedEmotes).emotes;
     // return new BttvEmoteResponse('', []).emotes;
   }
 
   async getGlobalBttvEmotes() {
     const globalBttvEmotes = await fetch(`https://api.betterttv.net/3/cached/emotes/global`);
-    // console.log('unmanaged emotes', data);
     let data = await globalBttvEmotes.json();
+    if (this.debugMode) {
+      // console.log("BTTV Global Emotes", data);
+    }
     const emotes = data || [];
     const formattedEmotes: Emote[] = [];
     emotes.forEach((emote: Emote) => {
@@ -136,7 +152,7 @@ export class TwitchApiV5 {
       formattedEmote.imageType = emote.imageType;
       formattedEmotes.push(formattedEmote);
     });
-    return new BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
+    return new BttvEmoteResponse("https://cdn.betterttv.net/emote/${emoteId}/${emoteScale}x", formattedEmotes).emotes;
     // return new BttvEmoteResponse('', []).emotes;
   }
 

@@ -32,11 +32,11 @@ class TwitchChatbot {
                 console.log(`params 1: ${channel} 2: ${emoteSetIds}`);
                 const twitchEmotes = yield this.twitchApi.getTwitchEmotes(channel);
                 // const twitchEmoteSets = await this.twitchApi.getTwitchEmotesBySets(emoteSetIds);
-                // const bttvChannelEmotes = await this.twitchApi.getBttvEmotesByChannel(channel);
-                // const bttvGlobalEmotes = await this.twitchApi.getGlobalBttvEmotes();
+                const bttvChannelEmotes = yield this.twitchApi.getBttvEmotesByChannel(channel);
+                const bttvGlobalEmotes = yield this.twitchApi.getGlobalBttvEmotes();
                 // emoteWidget.twitchSubBadges = values[0].subBadges;
                 let emotes = [];
-                emotes = emotes.concat(twitchEmotes); //.concat(twitchEmoteSets).concat(bttvChannelEmotes).concat(bttvGlobalEmotes);
+                emotes = emotes.concat(twitchEmotes).concat(bttvChannelEmotes).concat(bttvGlobalEmotes); //.concat(twitchEmoteSets)
                 this.setEmoteCodes(emotes);
                 return emotes;
             }
