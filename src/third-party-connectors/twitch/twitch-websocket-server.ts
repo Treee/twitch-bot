@@ -180,20 +180,20 @@ function onConnectedHandler(addr: string, port: number): void {
   console.log(`attempting to subscribe to additional events if you are treeeee:${opts.channels}.`);
   if (opts.channels && opts.channels[0] === "#itsatreee") {
     console.log(`subscribed`);
-    twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
-    twitchClient.on("ban", banHandler);
-    twitchClient.on("cheer", cheerHandler);
-    twitchClient.on("clearchat", clearchatHandler);
-    twitchClient.on("emoteonly", emoteonlyHandler);
-    twitchClient.on("emotesets", emotesetsHandler);
-    twitchClient.on("giftpaidupgrade", giftpaidupgradeHandler);
-    twitchClient.on("resub", resubHandler);
-    twitchClient.on("subgift", subgiftHandler);
-    twitchClient.on("submysterygift", submysterygiftHandler);
-    twitchClient.on("subscription", subscriptionHandler);
-    twitchClient.on("vips", vipsHandler);
-    twitchClient.on("raided", raidHandler);
-    twitchClient.on("hosted", hostHandler);
+    // twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
+    // twitchClient.on("ban", banHandler);
+    // twitchClient.on("cheer", cheerHandler);
+    // twitchClient.on("clearchat", clearchatHandler);
+    // twitchClient.on("emoteonly", emoteonlyHandler);
+    // twitchClient.on("emotesets", emotesetsHandler);
+    // twitchClient.on("giftpaidupgrade", giftpaidupgradeHandler);
+    // twitchClient.on("resub", resubHandler);
+    // twitchClient.on("subgift", subgiftHandler);
+    // twitchClient.on("submysterygift", submysterygiftHandler);
+    // twitchClient.on("subscription", subscriptionHandler);
+    // twitchClient.on("vips", vipsHandler);
+    // twitchClient.on("raided", raidHandler);
+    // twitchClient.on("hosted", hostHandler);
   }
 }
 
