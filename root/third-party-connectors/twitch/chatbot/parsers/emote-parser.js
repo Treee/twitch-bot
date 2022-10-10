@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.EmoteParser = exports.ComboType = void 0;
 var ComboType;
 (function (ComboType) {
     ComboType[ComboType["None"] = 0] = "None";

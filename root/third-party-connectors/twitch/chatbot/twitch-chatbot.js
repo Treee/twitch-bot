@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TwitchChatbot = void 0;
 const socket_message_enum_1 = require("../socket-message-enum");
 const secrets_1 = require("../../../secrets");
 const emote_parser_1 = require("./parsers/emote-parser");

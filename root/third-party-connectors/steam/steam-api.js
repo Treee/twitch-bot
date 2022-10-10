@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SteamApi = void 0;
 // https://steamcommunity.com/dev
 const fetch = require('node-fetch');
 const player_summary_1 = require("./player-summary");

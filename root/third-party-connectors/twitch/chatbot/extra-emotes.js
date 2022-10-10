@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.extraEmotes = void 0;
 exports.extraEmotes = JSON.parse(`{
     "hahahalidaysEmoteSet":{
        "id":472873131,

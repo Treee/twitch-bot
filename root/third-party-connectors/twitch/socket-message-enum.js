@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SocketMessageEnum = void 0;
 var SocketMessageEnum;
 (function (SocketMessageEnum) {
     SocketMessageEnum[SocketMessageEnum["ClientRegister"] = 0] = "ClientRegister";

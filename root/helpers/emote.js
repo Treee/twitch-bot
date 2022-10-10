@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SubBadge = exports.TwitchEmoteResponse = exports.BttvEmoteResponse = exports.Emote = void 0;
 class Emote {
     constructor(scale, url, code, id, type, emoteSetId = -1) {
         this.channelPointModifier = '';

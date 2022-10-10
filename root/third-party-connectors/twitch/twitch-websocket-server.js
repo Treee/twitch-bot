@@ -19,7 +19,7 @@ const opts = {
 const debugMode = false;
 const socketServerPort = parseInt(secrets_1.SECRETS.serverPort || "80");
 // Create a client with our options
-const twitchClient = tmi_js_1.client(opts);
+const twitchClient = (0, tmi_js_1.client)(opts);
 const steamApi = new steam_api_1.SteamApi();
 const twitchApi = new twitch_api_v5_1.TwitchApiV5(debugMode);
 const twitchChatbot = new twitch_chatbot_1.TwitchChatbot(twitchApi, steamApi, debugMode);
@@ -169,7 +169,7 @@ const serverOptions = {
 };
 let emoteWidgetSocketServer = new WebSocket.Server(serverOptions);
 function sendRegistrationToClient(websocket) {
-    const uuid = uuid_1.v4();
+    const uuid = (0, uuid_1.v4)();
     console.log(`sent client registration to user: ${uuid}`);
     websocket.send(formatDataForWebsocket(socket_message_enum_1.SocketMessageEnum.ClientRegister, uuid));
     return uuid;

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PlayerSummary = void 0;
 class PlayerSummary {
     constructor(rawJsonData) {
         this.convertJsonToObject(rawJsonData);

@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TwitchApiV5 = void 0;
 const emote_1 = require("../../helpers/emote");
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const extra_emotes_1 = require("./chatbot/extra-emotes");
@@ -50,7 +51,7 @@ class TwitchApiV5 {
             if (scope !== "") {
                 url = `${url}&scope=${scope}`;
             }
-            const response = yield node_fetch_1.default(url, {
+            const response = yield (0, node_fetch_1.default)(url, {
                 method: "post",
             });
             const json = yield response.json();
@@ -64,7 +65,7 @@ class TwitchApiV5 {
     validateoAuthToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
             // console.log("validate oauth token (" + token + ") start");
-            const response = yield node_fetch_1.default("https://id.twitch.tv/oauth2/validate", {
+            const response = yield (0, node_fetch_1.default)("https://id.twitch.tv/oauth2/validate", {
                 headers: {
                     Authorization: `OAuth ${token}`,
                 },
@@ -80,7 +81,7 @@ class TwitchApiV5 {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.checkoAuthToken(secrets_1.SECRETS.botClientId, secrets_1.SECRETS.botClientSecret);
             const headers = this.getTwitchRequestHeaders();
-            const emoteSetResponse = yield node_fetch_1.default(`https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=${setIds.join(",")}`, { headers });
+            const emoteSetResponse = yield (0, node_fetch_1.default)(`https://api.twitch.tv/kraken/chat/emoticon_images?emotesets=${setIds.join(",")}`, { headers });
             let jsonData = yield emoteSetResponse.json();
             // console.log('emotes by set emotes', jsonData);
             const emoticonSets = jsonData.emoticon_sets || {};
@@ -100,7 +101,7 @@ class TwitchApiV5 {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.checkoAuthToken(secrets_1.SECRETS.botClientId, secrets_1.SECRETS.botClientSecret, "", "client_credentials");
             const headers = this.getTwitchRequestHeaders();
-            const emoteResponse = yield node_fetch_1.default(`${this.helixBaseUrl}/chat/emotes?broadcaster_id=${broadcasterId}`, { headers });
+            const emoteResponse = yield (0, node_fetch_1.default)(`${this.helixBaseUrl}/chat/emotes?broadcaster_id=${broadcasterId}`, { headers });
             let responseBody = yield emoteResponse.json();
             let emotes = [];
             if (((_a = responseBody === null || responseBody === void 0 ? void 0 : responseBody.data) === null || _a === void 0 ? void 0 : _a.length) > 0) {
@@ -128,7 +129,7 @@ class TwitchApiV5 {
     }
     getBttvEmotesByChannel(channelName) {
         return __awaiter(this, void 0, void 0, function* () {
-            const bttvChannelResponse = yield node_fetch_1.default(`https://api.betterttv.net/3/cached/users/twitch/${channelName}`);
+            const bttvChannelResponse = yield (0, node_fetch_1.default)(`https://api.betterttv.net/3/cached/users/twitch/${channelName}`);
             let data = yield bttvChannelResponse.json();
             if (this.debugMode) {
                 // console.log("BTTV Emotes", data);
@@ -153,7 +154,7 @@ class TwitchApiV5 {
     }
     getGlobalBttvEmotes() {
         return __awaiter(this, void 0, void 0, function* () {
-            const globalBttvEmotes = yield node_fetch_1.default(`https://api.betterttv.net/3/cached/emotes/global`);
+            const globalBttvEmotes = yield (0, node_fetch_1.default)(`https://api.betterttv.net/3/cached/emotes/global`);
             let data = yield globalBttvEmotes.json();
             if (this.debugMode) {
                 // console.log("BTTV Global Emotes", data);
@@ -174,7 +175,7 @@ class TwitchApiV5 {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.checkoAuthToken(secrets_1.SECRETS.botClientId, secrets_1.SECRETS.botClientSecret);
             const headers = this.getTwitchRequestHeaders();
-            return yield node_fetch_1.default(`${this.helixBaseUrl}webhooks/subscriptions`, { method: "GET", headers: headers });
+            return yield (0, node_fetch_1.default)(`${this.helixBaseUrl}webhooks/subscriptions`, { method: "GET", headers: headers });
         });
     }
     // i want this thing to monitor for new people following when i am live
@@ -194,7 +195,7 @@ class TwitchApiV5 {
                     "hub.secret": secrets_1.SECRETS.botPublisherSecret,
                 }),
             };
-            return yield node_fetch_1.default(`${this.helixBaseUrl}webhooks/hub`, options);
+            return yield (0, node_fetch_1.default)(`${this.helixBaseUrl}webhooks/hub`, options);
         });
     }
     // get all bttv emotes available
