@@ -16,7 +16,7 @@ const opts = {
     },
     channels: secrets_1.SECRETS.irc.channelsToListenTo,
 };
-const debugMode = true;
+const debugMode = false;
 const socketServerPort = parseInt(secrets_1.SECRETS.serverPort || "80");
 // Create a client with our options
 const twitchClient = tmi_js_1.client(opts);
@@ -35,6 +35,7 @@ let clients = [];
 //     console.log("data yo", data);
 //     return data;
 // });
+//
 // i have the ability to sub and unsub to interesting events
 // what i want is to turn this on when i go live.
 // how do i know when i go live?
@@ -147,20 +148,20 @@ function onConnectedHandler(addr, port) {
     console.log(`attempting to subscribe to additional events if you are treeeee:${opts.channels}.`);
     if (opts.channels && opts.channels[0] === "#itsatreee") {
         console.log(`subscribed`);
-        twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
-        twitchClient.on("ban", banHandler);
-        twitchClient.on("cheer", cheerHandler);
-        twitchClient.on("clearchat", clearchatHandler);
-        twitchClient.on("emoteonly", emoteonlyHandler);
-        twitchClient.on("emotesets", emotesetsHandler);
-        twitchClient.on("giftpaidupgrade", giftpaidupgradeHandler);
-        twitchClient.on("resub", resubHandler);
-        twitchClient.on("subgift", subgiftHandler);
-        twitchClient.on("submysterygift", submysterygiftHandler);
-        twitchClient.on("subscription", subscriptionHandler);
-        twitchClient.on("vips", vipsHandler);
-        twitchClient.on("raided", raidHandler);
-        twitchClient.on("hosted", hostHandler);
+        // twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
+        // twitchClient.on("ban", banHandler);
+        // twitchClient.on("cheer", cheerHandler);
+        // twitchClient.on("clearchat", clearchatHandler);
+        // twitchClient.on("emoteonly", emoteonlyHandler);
+        // twitchClient.on("emotesets", emotesetsHandler);
+        // twitchClient.on("giftpaidupgrade", giftpaidupgradeHandler);
+        // twitchClient.on("resub", resubHandler);
+        // twitchClient.on("subgift", subgiftHandler);
+        // twitchClient.on("submysterygift", submysterygiftHandler);
+        // twitchClient.on("subscription", subscriptionHandler);
+        // twitchClient.on("vips", vipsHandler);
+        // twitchClient.on("raided", raidHandler);
+        // twitchClient.on("hosted", hostHandler);
     }
 }
 const serverOptions = {
@@ -220,9 +221,14 @@ function onClientConnect(socket) {
         }
         else if (applicableWebsockets.length > 0) {
             if (isValidWebsocketMessageType(msg.type)) {
-                console.log("received: %s", msg);
+                if (debugMode) {
+                    console.log("Received: %s", msg);
+                }
                 if (msg.type === socket_message_enum_1.SocketMessageEnum.CheckEmoteCache) {
                     const emoteSetIds = [];
+                    if (debugMode) {
+                        console.log("Checking Emote Cache: %s", msg);
+                    }
                     msg.data.emoteSetIds.forEach((setId) => {
                         if (!emoteSetIds.includes(setId.toString())) {
                             emoteSetIds.push(setId);
@@ -230,13 +236,17 @@ function onClientConnect(socket) {
                     });
                     // twitchChatbot.pullAllEmotes(msg.data.channelName, emoteSetIds).then((emotes) => {
                     twitchChatbot.pullAllEmotes("114260623", emoteSetIds).then((emotes) => {
-                        // console.log("fresh pull emotes:");
+                        if (debugMode) {
+                            console.log("Pull All Emotes"); //, emotes);
+                        }
                         websocketSend(socket_message_enum_1.SocketMessageEnum.CheckEmoteCache, emotes, msg.toClientId);
                     });
                 }
                 else if (msg.type === socket_message_enum_1.SocketMessageEnum.EmoteCodes) {
                     twitchChatbot.setEmoteCodes(msg.data);
-                    // console.log("cache emotes:");
+                    if (debugMode) {
+                        console.log("Setting Emotes"); //, msg.data);
+                    }
                 }
                 else if (msg.type === socket_message_enum_1.SocketMessageEnum.TEST) {
                     websocketSend(socket_message_enum_1.SocketMessageEnum.TEST, msg.data, msg.toClientId);

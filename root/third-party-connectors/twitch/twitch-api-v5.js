@@ -54,7 +54,9 @@ class TwitchApiV5 {
                 method: "post",
             });
             const json = yield response.json();
-            // console.log("getting oauth token end", json);
+            if (this.debugMode) {
+                console.log("getoAuthToken Response", json);
+            }
             this.oAuthToken = json.access_token;
             return json;
         });
@@ -68,7 +70,9 @@ class TwitchApiV5 {
                 },
             });
             const json = yield response.json();
-            // console.log("validate oauth token end", json);
+            if (this.debugMode) {
+                console.log("validateoAuthToken Response", json);
+            }
             return json;
         });
     }
@@ -94,13 +98,10 @@ class TwitchApiV5 {
     getTwitchEmotes(broadcasterId) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            this.oAuthToken = secrets_1.SECRETS.irc.userOAuthPassword;
-            yield this.checkoAuthToken(secrets_1.SECRETS.botClientId, secrets_1.SECRETS.botClientSecret, "", "authorization_code");
+            yield this.checkoAuthToken(secrets_1.SECRETS.botClientId, secrets_1.SECRETS.botClientSecret, "", "client_credentials");
             const headers = this.getTwitchRequestHeaders();
             const emoteResponse = yield node_fetch_1.default(`${this.helixBaseUrl}/chat/emotes?broadcaster_id=${broadcasterId}`, { headers });
-            // console.log("twitch emote response", emoteResponse);
             let responseBody = yield emoteResponse.json();
-            // console.log("emotes", responseBody?.data);
             let emotes = [];
             if (((_a = responseBody === null || responseBody === void 0 ? void 0 : responseBody.data) === null || _a === void 0 ? void 0 : _a.length) > 0) {
                 emotes = responseBody.data;
@@ -108,7 +109,12 @@ class TwitchApiV5 {
             // const subBadges = data.subscriber_badges || [];
             let formattedEmotes = [];
             const formattedSubBadges = [];
-            // console.log("emotes yayay: ", emotes);
+            if (this.debugMode) {
+                // console.log("Secrets: ", SECRETS);
+                console.log("twitch emote response", emoteResponse);
+                // console.log("resposne body", responseBody?.data);
+                // console.log("emotes yayay: ", emotes);
+            }
             emotes.forEach((emote) => {
                 formattedEmotes.push(new emote_1.Emote(1, emote.images.url_1x, emote.name, emote.id, "twitch", emote.emote_set_id));
             });
@@ -122,26 +128,36 @@ class TwitchApiV5 {
     }
     getBttvEmotesByChannel(channelName) {
         return __awaiter(this, void 0, void 0, function* () {
-            const bttvChannelResponse = yield node_fetch_1.default(`https://api.betterttv.net/2/channels/${channelName}`);
-            // console.log('unmanaged emotes', data);
+            const bttvChannelResponse = yield node_fetch_1.default(`https://api.betterttv.net/3/cached/users/twitch/${channelName}`);
             let data = yield bttvChannelResponse.json();
-            const emotes = data.emotes || [];
+            if (this.debugMode) {
+                // console.log("BTTV Emotes", data);
+            }
+            const emotes = data || [];
             const formattedEmotes = [];
-            emotes.forEach((emote) => {
+            emotes === null || emotes === void 0 ? void 0 : emotes.channelEmotes.forEach((emote) => {
                 const formattedEmote = new emote_1.Emote(1, "", emote.code, emote.id, "bttv");
                 formattedEmote.channel = emote.channel;
                 formattedEmote.imageType = emote.imageType;
                 formattedEmotes.push(formattedEmote);
             });
-            return new emote_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
+            emotes === null || emotes === void 0 ? void 0 : emotes.sharedEmotes.forEach((emote) => {
+                const formattedEmote = new emote_1.Emote(1, "", emote.code, emote.id, "bttv");
+                formattedEmote.channel = emote.channel;
+                formattedEmote.imageType = emote.imageType;
+                formattedEmotes.push(formattedEmote);
+            });
+            return new emote_1.BttvEmoteResponse("https://cdn.betterttv.net/emote/${emoteId}/${emoteScale}x", formattedEmotes).emotes;
             // return new BttvEmoteResponse('', []).emotes;
         });
     }
     getGlobalBttvEmotes() {
         return __awaiter(this, void 0, void 0, function* () {
             const globalBttvEmotes = yield node_fetch_1.default(`https://api.betterttv.net/3/cached/emotes/global`);
-            // console.log('unmanaged emotes', data);
             let data = yield globalBttvEmotes.json();
+            if (this.debugMode) {
+                // console.log("BTTV Global Emotes", data);
+            }
             const emotes = data || [];
             const formattedEmotes = [];
             emotes.forEach((emote) => {
@@ -150,7 +166,7 @@ class TwitchApiV5 {
                 formattedEmote.imageType = emote.imageType;
                 formattedEmotes.push(formattedEmote);
             });
-            return new emote_1.BttvEmoteResponse(data.urlTemplate, formattedEmotes).emotes;
+            return new emote_1.BttvEmoteResponse("https://cdn.betterttv.net/emote/${emoteId}/${emoteScale}x", formattedEmotes).emotes;
             // return new BttvEmoteResponse('', []).emotes;
         });
     }
