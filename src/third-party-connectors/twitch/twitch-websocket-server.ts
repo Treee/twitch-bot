@@ -41,7 +41,7 @@ let clients: { uuid: string; id: string; socket: WebSocket }[] = [];
 //     console.log("data yo", data);
 //     return data;
 // });
-
+//
 // i have the ability to sub and unsub to interesting events
 
 // what i want is to turn this on when i go live.
