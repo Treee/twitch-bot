@@ -181,8 +181,8 @@ function onConnectedHandler(addr: string, port: number): void {
   if (opts.channels && opts.channels[0] === "#itsatreee") {
     console.log(`subscribed`);
     // twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
-    // twitchClient.on("ban", banHandler);
-    // twitchClient.on("cheer", cheerHandler);
+    twitchClient.on("ban", banHandler);
+    twitchClient.on("cheer", cheerHandler);
     // twitchClient.on("clearchat", clearchatHandler);
     // twitchClient.on("emoteonly", emoteonlyHandler);
     // twitchClient.on("emotesets", emotesetsHandler);
@@ -190,9 +190,9 @@ function onConnectedHandler(addr: string, port: number): void {
     // twitchClient.on("resub", resubHandler);
     // twitchClient.on("subgift", subgiftHandler);
     // twitchClient.on("submysterygift", submysterygiftHandler);
-    // twitchClient.on("subscription", subscriptionHandler);
+    twitchClient.on("subscription", subscriptionHandler);
     // twitchClient.on("vips", vipsHandler);
-    // twitchClient.on("raided", raidHandler);
+    twitchClient.on("raided", raidHandler);
     // twitchClient.on("hosted", hostHandler);
   }
 }
