@@ -30,7 +30,6 @@ const opts: Options = {
 };
 const debugMode = false;
 const socketServerPort = parseInt(SECRETS.serverPort || "80");
-console.log("opts", opts);
 // Create a client with our options
 const twitchClient: Client = client(opts);
 const steamApi = new SteamApi();
