@@ -11,6 +11,15 @@ import { SteamApi } from "../steam/steam-api";
 import { SocketMessageEnum } from "./socket-message-enum";
 import { TwitchApiV5 } from "./twitch-api-v5";
 
+function treeChannelFilter(func: any) : any {
+  return (...params: any) => {
+    //params[0] is channel name
+    if (params[0] === "#itsatreee") {
+      func(...params);
+    }
+  }
+}
+
 // Define configuration options
 const opts: Options = {
   identity: {
@@ -21,7 +30,7 @@ const opts: Options = {
 };
 const debugMode = false;
 const socketServerPort = parseInt(SECRETS.serverPort || "80");
-
+console.log("opts", opts);
 // Create a client with our options
 const twitchClient: Client = client(opts);
 const steamApi = new SteamApi();
@@ -54,6 +63,10 @@ let clients: { uuid: string; id: string; socket: WebSocket }[] = [];
 // Register our event handlers (defined below)
 twitchClient.on("message", onMessageHandler);
 twitchClient.on("connected", onConnectedHandler);
+twitchClient.on("ban", treeChannelFilter(banHandler));
+twitchClient.on("cheer", treeChannelFilter(cheerHandler));
+twitchClient.on("subscription", treeChannelFilter(subscriptionHandler));
+twitchClient.on("raided", treeChannelFilter(raidHandler));
 
 // Connect to Twitch:
 twitchClient.connect();
@@ -180,20 +193,20 @@ function onConnectedHandler(addr: string, port: number): void {
   console.log(`attempting to subscribe to additional events if you are treeeee:${opts.channels}.`);
   if (opts.channels && opts.channels[0] === "#itsatreee") {
     console.log(`subscribed`);
-    // twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
-    twitchClient.on("ban", banHandler);
-    twitchClient.on("cheer", cheerHandler);
-    // twitchClient.on("clearchat", clearchatHandler);
-    // twitchClient.on("emoteonly", emoteonlyHandler);
-    // twitchClient.on("emotesets", emotesetsHandler);
-    // twitchClient.on("giftpaidupgrade", giftpaidupgradeHandler);
-    // twitchClient.on("resub", resubHandler);
-    // twitchClient.on("subgift", subgiftHandler);
-    // twitchClient.on("submysterygift", submysterygiftHandler);
-    twitchClient.on("subscription", subscriptionHandler);
-    // twitchClient.on("vips", vipsHandler);
-    twitchClient.on("raided", raidHandler);
-    // twitchClient.on("hosted", hostHandler);
+    // // twitchClient.on("anongiftpaidupgrade", anongiftpaidupgradeHandler);
+    // twitchClient.on("ban", banHandler);
+    // twitchClient.on("cheer", cheerHandler);
+    // // twitchClient.on("clearchat", clearchatHandler);
+    // // twitchClient.on("emoteonly", emoteonlyHandler);
+    // // twitchClient.on("emotesets", emotesetsHandler);
+    // // twitchClient.on("giftpaidupgrade", giftpaidupgradeHandler);
+    // // twitchClient.on("resub", resubHandler);
+    // // twitchClient.on("subgift", subgiftHandler);
+    // // twitchClient.on("submysterygift", submysterygiftHandler);
+    // twitchClient.on("subscription", subscriptionHandler);
+    // // twitchClient.on("vips", vipsHandler);
+    // twitchClient.on("raided", raidHandler);
+    // // twitchClient.on("hosted", hostHandler);
   }
 }
 
